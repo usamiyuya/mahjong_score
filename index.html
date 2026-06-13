@@ -28,29 +28,32 @@
     <div id="players-input">
       <!-- 4人分の入力欄 -->
       <div class="player-card">
-        <input type="text" placeholder="プレイヤー名" class="player-name">
+        <input list="player-list" type="text" placeholder="プレイヤー名" class="player-name">
         <input type="number" placeholder="スコア" class="player-score">
         <input type="number" placeholder="順位" class="player-rank">
       </div>
 
       <div class="player-card">
-        <input type="text" placeholder="プレイヤー名" class="player-name">
+        <input list="player-list" type="text" placeholder="プレイヤー名" class="player-name">
         <input type="number" placeholder="スコア" class="player-score">
         <input type="number" placeholder="順位" class="player-rank">
       </div>
 
       <div class="player-card">
-        <input type="text" placeholder="プレイヤー名" class="player-name">
+        <input list="player-list" type="text" placeholder="プレイヤー名" class="player-name">
         <input type="number" placeholder="スコア" class="player-score">
         <input type="number" placeholder="順位" class="player-rank">
       </div>
 
       <div class="player-card">
-        <input type="text" placeholder="プレイヤー名" class="player-name">
+        <input list="player-list" type="text" placeholder="プレイヤー名" class="player-name">
         <input type="number" placeholder="スコア" class="player-score">
         <input type="number" placeholder="順位" class="player-rank">
       </div>
     </div>
+
+    <!-- 過去プレイヤー名の候補 -->
+    <datalist id="player-list"></datalist>
 
     <div class="card">
       <label>メモ</label>
@@ -61,12 +64,13 @@
 
     <h3>最近の成績</h3>
     <div id="record-list"></div>
-
   </section>
 
   <!-- 画面：日別集計 -->
   <section id="tab-daily" class="tab-page">
     <h2>日別集計</h2>
+    <input type="date" id="daily-date">
+    <button id="show-daily-btn" class="primary-btn">表示</button>
     <div id="daily-list"></div>
   </section>
 
