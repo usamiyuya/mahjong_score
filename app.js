@@ -2,7 +2,6 @@ import {
   collection,
   addDoc,
   getDocs,
-  updateDoc,
   deleteDoc,
   doc
 } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
@@ -35,8 +34,11 @@ loadPlayers();
 document.getElementById("add-record-btn").addEventListener("click", async () => {
   const date = document.getElementById("game-date").value;
   const rule = document.getElementById("game-rule").value;
-  const uma = document.getElementById("game-uma").value;
-  const oka = Number(document.getElementById("game-oka").value);
+
+  // 初期値を適用
+  const uma = document.getElementById("game-uma").value || "10-30";
+  const oka = Number(document.getElementById("game-oka").value || 0);
+
   const note = document.getElementById("game-note").value;
 
   const nameEls = document.querySelectorAll(".player-name");
@@ -56,7 +58,7 @@ document.getElementById("add-record-btn").addEventListener("click", async () => 
 
     players.push({ name, score, rank, point });
 
-    // プレイヤー名を保存
+    // プレイヤー名を保存（重複は後で改善）
     await addDoc(playersCol, { name });
   }
 
