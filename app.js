@@ -35,6 +35,26 @@ function saveRecords(records) {
 let records = loadRecords();
 
 // -------------------------
+// 一覧表示
+// -------------------------
+function renderRecordList() {
+  const container = document.getElementById("record-list");
+  container.innerHTML = "";
+
+  records.slice().reverse().forEach(record => {
+    const div = document.createElement("div");
+    div.className = "card";
+    div.innerHTML = `
+      <strong>${record.date}（${record.rule}）</strong><br>
+      ${record.players.map(p => `${p.rank}位 ${p.name}: ${p.score}`).join("<br>")}
+      <br>
+      <small>${record.note || ""}</small>
+    `;
+    container.appendChild(div);
+  });
+}
+
+// -------------------------
 // 成績追加
 // -------------------------
 document.getElementById("add-record-btn").addEventListener("click", () => {
@@ -73,6 +93,8 @@ document.getElementById("add-record-btn").addEventListener("click", () => {
 
   records.push(record);
   saveRecords(records);
-
+  renderRecordList();
   alert("成績を追加しました！");
 });
+
+
