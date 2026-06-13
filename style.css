@@ -77,20 +77,10 @@ input, select {
   font-weight: bold;
 }
 
-.edit-btn, .delete-btn {
-  padding: 6px 10px;
-  margin-right: 6px;
-  border: none;
-  border-radius: 6px;
-  font-size: 14px;
-}
-
-.edit-btn {
-  background: #2196f3;
-  color: white;
-}
-
 .delete-btn {
+  padding: 6px 10px;
   background: #f44336;
   color: white;
+  border: none;
+  border-radius: 6px;
 }

@@ -13,6 +13,26 @@ const recordsCol = collection(db, "records");
 const playersCol = collection(db, "players");
 
 // -------------------------
+// タブ切り替え
+// -------------------------
+const tabButtons = document.querySelectorAll(".bottom-nav button");
+const tabPages = document.querySelectorAll(".tab-page");
+
+tabButtons.forEach(btn => {
+  btn.addEventListener("click", () => {
+    const target = btn.dataset.target;
+
+    tabButtons.forEach(b => b.classList.remove("active"));
+    btn.classList.add("active");
+
+    tabPages.forEach(page => {
+      page.classList.remove("active");
+      if (page.id === target) page.classList.add("active");
+    });
+  });
+});
+
+// -------------------------
 // プレイヤー名候補の読み込み
 // -------------------------
 async function loadPlayers() {
@@ -35,7 +55,6 @@ document.getElementById("add-record-btn").addEventListener("click", async () => 
   const date = document.getElementById("game-date").value;
   const rule = document.getElementById("game-rule").value;
 
-  // 初期値を適用
   const uma = document.getElementById("game-uma").value || "10-30";
   const oka = Number(document.getElementById("game-oka").value || 0);
 
@@ -58,7 +77,6 @@ document.getElementById("add-record-btn").addEventListener("click", async () => 
 
     players.push({ name, score, rank, point });
 
-    // プレイヤー名を保存（重複は後で改善）
     await addDoc(playersCol, { name });
   }
 
@@ -114,7 +132,7 @@ async function loadRecords() {
       ウマ: ${r.uma} / オカ: ${r.oka}<br><br>
       ${r.players.map(p => `${p.rank}位 ${p.name}: ${p.point.toFixed(1)}P`).join("<br>")}
       <br><br>
-      <button onclick="deleteRecord('${docSnap.id}')">削除</button>
+      <button class="delete-btn" onclick="deleteRecord('${docSnap.id}')">削除</button>
     `;
     container.appendChild(div);
   });
