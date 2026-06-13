@@ -11,19 +11,65 @@
   <!-- 画面：対局入力 -->
   <section id="tab-input" class="tab-page active">
     <h2>対局入力</h2>
-    <p>ここに入力フォームを置く</p>
+
+    <div class="card">
+      <label>日付</label>
+      <input type="date" id="game-date">
+
+      <label>ルール</label>
+      <select id="game-rule">
+        <option value="半荘">半荘</option>
+        <option value="東風">東風</option>
+      </select>
+    </div>
+
+    <h3>プレイヤー入力</h3>
+
+    <div id="players-input">
+      <!-- 4人分の入力欄 -->
+      <div class="player-card">
+        <input type="text" placeholder="プレイヤー名" class="player-name">
+        <input type="number" placeholder="スコア" class="player-score">
+        <input type="number" placeholder="順位" class="player-rank">
+      </div>
+
+      <div class="player-card">
+        <input type="text" placeholder="プレイヤー名" class="player-name">
+        <input type="number" placeholder="スコア" class="player-score">
+        <input type="number" placeholder="順位" class="player-rank">
+      </div>
+
+      <div class="player-card">
+        <input type="text" placeholder="プレイヤー名" class="player-name">
+        <input type="number" placeholder="スコア" class="player-score">
+        <input type="number" placeholder="順位" class="player-rank">
+      </div>
+
+      <div class="player-card">
+        <input type="text" placeholder="プレイヤー名" class="player-name">
+        <input type="number" placeholder="スコア" class="player-score">
+        <input type="number" placeholder="順位" class="player-rank">
+      </div>
+    </div>
+
+    <div class="card">
+      <label>メモ</label>
+      <input type="text" id="game-note" placeholder="ウマ・オカなど">
+    </div>
+
+    <button id="add-record-btn" class="primary-btn">成績を追加</button>
   </section>
 
   <!-- 画面：日別集計 -->
   <section id="tab-daily" class="tab-page">
     <h2>日別集計</h2>
-    <p>ここに日別集計を表示</p>
+    <div id="daily-list"></div>
   </section>
 
   <!-- 画面：プレイヤー別 -->
   <section id="tab-players" class="tab-page">
     <h2>プレイヤー別成績</h2>
-    <p>ここにプレイヤー別集計を表示</p>
+    <div id="players-list"></div>
   </section>
 
   <!-- 下タブ -->
