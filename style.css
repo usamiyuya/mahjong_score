@@ -1,0 +1,38 @@
+body {
+  margin: 0;
+  font-family: sans-serif;
+  background: #f5f5f5;
+  padding-bottom: 60px; /* 下タブの高さ分 */
+}
+
+/* タブページ */
+.tab-page {
+  display: none;
+  padding: 16px;
+}
+.tab-page.active {
+  display: block;
+}
+
+/* 下タブ */
+.bottom-nav {
+  position: fixed;
+  bottom: 0;
+  width: 100%;
+  display: flex;
+  background: #ffffff;
+  border-top: 1px solid #ccc;
+}
+
+.bottom-nav button {
+  flex: 1;
+  padding: 12px 0;
+  font-size: 16px;
+  border: none;
+  background: #fff;
+}
+
+.bottom-nav button.active {
+  background: #e0e0e0;
+  font-weight: bold;
+}

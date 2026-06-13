@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>麻雀成績管理</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- 画面：対局入力 -->
+  <section id="tab-input" class="tab-page active">
+    <h2>対局入力</h2>
+    <p>ここに入力フォームを置く</p>
+  </section>
+
+  <!-- 画面：日別集計 -->
+  <section id="tab-daily" class="tab-page">
+    <h2>日別集計</h2>
+    <p>ここに日別集計を表示</p>
+  </section>
+
+  <!-- 画面：プレイヤー別 -->
+  <section id="tab-players" class="tab-page">
+    <h2>プレイヤー別成績</h2>
+    <p>ここにプレイヤー別集計を表示</p>
+  </section>
+
+  <!-- 下タブ -->
+  <nav class="bottom-nav">
+    <button data-target="tab-input" class="active">入力</button>
+    <button data-target="tab-daily">日別</button>
+    <button data-target="tab-players">プレイヤー</button>
+  </nav>
+
+  <script src="app.js"></script>
+</body>
+</html>
