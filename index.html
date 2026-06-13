@@ -10,24 +10,22 @@
 
   <!-- Firebase SDK -->
   <script type="module">
-    import { initializeApp } from "firebase/app";
-    import { getAnalytics } from "firebase/analytics";
-
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+    import { getFirestore } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyCb1zWZvsfP3ovG1l48hq5_3t4uPFDiH3Q",
       authDomain: "mahjong-score-a0d70.firebaseapp.com",
-      databaseURL: "https://mahjong-score-a0d70-default-rtdb.firebaseio.com",
       projectId: "mahjong-score-a0d70",
-      storageBucket: "mahjong-score-a0d70.firebasestorage.app",
+      storageBucket: "mahjong-score-a0d70.appspot.com",
       messagingSenderId: "737019062372",
-      appId: "1:737019062372:web:7942006e29fd7b31ad9771",
-      measurementId: "G-N5S61D5WWC"
+      appId: "1:737019062372:web:7942006e29fd7b31ad9771"
     };
 
-    window.firebaseApp = initializeApp(firebaseConfig);
-    window.db = getFirestore(firebaseApp);
+    const app = initializeApp(firebaseConfig);
+    window.db = getFirestore(app);
   </script>
+
 
   <!-- ここからアプリ本体 -->
   <section id="tab-input" class="tab-page active">
