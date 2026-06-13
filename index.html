@@ -21,38 +21,43 @@
         <option value="半荘">半荘</option>
         <option value="東風">東風</option>
       </select>
+
+      <label>ウマ（例：10-20）</label>
+      <input type="text" id="game-uma" placeholder="10-20">
+
+      <label>オカ（例：20）</label>
+      <input type="number" id="game-oka" placeholder="20">
     </div>
 
     <h3>プレイヤー入力</h3>
 
     <div id="players-input">
-      <!-- 4人分の入力欄 -->
+      <!-- 4人分 -->
       <div class="player-card">
         <input list="player-list" type="text" placeholder="プレイヤー名" class="player-name">
-        <input type="number" placeholder="スコア" class="player-score">
+        <input type="number" placeholder="素点" class="player-score">
         <input type="number" placeholder="順位" class="player-rank">
       </div>
 
       <div class="player-card">
         <input list="player-list" type="text" placeholder="プレイヤー名" class="player-name">
-        <input type="number" placeholder="スコア" class="player-score">
+        <input type="number" placeholder="素点" class="player-score">
         <input type="number" placeholder="順位" class="player-rank">
       </div>
 
       <div class="player-card">
         <input list="player-list" type="text" placeholder="プレイヤー名" class="player-name">
-        <input type="number" placeholder="スコア" class="player-score">
+        <input type="number" placeholder="素点" class="player-score">
         <input type="number" placeholder="順位" class="player-rank">
       </div>
 
       <div class="player-card">
         <input list="player-list" type="text" placeholder="プレイヤー名" class="player-name">
-        <input type="number" placeholder="スコア" class="player-score">
+        <input type="number" placeholder="素点" class="player-score">
         <input type="number" placeholder="順位" class="player-rank">
       </div>
     </div>
 
-    <!-- 過去プレイヤー名の候補 -->
     <datalist id="player-list"></datalist>
 
     <div class="card">

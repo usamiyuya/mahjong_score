@@ -62,11 +62,31 @@ function updatePlayerList() {
 updatePlayerList();
 
 // -------------------------
+// ポイント計算（ウマ・オカ込み）
+// -------------------------
+function calcPoint(score, rank, uma, oka) {
+  const [uma2, uma1] = uma.split("-").map(Number);
+
+  let umaPoint = 0;
+  if (rank === 1) umaPoint = uma1;
+  if (rank === 2) umaPoint = uma2;
+  if (rank === 3) umaPoint = -uma2;
+  if (rank === 4) umaPoint = -uma1;
+
+  const base = score / 1000;
+  const okaPoint = rank === 1 ? oka : 0;
+
+  return base + umaPoint + okaPoint;
+}
+
+// -------------------------
 // 成績追加
 // -------------------------
 document.getElementById("add-record-btn").addEventListener("click", () => {
   const date = document.getElementById("game-date").value;
   const rule = document.getElementById("game-rule").value;
+  const uma = document.getElementById("game-uma").value;
+  const oka = Number(document.getElementById("game-oka").value);
   const note = document.getElementById("game-note").value;
 
   const nameEls = document.querySelectorAll(".player-name");
@@ -82,7 +102,9 @@ document.getElementById("add-record-btn").addEventListener("click", () => {
 
     if (!name) continue;
 
-    playersData.push({ name, score, rank });
+    const point = calcPoint(score, rank, uma, oka);
+
+    playersData.push({ name, score, rank, point });
 
     if (!players.includes(name)) {
       players.push(name);
@@ -100,6 +122,8 @@ document.getElementById("add-record-btn").addEventListener("click", () => {
     id: Date.now().toString(),
     date,
     rule,
+    uma,
+    oka,
     players: playersData,
     note
   };
@@ -110,6 +134,55 @@ document.getElementById("add-record-btn").addEventListener("click", () => {
   renderRecordList();
   alert("成績を追加しました！");
 });
+
+// -------------------------
+// 編集処理
+// -------------------------
+function editRecord(id) {
+  const record = records.find(r => r.id === id);
+  if (!record) return;
+
+  // 入力欄に反映
+  document.getElementById("game-date").value = record.date;
+  document.getElementById("game-rule").value = record.rule;
+  document.getElementById("game-uma").value = record.uma;
+  document.getElementById("game-oka").value = record.oka;
+  document.getElementById("game-note").value = record.note;
+
+  const nameEls = document.querySelectorAll(".player-name");
+  const scoreEls = document.querySelectorAll(".player-score");
+  const rankEls  = document.querySelectorAll(".player-rank");
+
+  for (let i = 0; i < 4; i++) {
+    if (record.players[i]) {
+      nameEls[i].value = record.players[i].name;
+      scoreEls[i].value = record.players[i].score;
+      rankEls[i].value = record.players[i].rank;
+    } else {
+      nameEls[i].value = "";
+      scoreEls[i].value = "";
+      rankEls[i].value = "";
+    }
+  }
+
+  // 削除して再追加する方式
+  records = records.filter(r => r.id !== id);
+  saveRecords(records);
+  renderRecordList();
+
+  alert("編集モードになりました。修正後に『成績を追加』を押してください。");
+}
+
+// -------------------------
+// 削除処理
+// -------------------------
+function deleteRecord(id) {
+  if (!confirm("本当に削除しますか？")) return;
+
+  records = records.filter(r => r.id !== id);
+  saveRecords(records);
+  renderRecordList();
+}
 
 // -------------------------
 // 最近の成績一覧
@@ -123,7 +196,11 @@ function renderRecordList() {
     div.className = "card";
     div.innerHTML = `
       <strong>${record.date}（${record.rule}）</strong><br>
-      ${record.players.map(p => `${p.rank}位 ${p.name}: ${p.score}`).join("<br>")}
+      ウマ: ${record.uma} / オカ: ${record.oka}<br><br>
+      ${record.players.map(p => `${p.rank}位 ${p.name}: 素点 ${p.score} → ${p.point.toFixed(1)}P`).join("<br>")}
+      <br><br>
+      <button class="edit-btn" onclick="editRecord('${record.id}')">編集</button>
+      <button class="delete-btn" onclick="deleteRecord('${record.id}')">削除</button>
       <br>
       <small>${record.note || ""}</small>
     `;
@@ -142,18 +219,13 @@ function calcDailyTotals(date) {
   daily.forEach(record => {
     record.players.forEach(p => {
       if (!totals[p.name]) {
-        totals[p.name] = { totalScore: 0, ranks: [], games: 0 };
+        totals[p.name] = { totalPoint: 0, ranks: [], games: 0 };
       }
-      totals[p.name].totalScore += p.score;
+      totals[p.name].totalPoint += p.point;
       totals[p.name].ranks.push(p.rank);
       totals[p.name].games++;
     });
   });
-
-  for (const name in totals) {
-    const t = totals[name];
-    t.avgRank = (t.ranks.reduce((a,b)=>a+b,0) / t.ranks.length).toFixed(2);
-  }
 
   return totals;
 }
@@ -167,12 +239,14 @@ document.getElementById("show-daily-btn").addEventListener("click", () => {
 
   for (const name in totals) {
     const t = totals[name];
+    const avgRank = (t.ranks.reduce((a,b)=>a+b,0) / t.ranks.length).toFixed(2);
+
     const div = document.createElement("div");
     div.className = "card";
     div.innerHTML = `
       <strong>${name}</strong><br>
-      トータル: ${t.totalScore}<br>
-      平均順位: ${t.avgRank}<br>
+      合計ポイント: ${t.totalPoint.toFixed(1)}<br>
+      平均順位: ${avgRank}<br>
       対局数: ${t.games}
     `;
     container.appendChild(div);
@@ -188,9 +262,9 @@ function renderPlayerTotals() {
   records.forEach(record => {
     record.players.forEach(p => {
       if (!totals[p.name]) {
-        totals[p.name] = { totalScore: 0, ranks: [], games: 0 };
+        totals[p.name] = { totalPoint: 0, ranks: [], games: 0 };
       }
-      totals[p.name].totalScore += p.score;
+      totals[p.name].totalPoint += p.point;
       totals[p.name].ranks.push(p.rank);
       totals[p.name].games++;
     });
@@ -201,12 +275,14 @@ function renderPlayerTotals() {
 
   for (const name in totals) {
     const t = totals[name];
+    const avgRank = (t.ranks.reduce((a,b)=>a+b,0) / t.ranks.length).toFixed(2);
+
     const div = document.createElement("div");
     div.className = "card";
     div.innerHTML = `
       <strong>${name}</strong><br>
-      トータル: ${t.totalScore}<br>
-      平均順位: ${(t.ranks.reduce((a,b)=>a+b,0) / t.ranks.length).toFixed(2)}<br>
+      合計ポイント: ${t.totalPoint.toFixed(1)}<br>
+      平均順位: ${avgRank}<br>
       対局数: ${t.games}
     `;
     container.appendChild(div);
