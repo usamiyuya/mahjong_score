@@ -8,7 +8,28 @@
 </head>
 <body>
 
-  <!-- 画面：対局入力 -->
+  <!-- Firebase SDK -->
+  <script type="module">
+    import { initializeApp } from "firebase/app";
+    import { getAnalytics } from "firebase/analytics";
+
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyCb1zWZvsfP3ovG1l48hq5_3t4uPFDiH3Q",
+      authDomain: "mahjong-score-a0d70.firebaseapp.com",
+      databaseURL: "https://mahjong-score-a0d70-default-rtdb.firebaseio.com",
+      projectId: "mahjong-score-a0d70",
+      storageBucket: "mahjong-score-a0d70.firebasestorage.app",
+      messagingSenderId: "737019062372",
+      appId: "1:737019062372:web:7942006e29fd7b31ad9771",
+      measurementId: "G-N5S61D5WWC"
+    };
+
+    window.firebaseApp = initializeApp(firebaseConfig);
+    window.db = getFirestore(firebaseApp);
+  </script>
+
+  <!-- ここからアプリ本体 -->
   <section id="tab-input" class="tab-page active">
     <h2>対局入力</h2>
 
@@ -32,29 +53,25 @@
     <h3>プレイヤー入力</h3>
 
     <div id="players-input">
-      <!-- 4人分 -->
       <div class="player-card">
-        <input list="player-list" type="text" placeholder="プレイヤー名" class="player-name">
-        <input type="number" placeholder="素点" class="player-score">
-        <input type="number" placeholder="順位" class="player-rank">
+        <input list="player-list" type="text" class="player-name" placeholder="プレイヤー名">
+        <input type="number" class="player-score" placeholder="素点">
+        <input type="number" class="player-rank" placeholder="順位">
       </div>
-
       <div class="player-card">
-        <input list="player-list" type="text" placeholder="プレイヤー名" class="player-name">
-        <input type="number" placeholder="素点" class="player-score">
-        <input type="number" placeholder="順位" class="player-rank">
+        <input list="player-list" type="text" class="player-name" placeholder="プレイヤー名">
+        <input type="number" class="player-score" placeholder="素点">
+        <input type="number" class="player-rank" placeholder="順位">
       </div>
-
       <div class="player-card">
-        <input list="player-list" type="text" placeholder="プレイヤー名" class="player-name">
-        <input type="number" placeholder="素点" class="player-score">
-        <input type="number" placeholder="順位" class="player-rank">
+        <input list="player-list" type="text" class="player-name" placeholder="プレイヤー名">
+        <input type="number" class="player-score" placeholder="素点">
+        <input type="number" class="player-rank" placeholder="順位">
       </div>
-
       <div class="player-card">
-        <input list="player-list" type="text" placeholder="プレイヤー名" class="player-name">
-        <input type="number" placeholder="素点" class="player-score">
-        <input type="number" placeholder="順位" class="player-rank">
+        <input list="player-list" type="text" class="player-name" placeholder="プレイヤー名">
+        <input type="number" class="player-score" placeholder="素点">
+        <input type="number" class="player-rank" placeholder="順位">
       </div>
     </div>
 
@@ -71,7 +88,6 @@
     <div id="record-list"></div>
   </section>
 
-  <!-- 画面：日別集計 -->
   <section id="tab-daily" class="tab-page">
     <h2>日別集計</h2>
     <input type="date" id="daily-date">
@@ -79,19 +95,17 @@
     <div id="daily-list"></div>
   </section>
 
-  <!-- 画面：プレイヤー別 -->
   <section id="tab-players" class="tab-page">
     <h2>プレイヤー別成績</h2>
     <div id="players-list"></div>
   </section>
 
-  <!-- 下タブ -->
   <nav class="bottom-nav">
     <button data-target="tab-input" class="active">入力</button>
     <button data-target="tab-daily">日別</button>
     <button data-target="tab-players">プレイヤー</button>
   </nav>
 
-  <script src="app.js"></script>
+  <script src="app.js" type="module"></script>
 </body>
 </html>
