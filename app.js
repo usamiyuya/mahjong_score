@@ -5,7 +5,8 @@ import {
   deleteDoc,
   doc,
   orderBy,
-  query
+  query,
+  where
 } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
 // ===================================
@@ -289,6 +290,20 @@ function setupRuleEvents() {
 
   }
 
+  const deleteBtn =
+    document.getElementById(
+      "delete-rule-btn"
+    );
+
+  if (deleteBtn) {
+
+    deleteBtn.addEventListener(
+      "click",
+      deleteRule
+    );
+
+  }
+
 }
 
 // ===================================
@@ -354,7 +369,62 @@ async function saveRule() {
 
 }
 
+// ===================================
+// 削除関数
+// ===================================
+const PROTECTED_RULES = [
+  "一般フリー",
+  "Mリーグ",
+  "競技麻雀"
+];
 
+async function deleteRule() {
+  if (
+    PROTECTED_RULES.includes(
+      currentRule.name
+    )
+  ) {
+
+    alert(
+      "標準ルールは削除できません"
+    );
+
+    return;
+  }
+
+  const select =
+    document.getElementById(
+      "rule-select"
+    );
+
+  const ruleId =
+    select.value;
+
+  if (!ruleId) return;
+
+  if (
+    !confirm(
+      "このルールを削除しますか？"
+    )
+  ) {
+    return;
+  }
+
+  await deleteDoc(
+    doc(
+      db,
+      "rules",
+      ruleId
+    )
+  );
+
+  alert(
+    "削除しました"
+  );
+
+  await loadRules();
+
+}
 
 // ===================================
 // 端数処理
@@ -556,6 +626,30 @@ function setupRecordEvents() {
 }
 
 // ===================================
+// プレイヤー登録
+// ===================================
+async function registerPlayer(name) {
+
+  const q = query(
+    playersCol,
+    where("name", "==", name)
+  );
+
+  const snap =
+    await getDocs(q);
+
+  if (!snap.empty) {
+    return;
+  }
+
+  await addDoc(
+    playersCol,
+    { name }
+  );
+
+}
+
+// ===================================
 // 成績保存
 // ===================================
 async function saveRecord() {
@@ -654,10 +748,11 @@ async function saveRecord() {
 
   };
 
-  await addDoc(
-    recordsCol,
-    record
-  );
+  // await addDoc(
+  //   recordsCol,
+  //   record
+  // );
+  await registerPlayer(name);
 
   alert("保存しました");
 
