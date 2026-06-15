@@ -32,8 +32,8 @@ body {
   min-height: 100vh;
   background:
     linear-gradient(
-      rgba(11, 93, 42, 0.90),
-      rgba(21, 122, 63, 0.90)
+      rgba(11, 93, 42, 0.70),
+      rgba(21, 122, 63, 0.70)
     ),
     url("mahjong-hai.jpg");
   background-size: cover;
