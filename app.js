@@ -435,6 +435,8 @@ function calcPoint(
   rank
 ) {
 
+  console.log(currentRule);
+
   const returnPoint =
     Number(
       document.getElementById(
@@ -567,41 +569,9 @@ async function saveRecord() {
 
   for (const card of cards) {
 
-    const firstPlayer =
-      players.find(
-        p => p.rank === 1
-      );
-
-    let totalOther = 0;
-
-    players.forEach(p => {
-
-      if (p.rank !== 1) {
-
-        p.point =
-          calcPoint(
-            p.score,
-            p.rank
-          );
-
-        totalOther +=
-          p.point;
-      }
-
-    });
-
-    if (firstPlayer) {
-
-      firstPlayer.point =
-        -totalOther;
-
-    }
-
     const name =
       card
-      .querySelector(
-        ".player-name"
-      )
+      .querySelector(".player-name")
       .value
       .trim();
 
@@ -621,22 +591,40 @@ async function saveRecord() {
 
     if (!name) continue;
 
-    const point =
-      calcPoint(
-        score,
-        rank
-      );
-
     players.push({
       name,
       score,
-      rank,
+      rank
     });
 
-    await addDoc(
-      playersCol,
-      { name }
+  }
+
+  let totalOther = 0;
+
+  players.forEach(p => {
+
+    if (p.rank !== 1) {
+
+      p.point =
+        calcPoint(
+          p.score,
+          p.rank
+        );
+
+      totalOther += p.point;
+    }
+
+  });
+
+  const firstPlayer =
+    players.find(
+      p => p.rank === 1
     );
+
+  if (firstPlayer) {
+
+    firstPlayer.point =
+      -totalOther;
 
   }
 
@@ -671,9 +659,7 @@ async function saveRecord() {
     record
   );
 
-  alert(
-    "保存しました"
-  );
+  alert("保存しました");
 
   await loadRecords();
 
@@ -721,12 +707,22 @@ async function loadRecords() {
     div.innerHTML = `
       <strong>${r.date}</strong>
       (${r.rule})<br>
+
       ${r.players
         .map(p =>
-          `${p.rank}位 ${p.name}
-           (${p.point})`
+          `${p.rank}位
+          ${p.name}
+          (${p.point})`
         )
         .join("<br>")}
+
+      <br><br>
+
+      <button
+        class="delete-record-btn"
+        data-id="${docSnap.id}">
+        削除
+      </button>
     `;
 
     container.appendChild(
@@ -734,6 +730,39 @@ async function loadRecords() {
     );
 
   });
+
+  container
+    .querySelectorAll(
+      ".delete-record-btn"
+    )
+    .forEach(btn => {
+
+      btn.addEventListener(
+        "click",
+        async () => {
+
+          if (
+            !confirm(
+              "削除しますか？"
+            )
+          ) {
+            return;
+          }
+
+          await deleteDoc(
+            doc(
+              db,
+              "records",
+              btn.dataset.id
+            )
+          );
+
+          await loadRecords();
+
+        }
+      );
+
+    });
 
 }
 
