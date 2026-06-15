@@ -116,7 +116,7 @@ function setupTabs() {
       if (target === "tab-players") {
         renderPlayerTotals();
       }
-      
+
     });
 
   });
@@ -567,6 +567,36 @@ async function saveRecord() {
 
   for (const card of cards) {
 
+    const firstPlayer =
+      players.find(
+        p => p.rank === 1
+      );
+
+    let totalOther = 0;
+
+    players.forEach(p => {
+
+      if (p.rank !== 1) {
+
+        p.point =
+          calcPoint(
+            p.score,
+            p.rank
+          );
+
+        totalOther +=
+          p.point;
+      }
+
+    });
+
+    if (firstPlayer) {
+
+      firstPlayer.point =
+        -totalOther;
+
+    }
+
     const name =
       card
       .querySelector(
@@ -601,7 +631,6 @@ async function saveRecord() {
       name,
       score,
       rank,
-      point
     });
 
     await addDoc(
