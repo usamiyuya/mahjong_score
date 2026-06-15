@@ -36,7 +36,7 @@ body {
       rgba(21, 122, 63, 0.50)
     ),
     url("mahjong-hai.jpg");
-  background-size: cover;
+  background-size: 1000-x auto;
   background-position: center;
   background-repeat: no-repeat;
   background-attachment: fixed;
