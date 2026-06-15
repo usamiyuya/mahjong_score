@@ -132,6 +132,13 @@ function setupTabs() {
     "daily-date"
   ).value = today;
 
+  document.getElementById(
+    "game-date"
+  ).value = today;
+  
+  document.getElementById(
+    "player-period-date"
+  ).value = today;
 }
 
 // ===================================
