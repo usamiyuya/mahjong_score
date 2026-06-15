@@ -263,8 +263,6 @@ function setupRuleEvents() {
 
   }
 
-  //}
-
   const saveBtn =
     document.getElementById(
       "save-rule-btn"
