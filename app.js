@@ -8,15 +8,25 @@ import {
 
 //const db = window.db;
 
+let recordsCol;
+let playersCol;
+let rulesCol;
+
 window.addEventListener("load", () => {
   initialize();
 });
 
 function initialize() {
+  //const db = window.db;
+
+  //window.recordsCol = collection(db, "records");
+  //window.playersCol = collection(db, "players");
+
   const db = window.db;
 
-  window.recordsCol = collection(db, "records");
-  window.playersCol = collection(db, "players");
+  recordsCol = collection(db, "records");
+  playersCol = collection(db, "players");
+  rulesCol = collection(db, "rules");
 
   loadPlayers();
   loadRecords();
@@ -173,45 +183,71 @@ document
 // プレイヤー別集計
 // -------------------------
 async function renderPlayerTotals() {
-  const snap = await getDocs(recordsCol);
-  const totals = {};
 
-  snap.forEach(docSnap => {
-    const r = docSnap.data();
-    if (!r.players) return;
-    r.players.forEach(p => {
-      if (!totals[p.name]) {
-        totals[p.name] = { totalPoint: 0, ranks: [], games: 0 };
-      }
-      totals[p.name].totalPoint += p.point;
-      totals[p.name].ranks.push(p.rank);
-      totals[p.name].games++;
+  try {
+
+    const snap = await getDocs(recordsCol);
+    const totals = {};
+
+    snap.forEach(docSnap => {
+      const r = docSnap.data();
+
+      if (!r.players) return;
+
+      r.players.forEach(p => {
+        if (!totals[p.name]) {
+          totals[p.name] = {
+            totalPoint: 0,
+            ranks: [],
+            games: 0
+          };
+        }
+
+        totals[p.name].totalPoint += p.point;
+        totals[p.name].ranks.push(p.rank);
+        totals[p.name].games++;
+      });
     });
-  });
 
-  const container = document.getElementById("players-list");
-  container.innerHTML = "";
+    const container =
+      document.getElementById("players-list");
 
-  if (Object.keys(totals).length === 0) {
-      container.innerHTML = "<div class='card'>データがありません</div>";
+    container.innerHTML = "";
+
+    if (Object.keys(totals).length === 0) {
+      container.innerHTML =
+        "<div class='card'>データがありません</div>";
       return;
     }
 
-  for (const name in totals) {
-    const t = totals[name];
-    const avgRank = (t.ranks.reduce((a,b)=>a+b,0) / t.ranks.length).toFixed(2);
+    for (const name in totals) {
 
-    const div = document.createElement("div");
-    div.className = "card";
-    div.innerHTML = `
-      <strong>${name}</strong><br>
-      合計ポイント: ${t.totalPoint.toFixed(1)}<br>
-      平均順位: ${avgRank}<br>
-      対局数: ${t.games}
-    `;
-    container.appendChild(div);
+      const t = totals[name];
+
+      const avgRank =
+        (t.ranks.reduce((a,b)=>a+b,0)
+          / t.ranks.length)
+          .toFixed(2);
+
+      const div =
+        document.createElement("div");
+
+      div.className = "card";
+
+      div.innerHTML = `
+        <strong>${name}</strong><br>
+        合計ポイント: ${t.totalPoint.toFixed(1)}<br>
+        平均順位: ${avgRank}<br>
+        対局数: ${t.games}
+      `;
+
+      container.appendChild(div);
+    }
+
   } catch(err) {
+
     console.error(err);
+
   }
 }
 
@@ -222,21 +258,32 @@ const tabButtons = document.querySelectorAll(".bottom-nav button");
 const tabPages = document.querySelectorAll(".tab-page");
 
 tabButtons.forEach(btn => {
-  btn.addEventListener("click", () => {
+
+  btn.addEventListener("click", async () => {
+
     const target = btn.dataset.target;
 
-    tabButtons.forEach(b => b.classList.remove("active"));
+    tabButtons.forEach(b =>
+      b.classList.remove("active"));
+
     btn.classList.add("active");
 
     tabPages.forEach(page => {
+
       page.classList.remove("active");
-      if (page.id === target) page.classList.add("active");
+
+      if (page.id === target) {
+        page.classList.add("active");
+      }
+
     });
 
     if (target === "tab-players") {
       await renderPlayerTotals();
     }
+
   });
+
 });
 
 // -------------------------
