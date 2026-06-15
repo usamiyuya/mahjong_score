@@ -245,36 +245,23 @@ function setupRuleEvents() {
 
   if (loadBtn) {
 
-    loadBtn.addEventListener(
-      "click",
-      () => {
+    loadBtn.addEventListener("click", () => {
 
-        document.getElementById(
-          "current-return-point"
-        ).value =
-          currentRule.returnPoint;
+      document.getElementById(
+        "current-return-point"
+      ).value = currentRule.returnPoint;
 
-        document.getElementById(
-          "current-rounding-rule"
-        ).value =
-          currentRule.rounding;
+      document.getElementById(
+        "current-rounding-rule"
+      ).value = currentRule.rounding;
 
-        document.getElementById(
-          "game-uma"
-        ).value =
-          currentRule.uma;
+      alert(
+        `${currentRule.name} を反映しました`
+      );
 
-        document.getElementById(
-          "game-oka"
-        ).value =
-          currentRule.oka;
-
-        alert(
-          `${currentRule.name} を反映しました`
-        );
+    });
 
   }
-);
 
   }
 
