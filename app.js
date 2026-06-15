@@ -169,7 +169,51 @@ document
   alert("保存しました");
 });
 
+// -------------------------
+// プレイヤー別集計
+// -------------------------
+async function renderPlayerTotals() {
+  const snap = await getDocs(recordsCol);
+  const totals = {};
 
+  snap.forEach(docSnap => {
+    const r = docSnap.data();
+    if (!r.players) return;
+    r.players.forEach(p => {
+      if (!totals[p.name]) {
+        totals[p.name] = { totalPoint: 0, ranks: [], games: 0 };
+      }
+      totals[p.name].totalPoint += p.point;
+      totals[p.name].ranks.push(p.rank);
+      totals[p.name].games++;
+    });
+  });
+
+  const container = document.getElementById("players-list");
+  container.innerHTML = "";
+
+  if (Object.keys(totals).length === 0) {
+      container.innerHTML = "<div class='card'>データがありません</div>";
+      return;
+    }
+
+  for (const name in totals) {
+    const t = totals[name];
+    const avgRank = (t.ranks.reduce((a,b)=>a+b,0) / t.ranks.length).toFixed(2);
+
+    const div = document.createElement("div");
+    div.className = "card";
+    div.innerHTML = `
+      <strong>${name}</strong><br>
+      合計ポイント: ${t.totalPoint.toFixed(1)}<br>
+      平均順位: ${avgRank}<br>
+      対局数: ${t.games}
+    `;
+    container.appendChild(div);
+  } catch(err) {
+    console.error(err);
+  }
+}
 
 // -------------------------
 // タブ切り替え
@@ -443,51 +487,7 @@ document.getElementById("show-daily-btn").addEventListener("click", async () => 
   }
 });
 
-// -------------------------
-// プレイヤー別集計
-// -------------------------
-async function renderPlayerTotals() {
-  const snap = await getDocs(recordsCol);
-  const totals = {};
 
-  snap.forEach(docSnap => {
-    const r = docSnap.data();
-    if (!r.players) return;
-    r.players.forEach(p => {
-      if (!totals[p.name]) {
-        totals[p.name] = { totalPoint: 0, ranks: [], games: 0 };
-      }
-      totals[p.name].totalPoint += p.point;
-      totals[p.name].ranks.push(p.rank);
-      totals[p.name].games++;
-    });
-  });
-
-  const container = document.getElementById("players-list");
-  container.innerHTML = "";
-
-  if (Object.keys(totals).length === 0) {
-      container.innerHTML = "<div class='card'>データがありません</div>";
-      return;
-    }
-
-  for (const name in totals) {
-    const t = totals[name];
-    const avgRank = (t.ranks.reduce((a,b)=>a+b,0) / t.ranks.length).toFixed(2);
-
-    const div = document.createElement("div");
-    div.className = "card";
-    div.innerHTML = `
-      <strong>${name}</strong><br>
-      合計ポイント: ${t.totalPoint.toFixed(1)}<br>
-      平均順位: ${avgRank}<br>
-      対局数: ${t.games}
-    `;
-    container.appendChild(div);
-  } catch(err) {
-    console.error(err);
-  }
-}
 
 // -------------------------
 // 削除
