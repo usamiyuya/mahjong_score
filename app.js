@@ -765,14 +765,19 @@ async function saveRecord() {
 
   };
 
-  // await addDoc(
-  //   recordsCol,
-  //   record
-  // );
-  await registerPlayer(name);
+  // Firestoreへ成績保存
+  await addDoc(
+    recordsCol,
+    record
+  );
+  // プレイヤー自動登録
+  for (const p of players) {
+    await registerPlayer(p.name);
+  }
 
   alert("保存しました");
 
+  await loadPlayers();
   await loadRecords();
 
 }
