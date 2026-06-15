@@ -263,7 +263,7 @@ function setupRuleEvents() {
 
   }
 
-  }
+  //}
 
   const saveBtn =
     document.getElementById(
