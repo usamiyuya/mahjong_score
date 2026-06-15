@@ -29,6 +29,8 @@ tabButtons.forEach(btn => {
       page.classList.remove("active");
       if (page.id === target) page.classList.add("active");
     });
+
+    if (target === "tab-players") renderPlayerTotals();
   });
 });
 
@@ -138,6 +140,91 @@ async function loadRecords() {
   });
 }
 loadRecords();
+
+// -------------------------
+// 日別集計
+// -------------------------
+document.getElementById("show-daily-btn").addEventListener("click", async () => {
+  const date = document.getElementById("daily-date").value;
+  if (!date) return;
+
+  const snap = await getDocs(recordsCol);
+  const daily = [];
+
+  snap.forEach(docSnap => {
+    const r = docSnap.data();
+    if (r.date === date) daily.push(r);
+  });
+
+  const container = document.getElementById("daily-list");
+  container.innerHTML = "";
+
+  const totals = {};
+
+  daily.forEach(record => {
+    record.players.forEach(p => {
+      if (!totals[p.name]) {
+        totals[p.name] = { totalPoint: 0, ranks: [], games: 0 };
+      }
+      totals[p.name].totalPoint += p.point;
+      totals[p.name].ranks.push(p.rank);
+      totals[p.name].games++;
+    });
+  });
+
+  for (const name in totals) {
+    const t = totals[name];
+    const avgRank = (t.ranks.reduce((a,b)=>a+b,0) / t.ranks.length).toFixed(2);
+
+    const div = document.createElement("div");
+    div.className = "card";
+    div.innerHTML = `
+      <strong>${name}</strong><br>
+      合計ポイント: ${t.totalPoint.toFixed(1)}<br>
+      平均順位: ${avgRank}<br>
+      対局数: ${t.games}
+    `;
+    container.appendChild(div);
+  }
+});
+
+// -------------------------
+// プレイヤー別集計
+// -------------------------
+async function renderPlayerTotals() {
+  const snap = await getDocs(recordsCol);
+  const totals = {};
+
+  snap.forEach(docSnap => {
+    const r = docSnap.data();
+    r.players.forEach(p => {
+      if (!totals[p.name]) {
+        totals[p.name] = { totalPoint: 0, ranks: [], games: 0 };
+      }
+      totals[p.name].totalPoint += p.point;
+      totals[p.name].ranks.push(p.rank);
+      totals[p.name].games++;
+    });
+  });
+
+  const container = document.getElementById("players-list");
+  container.innerHTML = "";
+
+  for (const name in totals) {
+    const t = totals[name];
+    const avgRank = (t.ranks.reduce((a,b)=>a+b,0) / t.ranks.length).toFixed(2);
+
+    const div = document.createElement("div");
+    div.className = "card";
+    div.innerHTML = `
+      <strong>${name}</strong><br>
+      合計ポイント: ${t.totalPoint.toFixed(1)}<br>
+      平均順位: ${avgRank}<br>
+      対局数: ${t.games}
+    `;
+    container.appendChild(div);
+  }
+}
 
 // -------------------------
 // 削除
