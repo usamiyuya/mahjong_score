@@ -147,6 +147,9 @@
       <input type="text" id="game-note" placeholder="ウマ・オカなど">
     </div>
 
+    <input type="hidden" id="current-return-point" value="30000">
+    <input type="hidden" id="current-rounding-rule" value="mahjong">
+
     <button id="add-record-btn" class="primary-btn">成績を追加</button>
 
     <h3>最近の成績</h3>
@@ -165,10 +168,71 @@
     <div id="players-list"></div>
   </section>
 
+  <section id="tab-rules" class="tab-page">
+    <h2>ルール管理</h2>
+
+    <div class="card">
+
+      <label>プリセットルール</label>
+      <select id="rule-select"></select>
+
+      <button
+        id="load-rule-btn"
+        class="primary-btn"
+        type="button">
+        このルールを入力画面へ反映
+      </button>
+
+    </div>
+
+    <div class="card">
+
+      <label>ルール名</label>
+      <input type="text" id="rule-name">
+
+      <label>返し点</label>
+      <select id="return-point">
+        <option value="25000">25000</option>
+        <option value="30000" selected>30000</option>
+        <option value="35000">35000</option>
+        <option value="40000">40000</option>
+      </select>
+
+      <label>端数処理</label>
+      <select id="rounding-rule">
+        <option value="mahjong">麻雀式</option>
+        <option value="gosha">五捨六入</option>
+        <option value="shisha">四捨五入</option>
+        <option value="ceil">切り上げ</option>
+        <option value="floor">切り捨て</option>
+      </select>
+
+      <label>ウマ</label>
+      <input type="text"
+             id="rule-uma"
+             value="10-30">
+
+      <label>オカ</label>
+      <input type="number"
+             id="rule-oka"
+             value="0">
+
+      <button
+        id="save-rule-btn"
+        class="primary-btn"
+        type="button">
+        ルール保存
+      </button>
+
+    </div>
+
+  </section>
+
   <nav class="bottom-nav">
     <button data-target="tab-input" class="active">入力</button>
     <button data-target="tab-daily">日別</button>
     <button data-target="tab-players">プレイヤー</button>
+    <button data-target="tab-rules">ルール</button>
   </nav>
 
 </body>
