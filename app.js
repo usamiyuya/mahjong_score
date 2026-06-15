@@ -6,7 +6,23 @@ import {
   doc
 } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
-const db = window.db;
+//const db = window.db;
+
+window.addEventListener("load", () => {
+  initialize();
+});
+
+function initialize() {
+  const db = window.db;
+
+  window.recordsCol = collection(db, "records");
+  window.playersCol = collection(db, "players");
+
+  loadPlayers();
+  loadRecords();
+
+  setupEvents();
+}
 
 // Firestore コレクション参照
 const recordsCol = collection(db, "records");
@@ -30,7 +46,9 @@ tabButtons.forEach(btn => {
       if (page.id === target) page.classList.add("active");
     });
 
-    if (target === "tab-players") renderPlayerTotals();
+    if (target === "tab-players") {
+      await renderPlayerTotals();
+    }
   });
 });
 
@@ -145,7 +163,9 @@ loadRecords();
 // 日別集計
 // -------------------------
 document.getElementById("show-daily-btn").addEventListener("click", async () => {
+  console.log("daily clicked");
   const date = document.getElementById("daily-date").value;
+  console.log(date);
   if (!date) return;
 
   const snap = await getDocs(recordsCol);
@@ -197,6 +217,7 @@ async function renderPlayerTotals() {
 
   snap.forEach(docSnap => {
     const r = docSnap.data();
+    if (!r.players) return;
     r.players.forEach(p => {
       if (!totals[p.name]) {
         totals[p.name] = { totalPoint: 0, ranks: [], games: 0 };
@@ -209,6 +230,11 @@ async function renderPlayerTotals() {
 
   const container = document.getElementById("players-list");
   container.innerHTML = "";
+
+  if (Object.keys(totals).length === 0) {
+      container.innerHTML = "<div class='card'>データがありません</div>";
+      return;
+    }
 
   for (const name in totals) {
     const t = totals[name];
@@ -223,6 +249,8 @@ async function renderPlayerTotals() {
       対局数: ${t.games}
     `;
     container.appendChild(div);
+  } catch(err) {
+    console.error(err);
   }
 }
 
