@@ -127,8 +127,15 @@ input, select {
 } */
 
 .bottom-nav {
+  position: fixed;
+  bottom: 0;
+  width: 100%;
+  display: flex;
   background: #1b1b1b;
   border-top: 2px solid #d4af37;
+  z-index: 999;
+  box-shadow:
+    0 -3px 10px rgba(0,0,0,0.4);
 }
 
 /* .bottom-nav button {
@@ -140,6 +147,10 @@ input, select {
 } */
 
 .bottom-nav button {
+  flex: 1;
+  padding: 12px 0;
+  font-size: 16px;
+  border: none;
   background: #1b1b1b;
   color: white;
 }
