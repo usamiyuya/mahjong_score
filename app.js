@@ -249,12 +249,32 @@ function setupRuleEvents() {
       "click",
       () => {
 
+        document.getElementById(
+          "current-return-point"
+        ).value =
+          currentRule.returnPoint;
+
+        document.getElementById(
+          "current-rounding-rule"
+        ).value =
+          currentRule.rounding;
+
+        document.getElementById(
+          "game-uma"
+        ).value =
+          currentRule.uma;
+
+        document.getElementById(
+          "game-oka"
+        ).value =
+          currentRule.oka;
+
         alert(
-          `${currentRule.name} を選択しました`
+          `${currentRule.name} を反映しました`
         );
 
-      }
-    );
+  }
+);
 
   }
 
