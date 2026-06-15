@@ -110,13 +110,13 @@ function setupTabs() {
         if (page.id === target) {
           page.classList.add("active");
         }
-
-        if (target === "tab-players") {
-          renderPlayerTotals();
-        }
-
+  
       });
-
+      
+      if (target === "tab-players") {
+        renderPlayerTotals();
+      }
+      
     });
 
   });
