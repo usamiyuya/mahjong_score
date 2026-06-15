@@ -1,5 +1,8 @@
 <!DOCTYPE html>
 <html lang="ja">
+<h1 class="app-title">
+  麻雀成績管理
+</h1>
 <head>
   <meta charset="UTF-8">
   <title>麻雀成績管理</title>
@@ -7,6 +10,9 @@
   <meta name="description" content="麻雀成績をスマホで簡単管理できるWebアプリ">
   <meta name="apple-mobile-web-app-title" content="雀績簿">
   <meta name="application-name" content="雀績簿">
+  <meta property="og:title" content="雀績簿">
+  <meta property="og:description" content="麻雀成績管理アプリ">
+  <meta property="og:type" content="website">
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -40,7 +46,9 @@
     <h2>対局入力</h2>
 
     <div class="card">
-      <label>日付</label>
+      <label for="daily-date">
+        日付を選択
+      </label>
       <input type="date" id="game-date">
 
       <label>ルール</label>
@@ -94,6 +102,9 @@
 
   <section id="tab-daily" class="tab-page">
     <h2>日別集計</h2>
+    <label for="daily-date">
+      日付を選択
+    </label>
     <input type="date" id="daily-date">
     <button id="show-daily-btn" class="primary-btn">表示</button>
     <div id="daily-list"></div>
