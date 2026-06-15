@@ -746,6 +746,15 @@ async function saveRecord() {
         "game-date"
       ).value,
 
+    time: 
+      new Date().toLocaleTimeString(
+        "ja-JP",
+        {
+          hour: "2-digit",
+          minute: "2-digit"
+        }
+    ),
+
     rule:
       document.getElementById(
         "game-rule"
@@ -921,12 +930,29 @@ async function renderDaily() {
     div.className =
       "card";
 
+    // div.innerHTML = `
+    //   ${r.players
+    //     .map(p =>
+    //       `${p.rank}位
+    //        ${p.name}
+    //        (${p.point})`
+    //     )
+    //     .join("<br>")}
+    // `;
+    const sortedPlayers =
+      [...r.players]
+        .sort((a, b) => a.rank - b.rank);
+
     div.innerHTML = `
-      ${r.players
+      <strong>${r.time || ""}</strong>
+      （${r.rule}）
+
+      <hr>
+
+      ${sortedPlayers
         .map(p =>
-          `${p.rank}位
-           ${p.name}
-           (${p.point})`
+          `${p.rank}位 ${p.name}
+          (${p.point})`
         )
         .join("<br>")}
     `;
