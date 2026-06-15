@@ -91,6 +91,14 @@ input, select {
   margin-bottom: 12px;
 }
 
+input[type="date"] {
+  appearance: none;
+  -webkit-appearance: none;
+  width: 100%;
+  box-sizing: border-box;
+  padding: 10px;
+}
+
 /* .primary-btn {
   width: 100%;
   padding: 14px;
