@@ -97,6 +97,22 @@
   </section>
 
   <section id="tab-players" class="tab-page">
+    <div class="card">
+      <label>集計期間</label>
+      <select id="player-period">
+        <option value="day">1日</option>
+        <option value="month">1か月</option>
+        <option value="year" selected>
+          通年
+        </option>
+        <option value="all">
+          すべて
+        </option>
+      </select>
+      <input
+        type="date"
+        id="player-period-date">
+    </div>
     <h2>プレイヤー別成績</h2>
     <div id="players-list"></div>
   </section>

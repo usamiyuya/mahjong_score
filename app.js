@@ -623,6 +623,23 @@ function setupRecordEvents() {
       renderDaily
     );
 
+  document
+    .getElementById(
+      "player-period"
+    )
+    ?.addEventListener(
+      "change",
+      renderPlayerTotals
+    );
+
+  document
+    .getElementById(
+      "player-period-date"
+    )
+    ?.addEventListener(
+      "change",
+      renderPlayerTotals
+    );
 }
 
 // ===================================
@@ -932,62 +949,118 @@ async function renderPlayerTotals() {
 
   const totals = {};
 
+  const period =
+    document.getElementById(
+      "player-period"
+    )?.value || "year";
+
+  const targetDate =
+    document.getElementById(
+      "player-period-date"
+    )?.value;
+
+  const today =
+    targetDate
+      ? new Date(targetDate)
+      : new Date();
+
   const snap =
     await getDocs(
       recordsCol
     );
 
   snap.forEach(docSnap => {
-
     const r =
       docSnap.data();
+    const gameDate =
+      new Date(r.date);
+    let include = true;
+    switch(period) {
+      case "day":
+        include =
+          gameDate
+            .toDateString()
+          ===
+          today
+            .toDateString();
+        break;
+      case "month":
+        include =
+          gameDate.getFullYear()
+          ===
+          today.getFullYear()
+          &&
+          gameDate.getMonth()
+          ===
+          today.getMonth();
+        break;
+      case "year":
+        include =
+          gameDate.getFullYear()
+          ===
+          today.getFullYear();
+        break;
+      case "all":
+        include = true;
+        break;
+    }
 
+    if (!include) return;
     r.players.forEach(p => {
-
       if (!totals[p.name]) {
-
         totals[p.name] = {
           point: 0,
           games: 0,
-          rankSum: 0
+          rankSum: 0,
+          first: 0,
+          second: 0,
+          third: 0,
+          fourth: 0
         };
-
       }
-
       totals[p.name].point +=
         p.point;
-
       totals[p.name].games++;
-
       totals[p.name].rankSum +=
         p.rank;
-
+      if (p.rank === 1)
+        totals[p.name].first++;
+      if (p.rank === 2)
+        totals[p.name].second++;
+      if (p.rank === 3)
+        totals[p.name].third++;
+      if (p.rank === 4)
+        totals[p.name].fourth++;
     });
-
   });
 
   Object.keys(totals)
     .forEach(name => {
-
       const t =
         totals[name];
-
       const div =
         document.createElement(
           "div"
         );
-
       div.className =
         "card";
-
       div.innerHTML = `
         <strong>${name}</strong><br>
-        合計: ${t.point.toFixed(1)}<br>
+        総合ポイント:
+        ${t.point.toFixed(1)}<br>
+        対局数:
+        ${t.games}<br>
         平均順位:
         ${(t.rankSum/t.games)
           .toFixed(2)}<br>
-        対局数:
-        ${t.games}
+        1位:
+        ${t.first}<br>
+        2位:
+        ${t.second}<br>
+        3位:
+        ${t.third}<br>
+        4位:
+        ${t.fourth}
       `;
 
       container.appendChild(
