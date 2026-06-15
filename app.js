@@ -3,7 +3,9 @@ import {
   addDoc,
   getDocs,
   deleteDoc,
-  doc
+  doc,
+  orderBy,
+  query
 } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
 // ===================================
@@ -68,6 +70,12 @@ window.addEventListener("load", async () => {
 
   setupRuleEvents();
 
+  await loadPlayers();
+
+  await loadRecords();
+
+  setupRecordEvents();
+
 });
 
 // ===================================
@@ -108,6 +116,10 @@ function setupTabs() {
     });
 
   });
+
+  if (target === "tab-players") {
+    renderPlayerTotals();
+  }
 
 }
 
@@ -339,5 +351,496 @@ async function saveRule() {
   );
 
   await loadRules();
+
+}
+
+
+
+// ===================================
+// 端数処理
+// ===================================
+function roundScore(
+  score,
+  returnPoint,
+  rule
+) {
+
+  const diff =
+    score - returnPoint;
+
+  switch(rule) {
+
+    case "mahjong":
+
+      if (diff >= 0) {
+        return Math.floor(
+          diff / 1000
+        );
+      }
+
+      return Math.ceil(
+        diff / 1000
+      );
+
+    case "gosha": {
+
+      const abs =
+        Math.abs(diff);
+
+      const th =
+        Math.floor(abs / 1000);
+
+      const rem =
+        abs % 1000;
+
+      const result =
+        rem >= 600
+          ? th + 1
+          : th;
+
+      return diff >= 0
+        ? result
+        : -result;
+    }
+
+    case "shisha":
+      return Math.round(
+        diff / 1000
+      );
+
+    case "ceil":
+      return Math.ceil(
+        diff / 1000
+      );
+
+    case "floor":
+      return Math.floor(
+        diff / 1000
+      );
+
+    default:
+      return Math.floor(
+        diff / 1000
+      );
+  }
+
+}
+
+
+// ===================================
+// ポイント計算
+// ===================================
+function calcPoint(
+  score,
+  rank
+) {
+
+  const returnPoint =
+    Number(
+      document.getElementById(
+        "current-return-point"
+      ).value
+    );
+
+  const roundingRule =
+    document.getElementById(
+      "current-rounding-rule"
+    ).value;
+
+  const base =
+    roundScore(
+      score,
+      returnPoint,
+      roundingRule
+    );
+
+  const [uma2, uma1] =
+    currentRule.uma
+      .split("-")
+      .map(Number);
+
+  let umaPoint = 0;
+
+  if (rank === 1)
+    umaPoint = uma1;
+
+  if (rank === 2)
+    umaPoint = uma2;
+
+  if (rank === 3)
+    umaPoint = -uma2;
+
+  if (rank === 4)
+    umaPoint = -uma1;
+
+  const okaPoint =
+    rank === 1
+      ? currentRule.oka
+      : 0;
+
+  return (
+    base +
+    umaPoint +
+    okaPoint
+  );
+
+}
+
+
+// ===================================
+// プレイヤー読み込み
+// ===================================
+async function loadPlayers() {
+
+  const datalist =
+    document.getElementById(
+      "player-list"
+    );
+
+  if (!datalist) return;
+
+  datalist.innerHTML = "";
+
+  const snap =
+    await getDocs(playersCol);
+
+  snap.forEach(docSnap => {
+
+    const player =
+      docSnap.data();
+
+    const option =
+      document.createElement(
+        "option"
+      );
+
+    option.value =
+      player.name;
+
+    datalist.appendChild(
+      option
+    );
+
+  });
+
+}
+
+// ===================================
+// 成績保存イベント
+// ===================================
+function setupRecordEvents() {
+
+  const btn =
+    document.getElementById(
+      "add-record-btn"
+    );
+
+  if (!btn) return;
+
+  btn.addEventListener(
+    "click",
+    saveRecord
+  );
+
+  document
+    .getElementById(
+      "show-daily-btn"
+    )
+    ?.addEventListener(
+      "click",
+      renderDaily
+    );
+
+}
+
+// ===================================
+// 成績保存
+// ===================================
+async function saveRecord() {
+
+  const players = [];
+
+  const cards =
+    document.querySelectorAll(
+      ".player-card"
+    );
+
+  for (const card of cards) {
+
+    const name =
+      card
+      .querySelector(
+        ".player-name"
+      )
+      .value
+      .trim();
+
+    const score =
+      Number(
+        card.querySelector(
+          ".player-score"
+        ).value
+      );
+
+    const rank =
+      Number(
+        card.querySelector(
+          ".player-rank"
+        ).value
+      );
+
+    if (!name) continue;
+
+    const point =
+      calcPoint(
+        score,
+        rank
+      );
+
+    players.push({
+      name,
+      score,
+      rank,
+      point
+    });
+
+    await addDoc(
+      playersCol,
+      { name }
+    );
+
+  }
+
+  const record = {
+
+    date:
+      document.getElementById(
+        "game-date"
+      ).value,
+
+    rule:
+      document.getElementById(
+        "game-rule"
+      ).value,
+
+    note:
+      document.getElementById(
+        "game-note"
+      ).value,
+
+    players,
+
+    currentRule,
+
+    createdAt:
+      Date.now()
+
+  };
+
+  await addDoc(
+    recordsCol,
+    record
+  );
+
+  alert(
+    "保存しました"
+  );
+
+  await loadRecords();
+
+}
+
+// ===================================
+// 最近の成績
+// ===================================
+async function loadRecords() {
+
+  const container =
+    document.getElementById(
+      "record-list"
+    );
+
+  if (!container) return;
+
+  container.innerHTML = "";
+
+  const q =
+    query(
+      recordsCol,
+      orderBy(
+        "createdAt",
+        "desc"
+      )
+    );
+
+  const snap =
+    await getDocs(q);
+
+  snap.forEach(docSnap => {
+
+    const r =
+      docSnap.data();
+
+    const div =
+      document.createElement(
+        "div"
+      );
+
+    div.className =
+      "card";
+
+    div.innerHTML = `
+      <strong>${r.date}</strong>
+      (${r.rule})<br>
+      ${r.players
+        .map(p =>
+          `${p.rank}位 ${p.name}
+           (${p.point})`
+        )
+        .join("<br>")}
+    `;
+
+    container.appendChild(
+      div
+    );
+
+  });
+
+}
+
+// ===================================
+// 日別集計
+// ===================================
+async function renderDaily() {
+
+  const date =
+    document.getElementById(
+      "daily-date"
+    ).value;
+
+  const container =
+    document.getElementById(
+      "daily-list"
+    );
+
+  container.innerHTML = "";
+
+  const snap =
+    await getDocs(
+      recordsCol
+    );
+
+  snap.forEach(docSnap => {
+
+    const r =
+      docSnap.data();
+
+    if (r.date !== date)
+      return;
+
+    const div =
+      document.createElement(
+        "div"
+      );
+
+    div.className =
+      "card";
+
+    div.innerHTML = `
+      ${r.players
+        .map(p =>
+          `${p.rank}位
+           ${p.name}
+           (${p.point})`
+        )
+        .join("<br>")}
+    `;
+
+    container.appendChild(
+      div
+    );
+
+  });
+
+}
+
+
+// ===================================
+// プレイヤー集計
+// ===================================
+async function renderPlayerTotals() {
+
+  const container =
+    document.getElementById(
+      "players-list"
+    );
+
+  container.innerHTML = "";
+
+  const totals = {};
+
+  const snap =
+    await getDocs(
+      recordsCol
+    );
+
+  snap.forEach(docSnap => {
+
+    const r =
+      docSnap.data();
+
+    r.players.forEach(p => {
+
+      if (!totals[p.name]) {
+
+        totals[p.name] = {
+          point: 0,
+          games: 0,
+          rankSum: 0
+        };
+
+      }
+
+      totals[p.name].point +=
+        p.point;
+
+      totals[p.name].games++;
+
+      totals[p.name].rankSum +=
+        p.rank;
+
+    });
+
+  });
+
+  Object.keys(totals)
+    .forEach(name => {
+
+      const t =
+        totals[name];
+
+      const div =
+        document.createElement(
+          "div"
+        );
+
+      div.className =
+        "card";
+
+      div.innerHTML = `
+        <strong>${name}</strong><br>
+        合計: ${t.point.toFixed(1)}<br>
+        平均順位:
+        ${(t.rankSum/t.games)
+          .toFixed(2)}<br>
+        対局数:
+        ${t.games}
+      `;
+
+      container.appendChild(
+        div
+      );
+
+    });
 
 }
