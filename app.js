@@ -27,6 +27,149 @@ function initialize() {
 // Firestore コレクション参照
 const recordsCol = collection(db, "records");
 const playersCol = collection(db, "players");
+const rulesCol = collection(db, "rules");
+
+
+// -------------------------
+// ルール
+// -------------------------
+const DEFAULT_RULES = [
+  {
+    name: "芦澤ルール",
+    returnPoint: 30000,
+    uma: "10-30",
+    oka: 0,
+    rounding: "mahjong"
+  },
+  {
+    name: "Mリーグ",
+    returnPoint: 30000,
+    uma: "0-0",
+    oka: 0,
+    rounding: "floor"
+  },
+  {
+    name: "競技麻雀",
+    returnPoint: 30000,
+    uma: "5-15",
+    oka: 0,
+    rounding: "mahjong"
+  }
+];
+
+//ルール読み込み
+async function loadRules() {
+
+  const select = document.getElementById("rule-select");
+
+  select.innerHTML = "";
+
+  const snap = await getDocs(rulesCol);
+
+  if (snap.empty) {
+
+    for (const rule of DEFAULT_RULES) {
+      await addDoc(rulesCol, rule);
+    }
+
+    return loadRules();
+  }
+
+  snap.forEach(docSnap => {
+
+    const rule = docSnap.data();
+
+    const option = document.createElement("option");
+
+    option.value = docSnap.id;
+    option.textContent = rule.name;
+
+    option.dataset.rule =
+      JSON.stringify(rule);
+
+    select.appendChild(option);
+  });
+
+  applySelectedRule();
+}
+
+//選択ルール反映
+function applySelectedRule() {
+
+  const select =
+    document.getElementById("rule-select");
+
+  const option =
+    select.options[select.selectedIndex];
+
+  if (!option) return;
+
+  const rule =
+    JSON.parse(option.dataset.rule);
+
+  document.getElementById("game-uma").value =
+    rule.uma;
+
+  document.getElementById("game-oka").value =
+    rule.oka;
+
+  document.getElementById("return-point").value =
+    rule.returnPoint;
+
+  document.getElementById("rounding-rule").value =
+    rule.rounding;
+}
+
+//ルール変更時
+document
+.getElementById("rule-select")
+.addEventListener("change", applySelectedRule);
+
+//ルール保存
+document
+.getElementById("save-rule-btn")
+.addEventListener("click", async () => {
+
+  const name =
+    prompt("ルール名を入力してください");
+
+  if (!name) return;
+
+  await addDoc(rulesCol, {
+
+    name,
+
+    returnPoint:
+      Number(
+        document.getElementById(
+          "return-point"
+        ).value
+      ),
+
+    uma:
+      document.getElementById(
+        "game-uma"
+      ).value,
+
+    oka:
+      Number(
+        document.getElementById(
+          "game-oka"
+        ).value
+      ),
+
+    rounding:
+      document.getElementById(
+        "rounding-rule"
+      ).value
+  });
+
+  await loadRules();
+
+  alert("保存しました");
+});
+
+
 
 // -------------------------
 // タブ切り替え
@@ -119,19 +262,111 @@ document.getElementById("add-record-btn").addEventListener("click", async () => 
 // -------------------------
 // ポイント計算
 // -------------------------
-function calcPoint(score, rank, uma, oka) {
-  const [uma2, uma1] = uma.split("-").map(Number);
+//端数処理
+function roundScore(
+  score,
+  returnPoint,
+  roundingRule
+) {
+
+  const diff = score - returnPoint;
+
+  switch (roundingRule) {
+
+    case "mahjong":
+
+      if (diff >= 0) {
+        return Math.floor(diff / 1000);
+      }
+
+      return Math.ceil(diff / 1000);
+
+    case "gosha": {
+
+      const abs = Math.abs(diff);
+
+      const th =
+        Math.floor(abs / 1000);
+
+      const rem =
+        abs % 1000;
+
+      const result =
+        rem >= 600
+          ? th + 1
+          : th;
+
+      return diff >= 0
+        ? result
+        : -result;
+    }
+
+    case "shisha":
+      return Math.round(
+        diff / 1000
+      );
+
+    case "ceil":
+      return Math.ceil(
+        diff / 1000
+      );
+
+    case "floor":
+      return Math.floor(
+        diff / 1000
+      );
+
+    default:
+      return Math.floor(
+        diff / 1000
+      );
+  }
+}
+
+function calcPoint(
+  score,
+  rank,
+  uma,
+  oka
+) {
+
+  const returnPoint =
+    Number(
+      document.getElementById(
+        "return-point"
+      ).value
+    );
+
+  const roundingRule =
+    document.getElementById(
+      "rounding-rule"
+    ).value;
+
+  const base =
+    roundScore(
+      score,
+      returnPoint,
+      roundingRule
+    );
+
+  const [uma2, uma1] =
+    uma.split("-").map(Number);
 
   let umaPoint = 0;
+
   if (rank === 1) umaPoint = uma1;
   if (rank === 2) umaPoint = uma2;
   if (rank === 3) umaPoint = -uma2;
   if (rank === 4) umaPoint = -uma1;
 
-  const base = score / 1000;
-  const okaPoint = rank === 1 ? oka : 0;
+  const okaPoint =
+    rank === 1 ? oka : 0;
 
-  return base + umaPoint + okaPoint;
+  return (
+    base +
+    umaPoint +
+    okaPoint
+  );
 }
 
 // -------------------------
