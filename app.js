@@ -6,7 +6,8 @@ import {
   doc,
   orderBy,
   query,
-  where
+  where,
+  limit
 } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
 // ===================================
@@ -811,7 +812,8 @@ async function loadRecords() {
       orderBy(
         "createdAt",
         "desc"
-      )
+      ),
+      limit(5)
     );
 
   const snap =
@@ -830,11 +832,15 @@ async function loadRecords() {
     div.className =
       "card";
 
+    const sortedPlayers =
+      [...r.players]
+        .sort((a, b) => a.rank - b.rank);
+        
     div.innerHTML = `
       <strong>${r.date}</strong>
       (${r.rule})<br>
 
-      ${r.players
+      ${sortedPlayers
         .map(p =>
           `${p.rank}位
           ${p.name}
