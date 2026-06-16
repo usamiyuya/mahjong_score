@@ -944,7 +944,6 @@ async function loadRecords() {
     div.innerHTML = `
       <strong>${r.date}</strong>
       (${r.rule})<br>
-
       ${sortedPlayers
         .map(p =>
           `${p.rank}位
@@ -952,20 +951,16 @@ async function loadRecords() {
           (${p.point})`
         )
         .join("<br>")}
-
       <br><br>
-
       <button
         class="delete-record-btn"
         data-id="${docSnap.id}">
         削除
       </button>
     `;
-
     container.appendChild(
       div
     );
-
   });
 
   container
@@ -973,11 +968,9 @@ async function loadRecords() {
       ".delete-record-btn"
     )
     .forEach(btn => {
-
       btn.addEventListener(
         "click",
         async () => {
-
           if (
             !confirm(
               "削除しますか？"
@@ -985,7 +978,6 @@ async function loadRecords() {
           ) {
             return;
           }
-
           await deleteDoc(
             doc(
               db,
@@ -993,9 +985,7 @@ async function loadRecords() {
               btn.dataset.id
             )
           );
-
           await loadRecords();
-
         }
       );
     });
@@ -1033,11 +1023,45 @@ async function loadRecords() {
         )
         .join("<br>")
       }
+      <br><br>
+      <button
+        class="delete-chip-btn"
+        data-id="${docSnap.id}">
+        削除
+      </button>
     `;
     container.appendChild(
       div
     );
   });
+
+  container
+    .querySelectorAll(
+      ".delete-chip-btn"
+    )
+    .forEach(btn => {
+      btn.addEventListener(
+        "click",
+        async () => {
+          if (
+            !confirm(
+              "チップ記録を削除しますか？"
+            )
+          ) {
+            return;
+          }
+          await deleteDoc(
+            doc(
+              db,
+              "chipRecords",
+              btn.dataset.id
+            )
+          );
+          await loadRecords();
+          await renderPlayerTotals();
+        }
+      );
+    });
 }
 
 // ===================================
