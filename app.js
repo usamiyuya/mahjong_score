@@ -1216,8 +1216,8 @@ async function renderPlayerTotals() {
           "div"
         );
       const chipPoint =
-        t.chip *
-        currentRule.chipValue;
+        (t.chip || 0) *
+        (currentRule.chipValue || 0);
       div.className =
         "card";
       div.innerHTML = `
