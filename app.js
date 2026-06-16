@@ -19,6 +19,7 @@ const db = window.db;
 const recordsCol = collection(db, "records");
 const playersCol = collection(db, "players");
 const rulesCol = collection(db, "rules");
+const chipRecordsCol = collection(db, "chipRecords");
 
 // ===================================
 // ルール定義
@@ -671,6 +672,14 @@ function setupRecordEvents() {
       renderPlayerTotals
     );
 
+  document
+    .getElementById(
+      "save-chip-btn"
+    )
+    ?.addEventListener(
+      "click",
+      saveChipRecord
+    );
 }
 
 // ===================================
@@ -1110,6 +1119,7 @@ async function renderPlayerTotals() {
       if (!totals[p.name]) {
         totals[p.name] = {
           point: 0,
+          chip: 0,
           games: 0,
           rankSum: 0,
           first: 0,
@@ -1134,6 +1144,31 @@ async function renderPlayerTotals() {
     });
   });
 
+  const chipSnap =
+    await getDocs(
+      chipRecordsCol
+    );
+  chipSnap.forEach(docSnap => {
+    const r =
+      docSnap.data();
+    r.players.forEach(p => {
+      if (!totals[p.name]) {
+        totals[p.name] = {
+          point: 0,
+          chip: 0,
+          games: 0,
+          rankSum: 0,
+          first: 0,
+          second: 0,
+          third: 0,
+          fourth: 0
+        };
+      }
+      totals[p.name].chip +=
+        p.chip;
+    });
+  });
+
   Object.keys(totals)
     .forEach(name => {
       const t =
@@ -1148,6 +1183,8 @@ async function renderPlayerTotals() {
         <strong>${name}</strong><br>
         総合ポイント:
         ${t.point.toFixed(1)}<br>
+        総チップ:
+        ${t.chip}<br>
         対局数:
         ${t.games}<br>
         平均順位:
@@ -1169,4 +1206,69 @@ async function renderPlayerTotals() {
 
     });
 
+}
+
+// ===================================
+// チップ保存
+// ===================================
+async function saveChipRecord() {
+  const players = [];
+  const names =
+    document.querySelectorAll(
+      ".chip-name"
+    );
+
+  const values =
+    document.querySelectorAll(
+      ".chip-value"
+    );
+  for (
+    let i = 0;
+    i < names.length;
+    i++
+  ) {
+    const name =
+      names[i]
+        .value
+        .trim();
+
+    const chip =
+      Number(
+        values[i].value
+      );
+    if (!name) continue;
+    players.push({
+      name,
+      chip
+    });
+  }
+
+  const total =
+    players.reduce(
+      (sum, p) =>
+        sum + p.chip,
+      0
+    );
+  if (total !== 0) {
+    alert(
+      "チップ合計が0ではありません"
+    );
+    return;
+  }
+
+  await addDoc(
+    chipRecordsCol,
+    {
+      date:
+        document.getElementById(
+          "game-date"
+        ).value,
+      players,
+      createdAt:
+        Date.now()
+    }
+  );
+  alert(
+    "チップ精算を保存しました"
+  );
 }
