@@ -32,6 +32,7 @@ const DEFAULT_RULES = [
     uma: "10-30",
     oka: 0,
     tobi: 0,
+    chipValue: 1,
     rounding: "mahjong"
   },
   {
@@ -40,6 +41,7 @@ const DEFAULT_RULES = [
     uma: "0-0",
     oka: 0,
     tobi: 0,
+    chipValue: 0,
     rounding: "floor"
   },
   {
@@ -48,6 +50,7 @@ const DEFAULT_RULES = [
     uma: "5-15",
     oka: 0,
     tobi: 0,
+    chipValue: 0,
     rounding: "mahjong"
   }
 ];
@@ -62,6 +65,7 @@ let currentRule = {
   uma: "10-30",
   oka: 0,
   tobi: 0,
+  chipValue: 1,
   rounding: "mahjong"
 };
 
@@ -254,7 +258,10 @@ function applySelectedRule() {
     "rule-tobi"
   ).value =
     rule.tobi || 0;
-
+  document.getElementById(
+    "rule-chip-value"
+  ).value =
+    rule.chipValue || 0;
 }
 
 // ===================================
@@ -385,8 +392,14 @@ async function saveRule() {
         document.getElementById(
           "rule-tobi"
         ).value
-      )
+      ),
 
+    chipValue:
+      Number(
+        document.getElementById(
+          "rule-chip-value"
+        ).value
+      ),
   };
 
   await addDoc(
@@ -1202,14 +1215,15 @@ async function renderPlayerTotals() {
         document.createElement(
           "div"
         );
+      const chipPoint =
+        t.chip *
+        currentRule.chipValue;
       div.className =
         "card";
       div.innerHTML = `
         <strong>${name}</strong><br>
-        総合ポイント:
-        ${t.point.toFixed(1)}<br>
-        総チップ:
-        ${t.chip}<br>
+        総合ポイント(チップポイント):
+        ${(t.point + chipPoint).toFixed(1)}(${chipPoint.toFixed(1)})pt<br>
         対局数:
         ${t.games}<br>
         平均順位:
