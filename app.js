@@ -590,42 +590,6 @@ function calcPoint(
 }
 
 // ===================================
-// 飛び賞
-// ===================================
-function updateTobiWinnerList() {
-
-  const select =
-    document.getElementById(
-      "tobi-winner"
-    );
-
-  select.innerHTML =
-    '<option value="">飛びなし</option>';
-
-  document
-    .querySelectorAll(".player-name")
-    .forEach(input => {
-
-      const name =
-        input.value.trim();
-
-      if (!name) return;
-
-      const option =
-        document.createElement(
-          "option"
-        );
-
-      option.value = name;
-      option.textContent = name;
-
-      select.appendChild(option);
-
-    });
-
-}
-
-// ===================================
 // プレイヤー読み込み
 // ===================================
 async function loadPlayers() {
@@ -707,16 +671,6 @@ function setupRecordEvents() {
       renderPlayerTotals
     );
 
-  document
-    .querySelectorAll(".player-name")
-    .forEach(input => {
-
-      input.addEventListener(
-        "change",
-        updateTobiWinnerList
-      );
-
-    });
 }
 
 // ===================================
@@ -795,21 +749,16 @@ async function saveRecord() {
 
   }
 
-  let totalOther = 0;
-
   players.forEach(p => {
-
-    if (p.rank !== 1) {
-
+    if (p.rank === 1) {
+      p.point = 0;
+    } else {
       p.point =
         calcPoint(
           p.score,
           p.rank
         );
-
-      totalOther += p.point;
     }
-
   });
 
 
@@ -841,12 +790,17 @@ async function saveRecord() {
     players.find(
       p => p.rank === 1
     );
-
   if (firstPlayer) {
-
+    const totalWithoutFirst =
+      players
+        .filter(p => p.rank !== 1)
+        .reduce(
+          (sum, p) =>
+            sum + p.point,
+          0
+        );
     firstPlayer.point =
-      -totalOther;
-
+      -totalWithoutFirst;
   }
 
   const record = {
