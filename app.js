@@ -871,11 +871,6 @@ async function saveRecord() {
         "game-rule"
       ).value,
 
-    note:
-      document.getElementById(
-        "game-note"
-      ).value,
-
     players,
 
     currentRule,
