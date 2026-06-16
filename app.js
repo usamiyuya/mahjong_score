@@ -680,6 +680,31 @@ function setupRecordEvents() {
       "click",
       saveChipRecord
     );
+
+  const chipToggle =
+    document.getElementById(
+      "chip-toggle"
+    );
+
+  const chipContent =
+    document.getElementById(
+      "chip-content"
+    );
+
+  chipToggle?.addEventListener(
+    "click",
+    () => {
+      chipContent.classList.toggle(
+        "open"
+      );
+      chipToggle.textContent =
+        chipContent.classList.contains(
+          "open"
+        )
+        ? "▼ チップ精算"
+        : "▶ チップ精算";
+    }
+  );
 }
 
 // ===================================

@@ -250,3 +250,17 @@ input[type="date"] {
 .tobi-option span {
   white-space: nowrap;
 }
+
+.accordion-title {
+  cursor: pointer;
+  margin: 0;
+}
+
+.accordion-content {
+  display: none;
+  margin-top: 12px;
+}
+
+.accordion-content.open {
+  display: block;
+}
