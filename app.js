@@ -841,6 +841,30 @@ async function saveRecord() {
     }
   }
 
+  const tobiPoint =
+    currentRule.tobi || 0;
+  if (tobiPoint > 0) {
+    const losers =
+      players.filter(
+        p => p.tobiLoser
+      );
+    const winners =
+      players.filter(
+        p => p.tobiWinner
+      );
+    losers.forEach(loser => {
+      loser.point -= tobiPoint;
+      if (winners.length > 0) {
+        const share =
+          tobiPoint /
+          winners.length;
+        winners.forEach(winner => {
+          winner.point += share;
+        });
+      }
+    });
+  }
+
   const firstPlayer =
     players.find(
       p => p.rank === 1
