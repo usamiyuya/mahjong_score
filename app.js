@@ -812,42 +812,6 @@ async function saveRecord() {
 
   });
 
-  // const tobiWinner =
-  //   document.getElementById(
-  //     "tobi-winner"
-  //   ).value;
-
-  // const tobiPoint =
-  //   currentRule.tobi || 0;
-
-  // if (
-  //   tobiWinner &&
-  //   tobiPoint > 0
-  // ) {
-
-  //   const loser =
-  //     players.find(
-  //       p => p.score < 0
-  //     );
-
-  //   const winner =
-  //     players.find(
-  //       p =>
-  //         p.name === tobiWinner
-  //     );
-
-  //   if (
-  //     loser &&
-  //     winner
-  //   ) {
-
-  //     winner.point +=
-  //       tobiPoint;
-
-  //     loser.point -=
-  //       tobiPoint;
-  //   }
-  // }
 
   const tobiPoint =
     currentRule.tobi || 0;
