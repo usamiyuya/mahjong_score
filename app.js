@@ -30,6 +30,7 @@ const DEFAULT_RULES = [
     returnPoint: 30000,
     uma: "10-30",
     oka: 0,
+    tobi: 0,
     rounding: "mahjong"
   },
   {
@@ -37,6 +38,7 @@ const DEFAULT_RULES = [
     returnPoint: 30000,
     uma: "0-0",
     oka: 0,
+    tobi: 0,
     rounding: "floor"
   },
   {
@@ -44,6 +46,7 @@ const DEFAULT_RULES = [
     returnPoint: 30000,
     uma: "5-15",
     oka: 0,
+    tobi: 0,
     rounding: "mahjong"
   }
 ];
@@ -57,6 +60,7 @@ let currentRule = {
   returnPoint: 30000,
   uma: "10-30",
   oka: 0,
+  tobi: 0,
   rounding: "mahjong"
 };
 
@@ -245,6 +249,10 @@ function applySelectedRule() {
     "rule-oka"
   ).value =
     rule.oka;
+  document.getElementById(
+    "rule-tobi"
+  ).value =
+    rule.tobi || 0;
 
 }
 
@@ -368,6 +376,13 @@ async function saveRule() {
       Number(
         document.getElementById(
           "rule-oka"
+        ).value
+      ),
+
+    tobi:
+      Number(
+        document.getElementById(
+          "rule-tobi"
         ).value
       )
 
@@ -572,9 +587,43 @@ function calcPoint(
     umaPoint +
     okaPoint
   );
-
 }
 
+// ===================================
+// 飛び賞
+// ===================================
+function updateTobiWinnerList() {
+
+  const select =
+    document.getElementById(
+      "tobi-winner"
+    );
+
+  select.innerHTML =
+    '<option value="">飛びなし</option>';
+
+  document
+    .querySelectorAll(".player-name")
+    .forEach(input => {
+
+      const name =
+        input.value.trim();
+
+      if (!name) return;
+
+      const option =
+        document.createElement(
+          "option"
+        );
+
+      option.value = name;
+      option.textContent = name;
+
+      select.appendChild(option);
+
+    });
+
+}
 
 // ===================================
 // プレイヤー読み込み
@@ -657,6 +706,17 @@ function setupRecordEvents() {
       "change",
       renderPlayerTotals
     );
+
+  document
+    .querySelectorAll(".player-name")
+    .forEach(input => {
+
+      input.addEventListener(
+        "change",
+        updateTobiWinnerList
+      );
+
+    });
 }
 
 // ===================================
@@ -743,6 +803,43 @@ async function saveRecord() {
     }
 
   });
+
+  const tobiWinner =
+    document.getElementById(
+      "tobi-winner"
+    ).value;
+
+  const tobiPoint =
+    currentRule.tobi || 0;
+
+  if (
+    tobiWinner &&
+    tobiPoint > 0
+  ) {
+
+    const loser =
+      players.find(
+        p => p.score < 0
+      );
+
+    const winner =
+      players.find(
+        p =>
+          p.name === tobiWinner
+      );
+
+    if (
+      loser &&
+      winner
+    ) {
+
+      winner.point +=
+        tobiPoint;
+
+      loser.point -=
+        tobiPoint;
+    }
+  }
 
   const firstPlayer =
     players.find(

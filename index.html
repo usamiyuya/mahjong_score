@@ -87,6 +87,16 @@
     <datalist id="player-list"></datalist>
 
     <div class="card">
+      <label>飛ばした人</label>
+
+      <select id="tobi-winner">
+        <option value="">
+          飛びなし
+        </option>
+      </select>
+    </div>
+
+    <div class="card">
       <label>メモ</label>
       <input type="text" id="game-note" placeholder="ウマ・オカなど">
     </div>
@@ -193,6 +203,12 @@
       <input type="number"
              id="rule-oka"
              value="0">
+
+      <label>飛び賞</label>
+      <input
+        type="number"
+        id="rule-tobi"
+        value="0">
 
       <button
         id="save-rule-btn"
