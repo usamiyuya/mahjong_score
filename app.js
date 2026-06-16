@@ -1003,68 +1003,83 @@ async function loadRecords() {
 
         }
       );
-
     });
 
+  const chipSnap =
+    await getDocs(
+      query(
+        chipRecordsCol,
+        orderBy(
+          "createdAt",
+          "desc"
+        ),
+        limit(5)
+      )
+    );
+  chipSnap.forEach(docSnap => {
+    const r =
+      docSnap.data();
+    const div =
+      document.createElement(
+        "div"
+      );
+    div.className =
+      "card";
+    div.innerHTML = `
+      <strong>${r.date}</strong>
+      <br>
+      チップ精算
+      <hr>
+      ${
+        r.players
+        .map(p =>
+          `${p.name}
+          (${p.chip})`
+        )
+        .join("<br>")
+      }
+    `;
+    container.appendChild(
+      div
+    );
+  });
 }
 
 // ===================================
 // 日別集計
 // ===================================
 async function renderDaily() {
-
   const date =
     document.getElementById(
       "daily-date"
     ).value;
-
   const container =
     document.getElementById(
       "daily-list"
     );
-
   container.innerHTML = "";
-
   const snap =
     await getDocs(
       recordsCol
     );
-
   snap.forEach(docSnap => {
-
     const r =
       docSnap.data();
-
     if (r.date !== date)
       return;
-
     const div =
       document.createElement(
         "div"
       );
-
     div.className =
       "card";
-
-    // div.innerHTML = `
-    //   ${r.players
-    //     .map(p =>
-    //       `${p.rank}位
-    //        ${p.name}
-    //        (${p.point})`
-    //     )
-    //     .join("<br>")}
-    // `;
     const sortedPlayers =
       [...r.players]
         .sort((a, b) => a.rank - b.rank);
-
     div.innerHTML = `
       <strong>${r.time || ""}</strong>
       （${r.rule}）
-
       <hr>
-
       ${sortedPlayers
         .map(p =>
           `${p.rank}位 ${p.name}
@@ -1072,13 +1087,44 @@ async function renderDaily() {
         )
         .join("<br>")}
     `;
-
     container.appendChild(
       div
     );
-
   });
 
+  const chipSnap =
+    await getDocs(
+      chipRecordsCol
+    );
+  chipSnap.forEach(docSnap => {
+    const r =
+      docSnap.data();
+    if (r.date !== date)
+      return;
+    const div =
+      document.createElement(
+        "div"
+      );
+    div.className =
+      "card";
+    div.innerHTML = `
+      <strong>
+        チップ精算
+      </strong>
+      <hr>
+      ${
+        r.players
+        .map(p =>
+          `${p.name}
+          (${p.chip})`
+        )
+        .join("<br>")
+      }
+    `;
+    container.appendChild(
+      div
+    );
+  });
 }
 
 
@@ -1187,23 +1233,51 @@ async function renderPlayerTotals() {
       chipRecordsCol
     );
   chipSnap.forEach(docSnap => {
-    const r =
-      docSnap.data();
+    const r = docSnap.data();
+    const chipDate =
+      new Date(r.date);
+    let include = true;
+    switch(period) {
+      case "day":
+        include =
+          chipDate.toDateString()
+          ===
+          today.toDateString();
+        break;
+      case "month":
+        include =
+          chipDate.getFullYear()
+          === today.getFullYear()
+          &&
+          chipDate.getMonth()
+          === today.getMonth();
+        break;
+      case "year":
+        include =
+          chipDate.getFullYear()
+          === today.getFullYear();
+        break;
+      case "all":
+        include = true;
+        break;
+    }
+    if (!include) return;
     r.players.forEach(p => {
       if (!totals[p.name]) {
         totals[p.name] = {
-          point: 0,
-          chip: 0,
-          games: 0,
-          rankSum: 0,
-          first: 0,
-          second: 0,
-          third: 0,
-          fourth: 0
+          point:0,
+          chip:0,
+          games:0,
+          rankSum:0,
+          first:0,
+          second:0,
+          third:0,
+          fourth:0
         };
       }
       totals[p.name].chip +=
-        p.chip;
+        p.chip *
+        (r.chipValue || 0);
     });
   });
 
@@ -1216,8 +1290,7 @@ async function renderPlayerTotals() {
           "div"
         );
       const chipPoint =
-        (t.chip || 0) *
-        (currentRule.chipValue || 0);
+        t.chip || 0;
       div.className =
         "card";
       div.innerHTML = `
@@ -1302,6 +1375,8 @@ async function saveChipRecord() {
         document.getElementById(
           "game-date"
         ).value,
+      chipValue:
+        currentRule.chipValue,
       players,
       createdAt:
         Date.now()
@@ -1310,4 +1385,6 @@ async function saveChipRecord() {
   alert(
     "チップ精算を保存しました"
   );
+  await loadRecords();
+  await renderPlayerTotals();
 }
