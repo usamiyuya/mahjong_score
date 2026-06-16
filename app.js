@@ -782,7 +782,15 @@ async function saveRecord() {
     players.push({
       name,
       score,
-      rank
+      rank,
+      tobiLoser:
+        card.querySelector(
+          ".tobi-loser"
+        ).checked,
+      tobiWinner:
+        card.querySelector(
+          ".tobi-winner"
+        ).checked
     });
 
   }
