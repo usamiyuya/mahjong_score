@@ -229,14 +229,20 @@ input[type="date"] {
   border-radius: 6px;
 }
 
+.tobi-row {
+  display: flex;
+  gap: 20px;
+  margin-top: 4px;
+}
+
 .tobi-option {
   display: flex;
   align-items: center;
-  gap: 6px;
-  margin-bottom: 8px;
+  gap: 4px;
+  margin-bottom: 0;
 }
 
-.tobi-option input[type="checkbox"] {
+.tobi-option input {
   width: auto;
   margin: 0;
 }
