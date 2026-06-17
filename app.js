@@ -72,6 +72,8 @@ let currentRule = {
 
 let playerNames = [];
 
+let activePlayerInput = null;
+
 // ===================================
 // 初期化
 // ===================================
@@ -674,6 +676,7 @@ function createPlayerDropdown(input) {
         () => {
           input.value = name;
           dropdown.remove();
+          activePlayerInput = null;
         }
       );
       dropdown.appendChild(
@@ -805,11 +808,21 @@ function setupPlayerDropdown() {
     )
     .forEach(input => {
       input.addEventListener(
-        "focus",
-        () => {
-          createPlayerDropdown(
-            input
-          );
+        "click",
+        e => {
+          if (activePlayerInput !== input) {
+            e.preventDefault();
+            activePlayerInput = input;
+            document
+              .querySelectorAll(
+                ".player-dropdown"
+              )
+              .forEach(d => d.remove());
+            createPlayerDropdown(input);
+            input.blur();
+            return;
+          }
+          input.focus();
         }
       );
       input.addEventListener(
