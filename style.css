@@ -264,3 +264,28 @@ input[type="date"] {
 .accordion-content.open {
   display: block;
 }
+
+.player-input-wrapper{
+  position: relative;
+}
+
+.player-dropdown{
+  position:absolute;
+  top:100%;
+  left:0;
+  right:0;
+  background:white;
+  border:1px solid #ccc;
+  z-index:1000;
+  max-height:200px;
+  overflow-y:auto;
+}
+
+.player-option{
+  padding:10px;
+  cursor:pointer;
+}
+
+.player-option:hover{
+  background:#f0f0f0;
+}

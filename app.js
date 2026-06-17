@@ -70,6 +70,8 @@ let currentRule = {
   rounding: "mahjong"
 };
 
+let playerNames = [];
+
 // ===================================
 // 初期化
 // ===================================
@@ -609,16 +611,11 @@ function calcPoint(
 // プレイヤー読み込み
 // ===================================
 async function loadPlayers() {
-
   const datalist =
     document.getElementById(
       "player-list"
     );
-
-  if (!datalist) return;
-
-  datalist.innerHTML = "";
-
+  playerNames = [];
   const q =
     query(
       playersCol,
@@ -627,51 +624,69 @@ async function loadPlayers() {
         "desc"
       )
     );
-
   const snap =
     await getDocs(q);
-  // const snap =
-  //   await getDocs(playersCol);
-
   snap.forEach(docSnap => {
-
     const player =
       docSnap.data();
-
-    const option =
-      document.createElement(
-        "option"
-      );
-
-    option.value =
-      player.name;
-
-    datalist.appendChild(
-      option
+    playerNames.push(
+      player.name
     );
-
   });
-
 }
 
-function setupPlayerDropdown() {
-  document
-    .querySelectorAll(
-      ".player-name, .chip-name"
-    )
-    .forEach(input => {
-      input.addEventListener(
-        "focus",
+function createPlayerDropdown(input) {
+  let dropdown =
+    input.parentElement
+      .querySelector(
+        ".player-dropdown"
+      );
+  if (dropdown) {
+    dropdown.remove();
+  }
+  dropdown =
+    document.createElement("div");
+  dropdown.className =
+    "player-dropdown";
+  const keyword =
+    input.value
+      .trim()
+      .toLowerCase();
+  const filtered =
+    playerNames.filter(name =>
+      name
+        .toLowerCase()
+        .includes(keyword)
+    );
+  filtered
+    .slice(0, 10)
+    .forEach(name => {
+      const item =
+        document.createElement(
+          "div"
+        );
+      item.className =
+        "player-option";
+      item.textContent =
+        name;
+      item.addEventListener(
+        "click",
         () => {
-          const current =
-            input.value;
-          input.value = " ";
-          setTimeout(() => {
-            input.value = current;
-          }, 0);
+          input.value = name;
+          dropdown.remove();
         }
       );
+      dropdown.appendChild(
+        item
+      );
     });
+  if (
+    dropdown.children.length > 0
+  ) {
+    input.parentElement.appendChild(
+      dropdown
+    );
+  }
 }
 
 // ===================================
@@ -781,6 +796,44 @@ async function registerPlayer(name) {
       lastUsed: Date.now()
     }
   );
+}
+
+function setupPlayerDropdown() {
+  document
+    .querySelectorAll(
+      ".player-name, .chip-name"
+    )
+    .forEach(input => {
+      input.addEventListener(
+        "focus",
+        () => {
+          createPlayerDropdown(
+            input
+          );
+        }
+      );
+      input.addEventListener(
+        "input",
+        () => {
+          createPlayerDropdown(
+            input
+          );
+        }
+      );
+      input.addEventListener(
+        "blur",
+        () => {
+          setTimeout(() => {
+            input
+              .parentElement
+              .querySelector(
+                ".player-dropdown"
+              )
+              ?.remove();
+          }, 200);
+        }
+      );
+    });
 }
 
 // ===================================
@@ -932,8 +985,8 @@ async function saveRecord() {
   alert("保存しました");
 
   await loadPlayers();
-  setupPlayerDropdown();
   await loadRecords();
+  setupPlayerDropdown();
 
 }
 
