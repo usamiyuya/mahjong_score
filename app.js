@@ -617,8 +617,19 @@ async function loadPlayers() {
 
   datalist.innerHTML = "";
 
+  const q =
+    query(
+      playersCol,
+      orderBy(
+        "lastUsed",
+        "desc"
+      )
+    );
+
   const snap =
-    await getDocs(playersCol);
+    await getDocs(q);
+  // const snap =
+  //   await getDocs(playersCol);
 
   snap.forEach(docSnap => {
 
@@ -639,6 +650,25 @@ async function loadPlayers() {
 
   });
 
+  function setupPlayerDropdown() {
+    document
+      .querySelectorAll(
+        ".player-name, .chip-name"
+      )
+      .forEach(input => {
+        input.addEventListener(
+          "focus",
+          () => {
+            const current =
+              input.value;
+            input.value = " ";
+            setTimeout(() => {
+              input.value = current;
+            }, 0);
+          }
+        );
+      });
+  }
 }
 
 // ===================================
@@ -734,14 +764,16 @@ async function registerPlayer(name) {
     await getDocs(q);
 
   if (!snap.empty) {
-    return;
+    const playerDoc =
+      snap.docs[0];
+    await updateDoc(
+      playerDoc.ref,
+      {
+        lastUsed:
+          Date.now()
+      }
+    );
   }
-
-  await addDoc(
-    playersCol,
-    { name }
-  );
-
 }
 
 // ===================================
@@ -893,6 +925,7 @@ async function saveRecord() {
   alert("保存しました");
 
   await loadPlayers();
+  setupPlayerDropdown();
   await loadRecords();
 
 }
