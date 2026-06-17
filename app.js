@@ -874,6 +874,24 @@ function setupPlayerDropdown() {
         }
       );
     });
+  document.addEventListener(
+    "click",
+    e => {
+      if (
+        !e.target.closest(
+          ".player-input-wrapper"
+        )
+      ) {
+        document
+          .querySelectorAll(
+            ".player-dropdown"
+          )
+          .forEach(d =>
+            d.remove()
+          );
+      }
+    }
+  );
 }
 
 // ===================================

@@ -307,3 +307,8 @@ input[type="date"] {
 .player-option:hover{
   background:#f0f0f0;
 }
+
+.chip-value{
+  width:120px;
+  flex-shrink:0;
+}
