@@ -7,7 +7,8 @@ import {
   orderBy,
   query,
   where,
-  limit
+  limit,
+  updateDoc
 } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
 // ===================================
@@ -82,6 +83,7 @@ window.addEventListener("load", async () => {
   setupRuleEvents();
 
   await loadPlayers();
+  setupPlayerDropdown();
 
   await loadRecords();
 
@@ -650,25 +652,26 @@ async function loadPlayers() {
 
   });
 
-  function setupPlayerDropdown() {
-    document
-      .querySelectorAll(
-        ".player-name, .chip-name"
-      )
-      .forEach(input => {
-        input.addEventListener(
-          "focus",
-          () => {
-            const current =
-              input.value;
-            input.value = " ";
-            setTimeout(() => {
-              input.value = current;
-            }, 0);
-          }
-        );
-      });
-  }
+}
+
+function setupPlayerDropdown() {
+  document
+    .querySelectorAll(
+      ".player-name, .chip-name"
+    )
+    .forEach(input => {
+      input.addEventListener(
+        "focus",
+        () => {
+          const current =
+            input.value;
+          input.value = " ";
+          setTimeout(() => {
+            input.value = current;
+          }, 0);
+        }
+      );
+    });
 }
 
 // ===================================
@@ -754,26 +757,30 @@ function setupRecordEvents() {
 // プレイヤー登録
 // ===================================
 async function registerPlayer(name) {
-
   const q = query(
     playersCol,
     where("name", "==", name)
   );
-
   const snap =
     await getDocs(q);
-
   if (!snap.empty) {
     const playerDoc =
       snap.docs[0];
     await updateDoc(
       playerDoc.ref,
       {
-        lastUsed:
-          Date.now()
+        lastUsed: Date.now()
       }
     );
+    return;
   }
+  await addDoc(
+    playersCol,
+    {
+      name,
+      lastUsed: Date.now()
+    }
+  );
 }
 
 // ===================================
