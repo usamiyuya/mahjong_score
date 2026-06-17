@@ -72,6 +72,8 @@ let currentRule = {
 
 let playerNames = [];
 
+let editingInput = null;
+
 let activePlayerInput = null;
 
 // ===================================
@@ -637,6 +639,23 @@ async function loadPlayers() {
   });
 }
 
+document.addEventListener(
+  "blur",
+  e => {
+    if (
+      e.target.classList?.contains(
+        "player-name"
+      )
+    ) {
+      setTimeout(() => {
+        e.target.readOnly =
+          true;
+      }, 300);
+    }
+  },
+  true
+);
+
 function createPlayerDropdown(input) {
   let dropdown =
     input.parentElement
@@ -675,8 +694,9 @@ function createPlayerDropdown(input) {
         "click",
         () => {
           input.value = name;
+          input.readOnly = true;
+          editingInput = null;
           dropdown.remove();
-          activePlayerInput = null;
         }
       );
       dropdown.appendChild(
@@ -804,46 +824,53 @@ async function registerPlayer(name) {
 function setupPlayerDropdown() {
   document
     .querySelectorAll(
-      ".player-name, .chip-name"
+      ".player-name"
     )
     .forEach(input => {
+      if (input.dataset.setup) {
+        return;
+      }
+      input.dataset.setup = "1";
       input.addEventListener(
         "click",
-        e => {
-          if (activePlayerInput !== input) {
-            e.preventDefault();
-            activePlayerInput = input;
+        () => {
+          if (input.readOnly) {
             document
               .querySelectorAll(
                 ".player-dropdown"
               )
-              .forEach(d => d.remove());
-            createPlayerDropdown(input);
-            input.blur();
-            return;
+              .forEach(d =>
+                d.remove()
+              );
+            createPlayerDropdown(
+              input
+            );
           }
+        }
+      );
+    });
+  document
+    .querySelectorAll(
+      ".edit-player-btn"
+    )
+    .forEach(btn => {
+      if (btn.dataset.setup) {
+        return;
+      }
+      btn.dataset.setup = "1";
+      btn.addEventListener(
+        "click",
+        () => {
+          const input =
+            btn.parentElement
+               .querySelector(
+                 ".player-name"
+               );
+          input.readOnly =
+            false;
+          editingInput =
+            input;
           input.focus();
-        }
-      );
-      input.addEventListener(
-        "input",
-        () => {
-          createPlayerDropdown(
-            input
-          );
-        }
-      );
-      input.addEventListener(
-        "blur",
-        () => {
-          setTimeout(() => {
-            input
-              .parentElement
-              .querySelector(
-                ".player-dropdown"
-              )
-              ?.remove();
-          }, 200);
         }
       );
     });
