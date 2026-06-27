@@ -1420,6 +1420,70 @@ function renderPlayerChart(totals) {
   const ctx = document.getElementById("player-point-chart");
   if (!ctx) return;
 
+  
+  const chartArea = ctx.getContext("2d");
+  
+  const entries = Object.entries(totals)
+    .map(([name, t]) => ({
+      name,
+      value: t.point + (t.chip || 0)
+    }))
+    .sort((a, b) => b.value - a.value);
+
+  const labels = entries.map(e => e.name);
+  const data = entries.map(e => e.value);
+
+  const topName = entries[0]?.name;
+
+  const colors = entries.map(e => {
+    if (e.name === topName) return "rgba(255, 215, 0, 1)";
+    return e.value >= 0
+    ? "rgba(46, 204, 113, 0.8)"
+      : "rgba(231, 76, 60, 0.8)";
+    });
+    
+    const borders = entries.map(e => {
+      if (e.name === topName) return "rgba(218, 165, 32, 1)";
+      return e.value >= 0
+      ? "rgba(39, 174, 96, 1)"
+      : "rgba(192, 57, 43, 1)";
+    });
+    
+    if (playerChart) playerChart.destroy();
+    
+    playerChart = new Chart(ctx, {
+      type: "bar",
+      data: {
+        labels,
+        datasets: [{
+          label: "総合ポイント",
+          data,
+          backgroundColor: colors,
+          borderColor: borders,
+          borderWidth: 1
+        }]
+    },
+    options: {
+      responsive: true,
+      indexAxis: "y",
+      plugins: {
+        legend: { display: false }
+      },
+      scales: {
+        x: {
+          beginAtZero: true,
+          grid: {
+            color: "#ddd"
+          }
+        }
+      },
+      animation: false,
+    },
+  });
+  const meta = playerChart.getDatasetMeta(0);
+  const chartdata = playerChart.data.datasets[0].data;
+  const maxIndex = chartdata.indexOf(Math.max(...chartdata));
+  const bar = meta.data[maxIndex];
   if (sparkleInterval) {
    clearInterval(sparkleInterval);
   }
@@ -1448,112 +1512,7 @@ function renderPlayerChart(totals) {
       createSparkle(x, y)
     );
   }, 150);
-
-  const chartArea = ctx.getContext("2d");
-
-  const entries = Object.entries(totals)
-    .map(([name, t]) => ({
-      name,
-      value: t.point + (t.chip || 0)
-    }))
-    .sort((a, b) => b.value - a.value);
-
-  const labels = entries.map(e => e.name);
-  const data = entries.map(e => e.value);
-
-  const topName = entries[0]?.name;
-
-  const colors = entries.map(e => {
-    if (e.name === topName) return "rgba(255, 215, 0, 1)";
-    return e.value >= 0
-      ? "rgba(46, 204, 113, 0.8)"
-      : "rgba(231, 76, 60, 0.8)";
-  });
-
-  const borders = entries.map(e => {
-    if (e.name === topName) return "rgba(218, 165, 32, 1)";
-    return e.value >= 0
-      ? "rgba(39, 174, 96, 1)"
-      : "rgba(192, 57, 43, 1)";
-  });
-
-  if (playerChart) playerChart.destroy();
-
-  playerChart = new Chart(ctx, {
-    type: "bar",
-    data: {
-      labels,
-      datasets: [{
-        label: "総合ポイント",
-        data,
-        backgroundColor: colors,
-        borderColor: borders,
-        borderWidth: 1
-      }]
-    },
-    options: {
-      responsive: true,
-      indexAxis: "y",
-      plugins: {
-        legend: { display: false }
-      },
-      scales: {
-        x: {
-          beginAtZero: true,
-          grid: {
-            color: "#ddd"
-          }
-        }
-      },
-      animation: false,
-    },
-    // plugins: [{
-    //   id: "goldShine",
-    //   afterDatasetsDraw(chart) {
-    //     const { ctx } = chart;
-    //     const meta = chart.getDatasetMeta(0);
-    //     const data = chart.data.datasets[0].data;
-    //     const max = Math.max(...data);
-    //     const index = data.indexOf(max);
-    //     const bar = meta.data[index];
-    //     if (!bar) return;
-    //     const time = Date.now() / 500;
-    //     // ✨ 揺れる光の位置
-    //     const shineX =
-    //       bar.x +
-    //       Math.sin(time) * 10;
-    //     const shineY =
-    //       bar.y +
-    //       Math.cos(time) * 3;
-    //     ctx.save();
-    //     // ✨ 光のぼかし
-    //     ctx.shadowColor = "rgba(255, 215, 0, 0.9)";
-    //     ctx.shadowBlur = 25;
-    //     // ✨ キラキラ点
-    //     ctx.fillStyle = "rgba(255, 255, 255, 0.8)";
-    //     ctx.beginPath();
-    //     ctx.arc(shineX, shineY, 3, 0, Math.PI * 2);
-    //     ctx.fill();
-    //     // ✨ メイン光
-    //     ctx.fillStyle = "rgba(255, 215, 0, 0.6)";
-    //     ctx.beginPath();
-    //     ctx.arc(bar.x, bar.y, 10, 0, Math.PI * 2);
-    //     ctx.fill();
-    //     ctx.restore();
-    //   }
-    // }]
-  });
-  const meta = playerChart.getDatasetMeta(0);
-  const chartdata = playerChart.data.datasets[0].data;
-  const maxIndex = chartdata.indexOf(Math.max(...chartdata));
-  const bar = meta.data[maxIndex];
-  setInterval(() => {
-    if (!bar) return;
-    const rect = bar.getProps(["x", "y", "width", "height"], true);
-    const x = rect.x - rect.width / 2 + Math.random() * rect.width;
-    const y = rect.y - rect.height / 2 + Math.random() * rect.height;
-    sparkles.push(createSparkle(x, y));
-  }, 150);
+  
   resizeSparkleCanvas();
   animateSparkles();
 }
@@ -1830,8 +1789,8 @@ let sparkles = [];
 function resizeSparkleCanvas() {
   const chart = document.getElementById("player-point-chart");
 
-  sparkleCanvas.width = chart.width;
-  sparkleCanvas.height = chart.height;
+  sparkleCanvas.width = chart.clientWidth;
+  sparkleCanvas.height = chart.clientHeight;
 }
 
 function createSparkle(x, y) {
