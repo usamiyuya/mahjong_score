@@ -1080,7 +1080,7 @@ async function saveRecord() {
 // 成績修正期間
 // ===================================
 const EDIT_LIMIT =
-  60 * 60 * 1000; // 一時間制約の場合
+  // 60 * 60 * 1000; // 一時間制約の場合
   60 * 60 * 24 * 1000; // 一日制約の場合
 function canEdit(record){
   return (
