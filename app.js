@@ -1490,28 +1490,19 @@ function renderPlayerChart(totals) {
   sparkleInterval = setInterval(() => {
     if (!bar) return;
     const props =
-      bar.getProps(
-        ["x", "y", "base"],
-        true
-      );
+      bar.getProps(["x", "y", "base", "width", "height"], true);
     const left =
       Math.min(props.x, props.base);
     const right =
       Math.max(props.x, props.base);
-    const height =
-      20;
-    const x =
-      left +
-      Math.random() *
-      (right - left);
-    const y =
-      props.y +
-      (Math.random() - 0.5) *
-      height;
+    const barTop = Math.min(props.y, props.base);
+    const barBottom = Math.max(props.y, props.base);
+    const x = left + Math.random() * (right - left);
+    const y = barTop + Math.random() * (barBottom - barTop);
     sparkles.push(
       createSparkle(x, y)
     );
-  }, 150);
+  }, 500);
   
   resizeSparkleCanvas();
   animateSparkles();
