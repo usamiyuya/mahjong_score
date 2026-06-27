@@ -1418,9 +1418,9 @@ function renderPlayerChart(totals) {
       -
       (totals[a].point + (totals[a].chip || 0))
     );
-  // const data = labels.map(name =>
-  //   totals[name].point + (totals[name].chip || 0)
-  // );
+  const data = labels.map(name =>
+    totals[name].point + (totals[name].chip || 0)
+  );
   // const colors = data.map(v =>
   //   v >= 0 ? "rgba(46, 204, 113, 0.8)" : "rgba(231, 76, 60, 0.8)"
   // );
