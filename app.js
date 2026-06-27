@@ -1489,12 +1489,9 @@ function renderPlayerChart(totals) {
   }
   sparkleInterval = setInterval(() => {
     if (!bar) return;
-    const props =
-      bar.getProps(["x", "y", "base", "width", "height"], true);
-    const left =
-      Math.min(props.x, props.base);
-    const right =
-      Math.max(props.x, props.base);
+    const props = bar.getProps(["x", "y", "base", "width", "height"], true);
+    const left = Math.min(props.x, props.base);
+    const right = Math.max(props.x, props.base);
     const barTop = Math.min(props.y, props.base);
     const barBottom = Math.max(props.y, props.base);
     const x = left + Math.random() * (right - left);
@@ -1502,7 +1499,7 @@ function renderPlayerChart(totals) {
     sparkles.push(
       createSparkle(x, y)
     );
-  }, 500);
+  }, 250);
   
   resizeSparkleCanvas();
   animateSparkles();
@@ -1833,7 +1830,7 @@ function createSparkle(x, y) {
 function drawCurvedDiamond(ctx, s) {
   const progress = s.life;
   // 拡大縮小（ポン→ふわ→消える）
-  const scale = Math.sin(progress * Math.PI);
+  const scale = Math.sin(progress * Math.PI) * 0.5;
   const alpha = 1 - progress;
   const size = s.size * scale;
   ctx.save();
