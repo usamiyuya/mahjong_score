@@ -1811,16 +1811,19 @@ function drawDiamond(ctx, x, y, size, alpha, rot) {
   ctx.rotate(rot);
   ctx.globalAlpha = alpha;
 
-  ctx.fillStyle = "rgba(255, 215, 0, 1)";
-  ctx.beginPath();
+  ctx.shadowColor = "rgba(255,255,255,0.9)";
+  ctx.shadowBlur = 8;
 
+  ctx.fillStyle = "rgba(255,255,255,0.95)";
+
+  ctx.beginPath();
   ctx.moveTo(0, -size);
   ctx.lineTo(size, 0);
   ctx.lineTo(0, size);
   ctx.lineTo(-size, 0);
   ctx.closePath();
-
   ctx.fill();
+
   ctx.restore();
 }
 
