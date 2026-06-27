@@ -1472,42 +1472,55 @@ function renderPlayerChart(totals) {
       },
       animation: false,
     },
-    plugins: [{
-      id: "goldShine",
-      afterDatasetsDraw(chart) {
-        const { ctx } = chart;
-        const meta = chart.getDatasetMeta(0);
-        const data = chart.data.datasets[0].data;
-        const max = Math.max(...data);
-        const index = data.indexOf(max);
-        const bar = meta.data[index];
-        if (!bar) return;
-        const time = Date.now() / 500;
-        // ✨ 揺れる光の位置
-        const shineX =
-          bar.x +
-          Math.sin(time) * 10;
-        const shineY =
-          bar.y +
-          Math.cos(time) * 3;
-        ctx.save();
-        // ✨ 光のぼかし
-        ctx.shadowColor = "rgba(255, 215, 0, 0.9)";
-        ctx.shadowBlur = 25;
-        // ✨ キラキラ点
-        ctx.fillStyle = "rgba(255, 255, 255, 0.8)";
-        ctx.beginPath();
-        ctx.arc(shineX, shineY, 3, 0, Math.PI * 2);
-        ctx.fill();
-        // ✨ メイン光
-        ctx.fillStyle = "rgba(255, 215, 0, 0.6)";
-        ctx.beginPath();
-        ctx.arc(bar.x, bar.y, 10, 0, Math.PI * 2);
-        ctx.fill();
-        ctx.restore();
-      }
-    }]
+    // plugins: [{
+    //   id: "goldShine",
+    //   afterDatasetsDraw(chart) {
+    //     const { ctx } = chart;
+    //     const meta = chart.getDatasetMeta(0);
+    //     const data = chart.data.datasets[0].data;
+    //     const max = Math.max(...data);
+    //     const index = data.indexOf(max);
+    //     const bar = meta.data[index];
+    //     if (!bar) return;
+    //     const time = Date.now() / 500;
+    //     // ✨ 揺れる光の位置
+    //     const shineX =
+    //       bar.x +
+    //       Math.sin(time) * 10;
+    //     const shineY =
+    //       bar.y +
+    //       Math.cos(time) * 3;
+    //     ctx.save();
+    //     // ✨ 光のぼかし
+    //     ctx.shadowColor = "rgba(255, 215, 0, 0.9)";
+    //     ctx.shadowBlur = 25;
+    //     // ✨ キラキラ点
+    //     ctx.fillStyle = "rgba(255, 255, 255, 0.8)";
+    //     ctx.beginPath();
+    //     ctx.arc(shineX, shineY, 3, 0, Math.PI * 2);
+    //     ctx.fill();
+    //     // ✨ メイン光
+    //     ctx.fillStyle = "rgba(255, 215, 0, 0.6)";
+    //     ctx.beginPath();
+    //     ctx.arc(bar.x, bar.y, 10, 0, Math.PI * 2);
+    //     ctx.fill();
+    //     ctx.restore();
+    //   }
+    // }]
   });
+  const meta = playerChart.getDatasetMeta(0);
+  const data = playerChart.data.datasets[0].data;
+  const maxIndex = data.indexOf(Math.max(...data));
+  const bar = meta.data[maxIndex];
+  setInterval(() => {
+    if (!bar) return;
+    const rect = bar.getProps(["x", "y", "width", "height"], true);
+    const x = rect.x - rect.width / 2 + Math.random() * rect.width;
+    const y = rect.y - rect.height / 2 + Math.random() * rect.height;
+    sparkles.push(createSparkle(x, y));
+  }, 150);
+  resizeSparkleCanvas();
+  animateSparkles();
 }
 
 
@@ -1774,8 +1787,72 @@ async function saveChipRecord() {
 // ===================================
 // グラフアニメーション
 // ===================================
-setInterval(() => {
-  if (playerChart) {
-    playerChart.update("none");
-  }
-}, 50);
+const sparkleCanvas = document.getElementById("sparkle-layer");
+const sparkleCtx = sparkleCanvas.getContext("2d");
+
+let sparkles = [];
+
+function resizeSparkleCanvas() {
+  const chart = document.getElementById("player-point-chart");
+
+  sparkleCanvas.width = chart.width;
+  sparkleCanvas.height = chart.height;
+}
+
+function createSparkle(x, y) {
+  return {
+    x,
+    y,
+    size: Math.random() * 4 + 2,
+    alpha: 1,
+    vx: (Math.random() - 0.5) * 0.5,
+    vy: (Math.random() - 0.5) * 0.5,
+    rot: Math.random() * Math.PI
+  };
+}
+
+function drawDiamond(ctx, x, y, size, alpha, rot) {
+  ctx.save();
+  ctx.translate(x, y);
+  ctx.rotate(rot);
+  ctx.globalAlpha = alpha;
+
+  ctx.fillStyle = "rgba(255, 215, 0, 1)";
+  ctx.beginPath();
+
+  ctx.moveTo(0, -size);
+  ctx.lineTo(size, 0);
+  ctx.lineTo(0, size);
+  ctx.lineTo(-size, 0);
+  ctx.closePath();
+
+  ctx.fill();
+  ctx.restore();
+}
+
+function animateSparkles() {
+  sparkleCtx.clearRect(
+    0,
+    0,
+    sparkleCanvas.width,
+    sparkleCanvas.height
+  );
+  // 既存更新
+  sparkles.forEach(s => {
+    s.x += s.vx;
+    s.y += s.vy;
+    s.alpha -= 0.02;
+    s.rot += 0.05;
+    drawDiamond(
+      sparkleCtx,
+      s.x,
+      s.y,
+      s.size,
+      s.alpha,
+      s.rot
+    );
+  });
+  // 消去
+  sparkles = sparkles.filter(s => s.alpha > 0);
+  requestAnimationFrame(animateSparkles);
+}

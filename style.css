@@ -318,3 +318,14 @@ input[type="date"] {
   border-radius: 10px;
   padding: 10px;
 }
+
+.chart-wrapper {
+  position: relative;
+}
+
+#sparkle-layer {
+  position: absolute;
+  top: 0;
+  left: 0;
+  pointer-events: none;
+}
