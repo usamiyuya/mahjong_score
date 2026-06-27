@@ -166,51 +166,51 @@ async function loadRules() {
 
   const select =
     document.getElementById("rule-select");
-
   if (!select) return;
-
   select.innerHTML = "";
-
   const snap =
     await getDocs(rulesCol);
 
   if (snap.empty) {
-
     for (const rule of DEFAULT_RULES) {
-
       await addDoc(
         rulesCol,
         rule
       );
-
     }
-
     return loadRules();
   }
 
   snap.forEach(docSnap => {
-
     const rule =
       docSnap.data();
-
     const option =
       document.createElement("option");
-
     option.value =
       docSnap.id;
-
     option.textContent =
       rule.name;
-
     option.dataset.rule =
       JSON.stringify(rule);
-
     select.appendChild(option);
-
   });
 
+  const lastRuleId =
+    localStorage.getItem(
+      "lastRuleId"
+    );
+  if (lastRuleId) {
+    const exists =
+      [...select.options]
+        .some(
+          o => o.value === lastRuleId
+        );
+    if (exists) {
+      select.value =
+        lastRuleId;
+    }
+  }
   applySelectedRule();
-
 }
 
 // ===================================
@@ -287,7 +287,13 @@ function setupRuleEvents() {
 
     select.addEventListener(
       "change",
-      applySelectedRule
+      () => {
+        applySelectedRule();
+        localStorage.setItem(
+          "lastRuleId",
+          select.value
+        );
+      }
     );
 
   }
@@ -1016,10 +1022,7 @@ async function saveRecord() {
         }
     ),
 
-    rule:
-      document.getElementById(
-        "game-rule"
-      ).value,
+    rule: currentRule.name,
 
     players,
 
@@ -1169,8 +1172,7 @@ async function loadRecords() {
       ${
         r.players
         .map(p =>
-          `${p.name}
-          (${p.chip})`
+          `${p.name} ${p.chip}枚`
         )
         .join("<br>")
       }
@@ -1285,8 +1287,7 @@ async function renderDaily() {
       ${
         r.players
         .map(p =>
-          `${p.name}
-          (${p.chip})`
+          `${p.name} ${p.chip}枚`
         )
         .join("<br>")
       }
