@@ -1495,11 +1495,11 @@ function renderPlayerChart(totals) {
     const barTop = Math.min(props.y, props.base);
     const barBottom = Math.max(props.y, props.base);
     const x = left + Math.random() * (right - left);
-    const y = barTop + Math.random() * 50; //(barBottom - barTop);
+    const y = barTop + Math.random() * 30; //(barBottom - barTop);
     sparkles.push(
       createSparkle(x, y)
     );
-  }, 150);
+  }, 250);
   
   resizeSparkleCanvas();
   animateSparkles();
