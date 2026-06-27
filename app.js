@@ -71,6 +71,9 @@ let currentRule = {
   rounding: "mahjong"
 };
 
+// ===================================
+// グローバル変数
+// ===================================
 let playerNames = [];
 
 let editingInput = null;
@@ -78,6 +81,9 @@ let editingInput = null;
 let activePlayerInput = null;
 
 let playerChart = null;
+
+let sparkleInterval = null;
+let sparkleAnimationStarted = false;
 
 // ===================================
 // 初期化
@@ -1414,6 +1420,35 @@ function renderPlayerChart(totals) {
   const ctx = document.getElementById("player-point-chart");
   if (!ctx) return;
 
+  if (sparkleInterval) {
+   clearInterval(sparkleInterval);
+  }
+  sparkleInterval = setInterval(() => {
+    if (!bar) return;
+    const props =
+      bar.getProps(
+        ["x", "y", "base"],
+        true
+      );
+    const left =
+      Math.min(props.x, props.base);
+    const right =
+      Math.max(props.x, props.base);
+    const height =
+      20;
+    const x =
+      left +
+      Math.random() *
+      (right - left);
+    const y =
+      props.y +
+      (Math.random() - 0.5) *
+      height;
+    sparkles.push(
+      createSparkle(x, y)
+    );
+  }, 150);
+
   const chartArea = ctx.getContext("2d");
 
   const entries = Object.entries(totals)
@@ -1509,8 +1544,8 @@ function renderPlayerChart(totals) {
     // }]
   });
   const meta = playerChart.getDatasetMeta(0);
-  const data = playerChart.data.datasets[0].data;
-  const maxIndex = data.indexOf(Math.max(...data));
+  const chartdata = playerChart.data.datasets[0].data;
+  const maxIndex = chartdata.indexOf(Math.max(...chartdata));
   const bar = meta.data[maxIndex];
   setInterval(() => {
     if (!bar) return;
