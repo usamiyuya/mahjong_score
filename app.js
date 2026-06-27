@@ -77,6 +77,8 @@ let editingInput = null;
 
 let activePlayerInput = null;
 
+let playerChart = null;
+
 // ===================================
 // 初期化
 // ===================================
@@ -1404,6 +1406,45 @@ async function renderDaily() {
   });
 }
 
+// ===================================
+// グラフ描画
+// ===================================
+function renderPlayerChart(totals) {
+  const ctx = document.getElementById("player-point-chart");
+
+  if (!ctx) return;
+
+  const labels = Object.keys(totals);
+  const data = labels.map(name =>
+    totals[name].point + (totals[name].chip || 0)
+  );
+
+  if (playerChart) {
+    playerChart.destroy();
+  }
+
+  playerChart = new Chart(ctx, {
+    type: "bar",
+    data: {
+      labels,
+      datasets: [{
+        label: "総合ポイント",
+        data
+      }]
+    },
+    options: {
+      responsive: true,
+      plugins: {
+        legend: { display: false }
+      },
+      scales: {
+        y: {
+          beginAtZero: true
+        }
+      }
+    }
+  });
+}
 
 // ===================================
 // プレイヤー集計
@@ -1588,14 +1629,13 @@ async function renderPlayerTotals() {
         4位:
         ${t.fourth}
       `;
-
       container.appendChild(
         div
       );
-
     });
-
+    renderPlayerChart(totals);
 }
+
 
 // ===================================
 // チップ保存
