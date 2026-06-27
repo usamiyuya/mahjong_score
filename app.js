@@ -1469,34 +1469,48 @@ function renderPlayerChart(totals) {
             color: "#ddd"
           }
         }
-      }
+      },
+      animation: false,
     },
     plugins: [{
-      id: "goldGradientFix",
-      beforeDatasetsDraw(chart) {
-        const { ctx, chartArea } = chart;
-        if (!chartArea) return;
-        chart.data.datasets[0].backgroundColor =
-          chart.data.datasets[0].data.map((v, i) => {
-            const max = Math.max(...chart.data.datasets[0].data);
-
-            if (v !== max) return chart.data.datasets[0].backgroundColor[i];
-
-            const gradient = ctx.createLinearGradient(
-              chartArea.left,
-              0,
-              chartArea.right,
-              0
-            );
-            gradient.addColorStop(0, "#fff8dc");
-            gradient.addColorStop(0.5, "#ffd700");
-            gradient.addColorStop(1, "#ffb300");
-            return gradient;
-          });
+      id: "goldShine",
+      afterDatasetsDraw(chart) {
+        const { ctx } = chart;
+        const meta = chart.getDatasetMeta(0);
+        const data = chart.data.datasets[0].data;
+        const max = Math.max(...data);
+        const index = data.indexOf(max);
+        const bar = meta.data[index];
+        if (!bar) return;
+        const time = Date.now() / 500;
+        // ✨ 揺れる光の位置
+        const shineX =
+          bar.x +
+          Math.sin(time) * 10;
+        const shineY =
+          bar.y +
+          Math.cos(time) * 3;
+        ctx.save();
+        // ✨ 光のぼかし
+        ctx.shadowColor = "rgba(255, 215, 0, 0.9)";
+        ctx.shadowBlur = 25;
+        // ✨ キラキラ点
+        ctx.fillStyle = "rgba(255, 255, 255, 0.8)";
+        ctx.beginPath();
+        ctx.arc(shineX, shineY, 3, 0, Math.PI * 2);
+        ctx.fill();
+        // ✨ メイン光
+        ctx.fillStyle = "rgba(255, 215, 0, 0.6)";
+        ctx.beginPath();
+        ctx.arc(bar.x, bar.y, 10, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.restore();
       }
     }]
   });
 }
+
+
 // ===================================
 // プレイヤー集計
 // ===================================
@@ -1756,3 +1770,12 @@ async function saveChipRecord() {
   await loadRecords();
   await renderPlayerTotals();
 }
+
+// ===================================
+// グラフアニメーション
+// ===================================
+setInterval(() => {
+  if (playerChart) {
+    playerChart.update("none");
+  }
+}, 50);
