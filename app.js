@@ -932,6 +932,7 @@ function setupPlayerDropdown() {
 // ===================================
 async function saveRecord() {
 
+  let totalScore = 0;
   const players = [];
 
   const cards =
@@ -940,43 +941,50 @@ async function saveRecord() {
     );
 
   for (const card of cards) {
-
+    
     const name =
-      card
-      .querySelector(".player-name")
-      .value
-      .trim();
-
+    card
+    .querySelector(".player-name")
+    .value
+    .trim();
+    
     const score =
-      Number(
-        card.querySelector(
-          ".player-score"
-        ).value
-      );
-
+    Number(
+      card.querySelector(
+        ".player-score"
+      ).value
+    );
+    
     const rank =
-      Number(
-        card.querySelector(
-          ".player-rank"
-        ).value
-      );
-
+    Number(
+      card.querySelector(
+        ".player-rank"
+      ).value
+    );
+    
     if (!name) continue;
-
+    
     players.push({
       name,
       score,
       rank,
       tobiLoser:
-        card.querySelector(
-          ".tobi-loser"
-        ).checked,
+      card.querySelector(
+        ".tobi-loser"
+      ).checked,
       tobiWinner:
-        card.querySelector(
-          ".tobi-winner"
-        ).checked
+      card.querySelector(
+        ".tobi-winner"
+      ).checked
     });
+  }
 
+  players.forEach(p => {
+    totalScore += p.score;
+  });
+  if (totalScore !== 100000) {
+    alert(`素点合計が100000点ではありません（現在: ${totalScore}点）`);
+    return;
   }
 
   players.forEach(p => {
@@ -1034,12 +1042,10 @@ async function saveRecord() {
   }
 
   const record = {
-
     date:
       document.getElementById(
         "game-date"
       ).value,
-
     time: 
       new Date().toLocaleTimeString(
         "ja-JP",
@@ -1048,16 +1054,11 @@ async function saveRecord() {
           minute: "2-digit"
         }
     ),
-
     rule: currentRule.name,
-
     players,
-
     currentRule,
-
     createdAt:
       Date.now()
-
   };
 
   // Firestoreへ成績保存
