@@ -1830,9 +1830,9 @@ function createSparkle(x, y) {
 function drawCurvedDiamond(ctx, s) {
   const progress = s.life;
   // 拡大縮小（ポン→ふわ→消える）
-  const scale = Math.sin(progress * Math.PI) * 0.5;
+  const scale = Math.sin(progress * Math.PI);
   const alpha = 1 - progress;
-  const size = s.size * scale;
+  const size = s.size * scale * 0.2;
   ctx.save();
   ctx.translate(s.x, s.y);
   ctx.globalAlpha = alpha;
