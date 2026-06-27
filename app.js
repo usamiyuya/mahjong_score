@@ -1793,16 +1793,49 @@ function resizeSparkleCanvas() {
   sparkleCanvas.height = chart.clientHeight;
 }
 
+// function createSparkle(x, y) {
+//   return {
+//     x,
+//     y,
+//     size: Math.random() * 4 + 2,
+//     alpha: 1,
+//     vx: (Math.random() - 0.5) * 0.5,
+//     vy: (Math.random() - 0.5) * 0.5,
+//     rot: Math.random() * Math.PI
+//   };
+// }
+
 function createSparkle(x, y) {
   return {
     x,
     y,
-    size: Math.random() * 4 + 2,
-    alpha: 1,
-    vx: (Math.random() - 0.5) * 0.5,
-    vy: (Math.random() - 0.5) * 0.5,
-    rot: Math.random() * Math.PI
+    size: Math.random() * 10 + 10, // 基準サイズ（✨は少し大きめでもOK）
+    life: 0, // 0 → 1で進行
+    vx: (Math.random() - 0.5) * 0.3,
+    vy: (Math.random() - 0.5) * 0.3,
   };
+}
+
+function drawSparkle(ctx, s) {
+  const progress = s.life; // 0〜1
+
+  // イージング（気持ちいい動き）
+  const scale =
+    Math.sin(progress * Math.PI) * (0.8 + Math.random() * 0.4); // 0→1→0
+  const alpha =
+    1 - progress; // フェードアウト
+  const size = s.size * scale;
+  ctx.save();
+  ctx.translate(s.x, s.y);
+  ctx.globalAlpha = alpha;
+  // 発光っぽく
+  ctx.shadowColor = "rgba(255,255,255,0.9)";
+  ctx.shadowBlur = 10;
+  ctx.font = `${size}px sans-serif`;
+  ctx.textAlign = "center";
+  ctx.textBaseline = "middle";
+  ctx.fillText("✨", 0, 0);
+  ctx.restore();
 }
 
 function drawDiamond(ctx, x, y, size, alpha, rot) {
@@ -1827,6 +1860,33 @@ function drawDiamond(ctx, x, y, size, alpha, rot) {
   ctx.restore();
 }
 
+// function animateSparkles() {
+//   sparkleCtx.clearRect(
+//     0,
+//     0,
+//     sparkleCanvas.width,
+//     sparkleCanvas.height
+//   );
+//   // 既存更新
+//   sparkles.forEach(s => {
+//     s.x += s.vx;
+//     s.y += s.vy;
+//     s.alpha -= 0.02;
+//     s.rot += 0.05;
+//     drawDiamond(
+//       sparkleCtx,
+//       s.x,
+//       s.y,
+//       s.size,
+//       s.alpha,
+//       s.rot
+//     );
+//   });
+//   // 消去
+//   sparkles = sparkles.filter(s => s.alpha > 0);
+//   requestAnimationFrame(animateSparkles);
+// }
+
 function animateSparkles() {
   sparkleCtx.clearRect(
     0,
@@ -1834,22 +1894,14 @@ function animateSparkles() {
     sparkleCanvas.width,
     sparkleCanvas.height
   );
-  // 既存更新
   sparkles.forEach(s => {
     s.x += s.vx;
     s.y += s.vy;
-    s.alpha -= 0.02;
-    s.rot += 0.05;
-    drawDiamond(
-      sparkleCtx,
-      s.x,
-      s.y,
-      s.size,
-      s.alpha,
-      s.rot
-    );
+    // 進行
+    s.life += 0.02;
+    drawSparkle(sparkleCtx, s);
   });
-  // 消去
-  sparkles = sparkles.filter(s => s.alpha > 0);
+  // 完全消滅
+  sparkles = sparkles.filter(s => s.life < 1);
   requestAnimationFrame(animateSparkles);
 }
