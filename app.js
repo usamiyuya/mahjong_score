@@ -1495,7 +1495,7 @@ function renderPlayerChart(totals) {
     const barTop = Math.min(props.y, props.base);
     const barBottom = Math.max(props.y, props.base);
     const x = left + Math.random() * (right - left);
-    const y = barTop + Math.random() * 30; //(barBottom - barTop);
+    const y = barTop + Math.random() * 20; //(barBottom - barTop);
     sparkles.push(
       createSparkle(x, y)
     );
@@ -1832,7 +1832,7 @@ function drawCurvedDiamond(ctx, s) {
   // 拡大縮小（ポン→ふわ→消える）
   const scale = Math.sin(progress * Math.PI);
   const alpha = 1 - progress;
-  const size = s.size * scale * 0.2;
+  const size = s.size * scale * 0.3;
   ctx.save();
   ctx.translate(s.x, s.y);
   ctx.globalAlpha = alpha;
