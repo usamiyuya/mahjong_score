@@ -1414,6 +1414,8 @@ function renderPlayerChart(totals) {
   const ctx = document.getElementById("player-point-chart");
   if (!ctx) return;
 
+  const chartArea = ctx.getContext("2d");
+
   const entries = Object.entries(totals)
     .map(([name, t]) => ({
       name,
@@ -1426,15 +1428,21 @@ function renderPlayerChart(totals) {
 
   const topName = entries[0]?.name;
 
+    const goldGradient = chartArea.createLinearGradient(0, 0, 400, 0);
+  goldGradient.addColorStop(0, "#fff7cc");
+  goldGradient.addColorStop(0.4, "#ffd700");
+  goldGradient.addColorStop(0.7, "#ffbf00");
+  goldGradient.addColorStop(1, "#ff9900");
+
   const colors = entries.map(e => {
-    if (e.name === topName) return "rgba(212, 175, 55, 0.9)";
+    if (e.name === topName) return goldGradient;;
     return e.value >= 0
       ? "rgba(46, 204, 113, 0.8)"
       : "rgba(231, 76, 60, 0.8)";
   });
 
   const borders = entries.map(e => {
-    if (e.name === topName) return "rgba(180, 150, 40, 1)";
+    if (e.name === topName) return "rgba(218, 165, 32, 1)";
     return e.value >= 0
       ? "rgba(39, 174, 96, 1)"
       : "rgba(192, 57, 43, 1)";
@@ -1468,7 +1476,37 @@ function renderPlayerChart(totals) {
           }
         }
       }
-    }
+    },
+    plugins: [{
+      id: "glowTopBar",
+      afterDatasetsDraw(chart) {
+        const { ctx } = chart;
+        const meta = chart.getDatasetMeta(0);
+
+        // 一番大きい値を探す
+        const data = chart.data.datasets[0].data;
+        const maxIndex = data.indexOf(Math.max(...data));
+
+        const bar = meta.data[maxIndex];
+        if (!bar) return;
+
+        ctx.save();
+
+        // ✨ 光（影）
+        ctx.shadowColor = "rgba(255, 215, 0, 0.9)";
+        ctx.shadowBlur = 20;
+
+        ctx.fillStyle = "rgba(255, 215, 0, 0.2)";
+        ctx.fillRect(
+          bar.x - bar.width / 2,
+          bar.y - bar.height / 2,
+          bar.width,
+          bar.height
+        );
+
+        ctx.restore();
+      }
+    }]
   });
 }
 // ===================================
