@@ -2,6 +2,7 @@ import {
   collection,
   addDoc,
   getDocs,
+  getDoc,
   deleteDoc,
   doc,
   orderBy,
@@ -94,6 +95,8 @@ window.addEventListener("load", async () => {
   await loadRecords();
 
   setupRecordEvents();
+
+  setupScoreInputs();
 
 });
 
@@ -798,6 +801,28 @@ function setupRecordEvents() {
 }
 
 // ===================================
+// スコア入力設定
+// ===================================
+function setupScoreInputs() {
+  document
+    .querySelectorAll(
+      ".player-score"
+    )
+    .forEach(input => {
+      input.addEventListener(
+        "input",
+        () => {
+          input.value =
+            input.value.replace(
+              /[^0-9]/g,
+              ""
+            );
+        }
+      );
+    });
+}
+
+// ===================================
 // プレイヤー登録
 // ===================================
 async function registerPlayer(name) {
@@ -1052,6 +1077,19 @@ async function saveRecord() {
 }
 
 // ===================================
+// 成績修正期間
+// ===================================
+const EDIT_LIMIT =
+  60 * 60 * 1000; // 一時間制約の場合
+  60 * 60 * 24 * 1000; // 一日制約の場合
+function canEdit(record){
+  return (
+    Date.now() -
+    record.createdAt
+  ) < EDIT_LIMIT;
+}
+
+// ===================================
 // 最近の成績
 // ===================================
 async function loadRecords() {
@@ -1106,11 +1144,22 @@ async function loadRecords() {
         )
         .join("<br>")}
       <br><br>
-      <button
-        class="delete-record-btn"
-        data-id="${docSnap.id}">
-        削除
-      </button>
+      ${
+        canEdit(r)
+        ?
+        `
+        <button
+          class="delete-record-btn"
+          data-id="${docSnap.id}">
+          削除
+        </button>
+        `
+        :
+        `
+        <span>
+          🔒確定済
+        </span> `
+      }
     `;
     container.appendChild(
       div
@@ -1125,6 +1174,27 @@ async function loadRecords() {
       btn.addEventListener(
         "click",
         async () => {
+          const target =
+            btn.dataset.id;
+          const snap =
+            await getDoc(
+              doc(
+                db,
+                "records",
+                target
+              )
+            );
+          const record =
+            snap.data();
+          if (
+            !record ||
+            !canEdit(record)
+          ) {
+            alert(
+              "確定済みデータのため削除できません"
+            );
+            return;
+          }
           if (
             !confirm(
               "削除しますか？"
@@ -1136,7 +1206,7 @@ async function loadRecords() {
             doc(
               db,
               "records",
-              btn.dataset.id
+              target
             )
           );
           await loadRecords();
@@ -1177,11 +1247,23 @@ async function loadRecords() {
         .join("<br>")
       }
       <br><br>
-      <button
-        class="delete-chip-btn"
-        data-id="${docSnap.id}">
-        削除
-      </button>
+      ${
+        canEdit(r)
+        ?
+        `
+        <button
+          class="delete-chip-btn"
+          data-id="${docSnap.id}">
+          削除
+        </button>
+        `
+        :
+        `
+        <span>
+          🔒確定済
+        </span>
+        `
+      }
     `;
     container.appendChild(
       div
@@ -1196,6 +1278,30 @@ async function loadRecords() {
       btn.addEventListener(
         "click",
         async () => {
+          const target =
+            btn.dataset.id;
+          const snap =
+            await getDocs(
+              chipRecordsCol
+            );
+          let record = null;
+          snap.forEach(docSnap => {
+            if (
+              docSnap.id === target
+            ) {
+              record =
+                docSnap.data();
+            }
+          });
+          if (
+            !record ||
+            !canEdit(record)
+          ) {
+            alert(
+              "確定済みデータのため削除できません"
+            );
+            return;
+          }
           if (
             !confirm(
               "チップ記録を削除しますか？"
