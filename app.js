@@ -1793,11 +1793,12 @@ function resizeSparkleCanvas() {
   sparkleCanvas.height = chart.clientHeight;
 }
 
+
 // function createSparkle(x, y) {
-//   return {
-//     x,
-//     y,
-//     size: Math.random() * 4 + 2,
+  //   return {
+    //     x,
+    //     y,
+    //     size: Math.random() * 4 + 2,
 //     alpha: 1,
 //     vx: (Math.random() - 0.5) * 0.5,
 //     vy: (Math.random() - 0.5) * 0.5,
@@ -1816,25 +1817,67 @@ function createSparkle(x, y) {
   };
 }
 
-function drawSparkle(ctx, s) {
-  const progress = s.life; // 0〜1
+// function drawSparkle(ctx, s) {
+//   const progress = s.life; // 0〜1
+//   // イージング（気持ちいい動き）
+//   const scale =
+//     Math.sin(progress * Math.PI) * (0.8 + Math.random() * 0.4); // 0→1→0
+//   const alpha =
+//     1 - progress; // フェードアウト
+//   const size = s.size * scale;
+//   ctx.save();
+//   ctx.translate(s.x, s.y);
+//   ctx.globalAlpha = alpha;
+//   // 発光っぽく
+//   ctx.shadowColor = "rgba(255,255,255,0.9)";
+//   ctx.shadowBlur = 10;
+//   ctx.font = `${size}px sans-serif`;
+//   ctx.textAlign = "center";
+//   ctx.textBaseline = "middle";
+//   ctx.fillText("✨", 0, 0);
+//   ctx.restore();
+}
 
-  // イージング（気持ちいい動き）
-  const scale =
-    Math.sin(progress * Math.PI) * (0.8 + Math.random() * 0.4); // 0→1→0
-  const alpha =
-    1 - progress; // フェードアウト
+// 表示図形
+function drawCurvedDiamond(ctx, s) {
+  const progress = s.life;
+  // 拡大縮小（ポン→ふわ→消える）
+  const scale = Math.sin(progress * Math.PI);
+  const alpha = 1 - progress;
   const size = s.size * scale;
   ctx.save();
   ctx.translate(s.x, s.y);
   ctx.globalAlpha = alpha;
-  // 発光っぽく
   ctx.shadowColor = "rgba(255,255,255,0.9)";
-  ctx.shadowBlur = 10;
-  ctx.font = `${size}px sans-serif`;
-  ctx.textAlign = "center";
-  ctx.textBaseline = "middle";
-  ctx.fillText("✨", 0, 0);
+  ctx.shadowBlur = 12;
+  ctx.fillStyle = "rgba(255,255,255,0.95)";
+  const w = size * 0.9;  // 横
+  const h = size * 1.2;  // 縦（やや縦長）
+  ctx.beginPath();
+  // 上頂点
+  ctx.moveTo(0, -h);
+  // 右辺（少し内側に湾曲）
+  ctx.quadraticCurveTo(
+    w * 0.6, -h * 0.4,
+    w, 0
+  );
+  // 下右 → 下（湾曲）
+  ctx.quadraticCurveTo(
+    w * 0.6, h * 0.4,
+    0, h
+  );
+  // 下左（湾曲）
+  ctx.quadraticCurveTo(
+    -w * 0.6, h * 0.4,
+    -w, 0
+  );
+  // 上左（湾曲）
+  ctx.quadraticCurveTo(
+    -w * 0.6, -h * 0.4,
+    0, -h
+  );
+  ctx.closePath();
+  ctx.fill();
   ctx.restore();
 }
 
@@ -1899,7 +1942,7 @@ function animateSparkles() {
     s.y += s.vy;
     // 進行
     s.life += 0.02;
-    drawSparkle(sparkleCtx, s);
+    drawCurvedDiamond(sparkleCtx, s);
   });
   // 完全消滅
   sparkles = sparkles.filter(s => s.life < 1);
