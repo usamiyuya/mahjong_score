@@ -1428,14 +1428,8 @@ function renderPlayerChart(totals) {
 
   const topName = entries[0]?.name;
 
-    const goldGradient = chartArea.createLinearGradient(0, 0, 400, 0);
-  goldGradient.addColorStop(0, "#fff7cc");
-  goldGradient.addColorStop(0.4, "#ffd700");
-  goldGradient.addColorStop(0.7, "#ffbf00");
-  goldGradient.addColorStop(1, "#ff9900");
-
   const colors = entries.map(e => {
-    if (e.name === topName) return goldGradient;;
+    if (e.name === topName) return "rgba(255, 215, 0, 1)";
     return e.value >= 0
       ? "rgba(46, 204, 113, 0.8)"
       : "rgba(231, 76, 60, 0.8)";
@@ -1478,33 +1472,27 @@ function renderPlayerChart(totals) {
       }
     },
     plugins: [{
-      id: "glowTopBar",
-      afterDatasetsDraw(chart) {
-        const { ctx } = chart;
-        const meta = chart.getDatasetMeta(0);
+      id: "goldGradientFix",
+      beforeDatasetsDraw(chart) {
+        const { ctx, chartArea } = chart;
+        if (!chartArea) return;
+        chart.data.datasets[0].backgroundColor =
+          chart.data.datasets[0].data.map((v, i) => {
+            const max = Math.max(...chart.data.datasets[0].data);
 
-        // 一番大きい値を探す
-        const data = chart.data.datasets[0].data;
-        const maxIndex = data.indexOf(Math.max(...data));
+            if (v !== max) return chart.data.datasets[0].backgroundColor[i];
 
-        const bar = meta.data[maxIndex];
-        if (!bar) return;
-
-        ctx.save();
-
-        // ✨ 光（影）
-        ctx.shadowColor = "rgba(255, 215, 0, 0.9)";
-        ctx.shadowBlur = 20;
-
-        ctx.fillStyle = "rgba(255, 215, 0, 0.2)";
-        ctx.fillRect(
-          bar.x - bar.width / 2,
-          bar.y - bar.height / 2,
-          bar.width,
-          bar.height
-        );
-
-        ctx.restore();
+            const gradient = ctx.createLinearGradient(
+              chartArea.left,
+              0,
+              chartArea.right,
+              0
+            );
+            gradient.addColorStop(0, "#fff8dc");
+            gradient.addColorStop(0.5, "#ffd700");
+            gradient.addColorStop(1, "#ffb300");
+            return gradient;
+          });
       }
     }]
   });
