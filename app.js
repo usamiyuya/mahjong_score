@@ -1412,16 +1412,53 @@ async function renderDaily() {
 function renderPlayerChart(totals) {
   const ctx = document.getElementById("player-point-chart");
   if (!ctx) return;
-  const labels = Object.keys(totals);
-  const data = labels.map(name =>
-    totals[name].point + (totals[name].chip || 0)
-  );
-  const colors = data.map(v =>
-    v >= 0 ? "rgba(46, 204, 113, 0.8)" : "rgba(231, 76, 60, 0.8)"
-  );
-  const borders = data.map(v =>
-    v >= 0 ? "rgba(39, 174, 96, 1)" : "rgba(192, 57, 43, 1)"
-  );
+  const labels = Object.keys(totals)
+    .sort((a, b) =>
+      (totals[b].point + (totals[b].chip || 0))
+      -
+      (totals[a].point + (totals[a].chip || 0))
+    );
+  // const data = labels.map(name =>
+  //   totals[name].point + (totals[name].chip || 0)
+  // );
+  // const colors = data.map(v =>
+  //   v >= 0 ? "rgba(46, 204, 113, 0.8)" : "rgba(231, 76, 60, 0.8)"
+  // );
+  // const borders = data.map(v =>
+  //   v >= 0 ? "rgba(39, 174, 96, 1)" : "rgba(192, 57, 43, 1)"
+  // );
+
+  const sorted = labels
+    .map((name, i) => ({
+      name,
+      value: data[i]
+    }))
+    .sort((a, b) => b.value - a.value);
+  const topName = sorted[0]?.name;
+  const colors = labels.map((name, i) => {
+    const value = data[i];
+    // 🥇 1位：筋色（ゴールド）
+    if (name === topName) {
+      return "rgba(212, 175, 55, 0.9)";
+    }
+    // プラス
+    if (value >= 0) {
+      return "rgba(46, 204, 113, 0.8)";
+    }
+    // マイナス
+    return "rgba(231, 76, 60, 0.8)";
+  });
+
+  const borders = labels.map((name, i) => {
+    const value = data[i];
+    if (name === topName) {
+      return "rgba(180, 150, 40, 1)";
+    }
+    return value >= 0
+      ? "rgba(39, 174, 96, 1)"
+      : "rgba(192, 57, 43, 1)";
+  });
+
   if (playerChart) {
     playerChart.destroy();
   }
@@ -1439,12 +1476,16 @@ function renderPlayerChart(totals) {
     },
     options: {
       responsive: true,
+      indexAxis:"y",
       plugins: {
         legend: { display: false }
       },
       scales: {
         y: {
-          beginAtZero: true
+          beginAtZero: true,
+          grid: {
+            color: "#ddd"
+          }
         }
       }
     }
