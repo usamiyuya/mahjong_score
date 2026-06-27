@@ -1836,7 +1836,7 @@ function createSparkle(x, y) {
 //   ctx.textBaseline = "middle";
 //   ctx.fillText("✨", 0, 0);
 //   ctx.restore();
-}
+// }
 
 // 表示図形
 function drawCurvedDiamond(ctx, s) {
