@@ -275,6 +275,7 @@ input[type="date"] {
 .player-score {
   flex: 1;
   min-width: 0;
+  margin-bottom: 0;
 }
 
 .minus-btn {
