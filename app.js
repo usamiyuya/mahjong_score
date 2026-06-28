@@ -1516,23 +1516,26 @@ function renderPlayerChart(totals) {
   const bar = meta.data[maxIndex];
   if (sparkleInterval) {
    clearInterval(sparkleInterval);
+   sparkleInterval = null;
   }
   sparkleInterval = setInterval(() => {
     if (!bar) return;
     const props = bar.getProps(["x", "y", "base", "width", "height"], true);
-    const left = Math.min(props.x, props.base);
-    const right = Math.max(props.x, props.base);
-    const barTop = Math.min(props.y, props.base);
-    const barBottom = Math.max(props.y, props.base);
-    const x = left + Math.random() * (right - left);
-    const y = barTop + Math.random() * 20; //(barBottom - barTop);
+    const barHeight = bar.height;
+    const top = props.y - barHeight / 2;
+    const bottom = props.y + barHeight / 2;
+    const x = props.base + Math.random() * (props.x - props.base);
+    const y = top + Math.random() * barHeight;
     sparkles.push(
       createSparkle(x, y)
     );
   }, 250);
   
   resizeSparkleCanvas();
-  animateSparkles();
+  if (!sparkleAnimationStarted){
+    sparkleAnimationStarted = true;
+    animateSparkles();
+  }
 }
 
 
@@ -1811,19 +1814,6 @@ function resizeSparkleCanvas() {
   sparkleCanvas.height = chart.clientHeight;
 }
 
-
-// function createSparkle(x, y) {
-  //   return {
-    //     x,
-    //     y,
-    //     size: Math.random() * 4 + 2,
-//     alpha: 1,
-//     vx: (Math.random() - 0.5) * 0.5,
-//     vy: (Math.random() - 0.5) * 0.5,
-//     rot: Math.random() * Math.PI
-//   };
-// }
-
 function createSparkle(x, y) {
   return {
     x,
@@ -1835,26 +1825,6 @@ function createSparkle(x, y) {
   };
 }
 
-// function drawSparkle(ctx, s) {
-//   const progress = s.life; // 0〜1
-//   // イージング（気持ちいい動き）
-//   const scale =
-//     Math.sin(progress * Math.PI) * (0.8 + Math.random() * 0.4); // 0→1→0
-//   const alpha =
-//     1 - progress; // フェードアウト
-//   const size = s.size * scale;
-//   ctx.save();
-//   ctx.translate(s.x, s.y);
-//   ctx.globalAlpha = alpha;
-//   // 発光っぽく
-//   ctx.shadowColor = "rgba(255,255,255,0.9)";
-//   ctx.shadowBlur = 10;
-//   ctx.font = `${size}px sans-serif`;
-//   ctx.textAlign = "center";
-//   ctx.textBaseline = "middle";
-//   ctx.fillText("✨", 0, 0);
-//   ctx.restore();
-// }
 
 // 表示図形
 function drawCurvedDiamond(ctx, s) {
@@ -1921,32 +1891,6 @@ function drawDiamond(ctx, x, y, size, alpha, rot) {
   ctx.restore();
 }
 
-// function animateSparkles() {
-//   sparkleCtx.clearRect(
-//     0,
-//     0,
-//     sparkleCanvas.width,
-//     sparkleCanvas.height
-//   );
-//   // 既存更新
-//   sparkles.forEach(s => {
-//     s.x += s.vx;
-//     s.y += s.vy;
-//     s.alpha -= 0.02;
-//     s.rot += 0.05;
-//     drawDiamond(
-//       sparkleCtx,
-//       s.x,
-//       s.y,
-//       s.size,
-//       s.alpha,
-//       s.rot
-//     );
-//   });
-//   // 消去
-//   sparkles = sparkles.filter(s => s.alpha > 0);
-//   requestAnimationFrame(animateSparkles);
-// }
 
 function animateSparkles() {
   sparkleCtx.clearRect(
