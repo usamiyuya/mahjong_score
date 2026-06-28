@@ -185,15 +185,25 @@ input[type="date"] {
 .player-input-wrapper{
   position: relative;
   display:flex;
+  align-items: center;
   gap:4px;
 }
 
 .player-name{
   flex:1;
+  min-width: 0;
 }
 
 .edit-player-btn{
-  width:42px;
+  flex-shrink: 0;
+  width: 36px;
+  height: 36px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  background: #f5f5f5;
+  font-size: 16px;
+  font-weight: bold;
+  /* width:42px;
   flex-shrink:0;
 
   border:none;
@@ -201,7 +211,7 @@ input[type="date"] {
 
   cursor:pointer;
 
-  font-size:18px;
+  font-size:18px; */
 }
 
 .player-dropdown{
