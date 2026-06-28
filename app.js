@@ -1015,12 +1015,45 @@ async function saveRecord() {
     });
   }
 
+  const names =
+    players.map(p => p.name);
+  const duplicateNames =
+    names.filter(
+      (name, index) =>
+        names.indexOf(name) !== index
+    );
+  if (duplicateNames.length > 0) {
+    alert(
+      `同じプレイヤー名が入力されています。\n\n${[...new Set(duplicateNames)].join("、")}`
+    );
+    return;
+  }
+
   players.forEach(p => {
     totalScore += p.score;
   });
   if (totalScore !== 100000) {
     alert(`素点合計が100000点ではありません（現在: ${totalScore}点）`);
     return;
+  }
+
+  const ranks =
+    players.map(p => p.rank);
+  const duplicateRanks =
+    [...new Set(
+      ranks.filter(
+        (rank, index) =>
+          ranks.indexOf(rank) !== index
+      )
+    )];
+  if (duplicateRanks.length > 0) {
+    const proceed =
+      confirm(
+        `同じ順位が入力されています。\n\n${duplicateRanks.join("位、")}位\n\nこのまま登録しますか？`
+      );
+    if (!proceed) {
+      return;
+    }
   }
 
   players.forEach(p => {
