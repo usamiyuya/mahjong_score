@@ -1261,7 +1261,7 @@ async function loadRecords() {
           "createdAt",
           "desc"
         ),
-        limit(5)
+        limit(1)
       )
     );
   chipSnap.forEach(docSnap => {
