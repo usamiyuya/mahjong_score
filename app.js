@@ -1472,26 +1472,26 @@ function renderPlayerChart(totals) {
       : "rgba(231, 76, 60, 0.8)";
     });
     
-    const borders = entries.map(e => {
-      if (e.name === topName) return "rgba(218, 165, 32, 1)";
-      return e.value >= 0
-      ? "rgba(39, 174, 96, 1)"
-      : "rgba(192, 57, 43, 1)";
-    });
-    
-    if (playerChart) playerChart.destroy();
-    
-    playerChart = new Chart(ctx, {
-      type: "bar",
-      data: {
-        labels,
-        datasets: [{
-          label: "総合ポイント",
-          data,
-          backgroundColor: colors,
-          borderColor: borders,
-          borderWidth: 1
-        }]
+  const borders = entries.map(e => {
+    if (e.name === topName) return "rgba(218, 165, 32, 1)";
+    return e.value >= 0
+    ? "rgba(39, 174, 96, 1)"
+    : "rgba(192, 57, 43, 1)";
+  });
+  
+  if (playerChart) playerChart.destroy();
+  
+  playerChart = new Chart(ctx, {
+    type: "bar",
+    data: {
+      labels,
+      datasets: [{
+        label: "総合ポイント",
+        data,
+        backgroundColor: colors,
+        borderColor: borders,
+        borderWidth: 1
+      }]
     },
     options: {
       responsive: true,
