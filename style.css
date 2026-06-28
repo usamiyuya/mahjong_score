@@ -229,8 +229,16 @@ input[type="date"] {
 }
 
 .chip-value{
-  width:120px;
-  flex-shrink:0;
+  width: 120px;
+  height: 38px;
+  box-sizing: border-box;
+  margin-bottom: 0;
+}
+
+.chip-row{
+  display: flex;
+  align-items: center;
+  gap: 6px;
 }
 
 #player-point-chart {
