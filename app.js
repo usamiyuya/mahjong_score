@@ -1733,37 +1733,73 @@ async function renderPlayerTotals() {
 // ===================================
 // チップ保存
 // ===================================
+// async function saveChipRecord() {
+//   const players = [];
+//   const names =
+//     document.querySelectorAll(
+//       ".chip-name"
+//     );
+
+//   const values =
+//     document.querySelectorAll(
+//       ".chip-value"
+//     );
+//   for (
+//     let i = 0;
+//     i < names.length;
+//     i++
+//   ) {
+//     const name =
+//       names[i]
+//         .value
+//         .trim();
+
+//     const chip =
+//       Number(
+//         values[i].value
+//       );
+//     if (!name) continue;
+//     players.push({
+//       name,
+//       chip
+//     });
+//   }
+
 async function saveChipRecord() {
   const players = [];
   const names =
-    document.querySelectorAll(
-      ".chip-name"
-    );
-
+    document.querySelectorAll(".chip-name");
   const values =
-    document.querySelectorAll(
-      ".chip-value"
-    );
-  for (
-    let i = 0;
-    i < names.length;
-    i++
-  ) {
+    document.querySelectorAll(".chip-value");
+  for (let i = 0; i < names.length; i++) {
     const name =
-      names[i]
-        .value
-        .trim();
-
+      names[i].value.trim();
     const chip =
-      Number(
-        values[i].value
-      );
+      Number(values[i].value);
+    // ⭐ここが重要：名前がない行は無視
     if (!name) continue;
     players.push({
       name,
       chip
     });
   }
+  // 合計チェック（今まで通り）
+  const total =
+    players.reduce((sum, p) => sum + p.chip, 0);
+  if (total !== 0) {
+    alert("チップ合計が0ではありません");
+    return;
+  }
+  await addDoc(chipRecordsCol, {
+    date: document.getElementById("game-date").value,
+    chipValue: currentRule.chipValue,
+    players,
+    createdAt: Date.now()
+  });
+  alert("チップ精算を保存しました");
+  await loadRecords();
+  await renderPlayerTotals();
+}
 
   const total =
     players.reduce(
