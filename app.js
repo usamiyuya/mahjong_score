@@ -1956,8 +1956,9 @@ function animateSparkles() {
     sparkleCanvas.height
   );
   sparkles.forEach(s => {
-    s.x += s.vx;
-    s.y += s.vy;
+    // 移動？
+    // s.x += s.vx;
+    // s.y += s.vy;
     // 進行
     s.life += 0.02;
     drawCurvedDiamond(sparkleCtx, s);
