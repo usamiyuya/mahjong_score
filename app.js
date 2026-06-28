@@ -1765,6 +1765,40 @@ async function renderPlayerTotals() {
 //     });
 //   }
 
+//   const total =
+//     players.reduce(
+//       (sum, p) =>
+//         sum + p.chip,
+//       0
+//     );
+//   if (total !== 0) {
+//     alert(
+//       "チップ合計が0ではありません"
+//     );
+//     return;
+//   }
+
+//   await addDoc(
+//     chipRecordsCol,
+//     {
+//       date:
+//         document.getElementById(
+//           "game-date"
+//         ).value,
+//       chipValue:
+//         currentRule.chipValue,
+//       players,
+//       createdAt:
+//         Date.now()
+//     }
+//   );
+//   alert(
+//     "チップ精算を保存しました"
+//   );
+//   await loadRecords();
+//   await renderPlayerTotals();
+// }
+
 async function saveChipRecord() {
   const players = [];
   const names =
@@ -1797,40 +1831,6 @@ async function saveChipRecord() {
     createdAt: Date.now()
   });
   alert("チップ精算を保存しました");
-  await loadRecords();
-  await renderPlayerTotals();
-}
-
-  const total =
-    players.reduce(
-      (sum, p) =>
-        sum + p.chip,
-      0
-    );
-  if (total !== 0) {
-    alert(
-      "チップ合計が0ではありません"
-    );
-    return;
-  }
-
-  await addDoc(
-    chipRecordsCol,
-    {
-      date:
-        document.getElementById(
-          "game-date"
-        ).value,
-      chipValue:
-        currentRule.chipValue,
-      players,
-      createdAt:
-        Date.now()
-    }
-  );
-  alert(
-    "チップ精算を保存しました"
-  );
   await loadRecords();
   await renderPlayerTotals();
 }
