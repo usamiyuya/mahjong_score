@@ -182,8 +182,8 @@ input[type="date"] {
   display: block;
 }
 
-/* position: relative; */
 .player-input-wrapper{
+  position: relative;
   display: flex;
   align-items: center;
   gap: 6px;
