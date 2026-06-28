@@ -820,11 +820,27 @@ function setupScoreInputs() {
       input.addEventListener(
         "input",
         () => {
-          input.value =
+          let value =
             input.value.replace(
-              /[^0-9]/g,
+              /[^0-9-]/g,
               ""
             );
+          // マイナスが先頭以外にある場合削除
+          value =
+            value.replace(
+              /(?!^)-/g,
+              ""
+            );
+          // マイナスを複数入力できないようにする
+          const minusCount =
+            (value.match(/-/g) || [])
+              .length;
+          if (minusCount > 1) {
+            value =
+              "-" +
+              value.replace(/-/g, "");
+          }
+          input.value = value;
         }
       );
     });
