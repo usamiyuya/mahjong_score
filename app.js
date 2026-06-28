@@ -813,9 +813,7 @@ function setupRecordEvents() {
 // ===================================
 function setupScoreInputs() {
   document
-    .querySelectorAll(
-      ".player-score"
-    )
+    .querySelectorAll(".player-score")
     .forEach(input => {
       input.addEventListener(
         "input",
@@ -825,22 +823,38 @@ function setupScoreInputs() {
               /[^0-9-]/g,
               ""
             );
-          // マイナスが先頭以外にある場合削除
           value =
             value.replace(
               /(?!^)-/g,
               ""
             );
-          // マイナスを複数入力できないようにする
-          const minusCount =
-            (value.match(/-/g) || [])
-              .length;
-          if (minusCount > 1) {
-            value =
-              "-" +
-              value.replace(/-/g, "");
-          }
           input.value = value;
+        }
+      );
+    });
+  // ここから追加
+  document
+    .querySelectorAll(".minus-btn")
+    .forEach(btn => {
+      btn.addEventListener(
+        "click",
+        () => {
+          const input =
+            btn.parentElement
+               .querySelector(
+                 ".player-score"
+               );
+          if (!input) return;
+          if (
+            input.value.startsWith("-")
+          ) {
+            input.value =
+              input.value.slice(1);
+          } else {
+            input.value =
+              "-" + input.value;
+          }
+          input.focus();
         }
       );
     });
