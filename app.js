@@ -110,7 +110,7 @@ window.addEventListener("load", async () => {
 
   document
     .getElementById(
-      "game-type"
+      "game-rule"
     )
     ?.addEventListener(
       "change",
@@ -617,7 +617,7 @@ function calcPoint(
 
   const gameType =
     document.getElementById(
-      "game-type"
+      "game-rule"
     )?.value || "4";
   if (gameType === "3") {
     if (rank === 1)
@@ -887,7 +887,7 @@ function setupScoreInputs() {
 function updateRankOptions() {
   const gameType =
     document.getElementById(
-      "game-type"
+      "game-rule"
     )?.value || "4";
   document
     .querySelectorAll(".player-rank")
@@ -1093,7 +1093,7 @@ async function saveRecord() {
   // 三麻・四麻人数チェック
   const gameType =
     document.getElementById(
-      "game-type"
+      "game-rule"
     )?.value || "4";
   if (
     gameType === "4" &&
@@ -1898,7 +1898,7 @@ async function saveChipRecord() {
   }
   const gameType =
     document.getElementById(
-      "game-type"
+      "game-rule"
     )?.value || "4";
   await addDoc(chipRecordsCol, {
     date:
