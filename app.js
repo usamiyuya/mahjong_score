@@ -796,6 +796,15 @@ function setupRecordEvents() {
 
   document
     .getElementById(
+      "player-game-filter"
+    )
+    ?.addEventListener(
+      "change",
+      renderPlayerTotals
+    );
+
+  document
+    .getElementById(
       "save-chip-btn"
     )
     ?.addEventListener(
@@ -1697,6 +1706,11 @@ async function renderPlayerTotals() {
       "player-period"
     )?.value || "year";
 
+  const gameFilter =
+    document.getElementById(
+      "player-game-filter"
+    )?.value || "all";
+
   const targetDate =
     document.getElementById(
       "player-period-date"
@@ -1715,7 +1729,7 @@ async function renderPlayerTotals() {
   snap.forEach(docSnap => {
     const r =
       docSnap.data();
-    if (gameFilter !== "all" && r.gameType !== gameFilter) return;
+    if (gameFilter !== "all" && r.gameType !== gameFilter) {return};
     const gameDate =
       new Date(r.date);
     let include = true;
@@ -1785,7 +1799,7 @@ async function renderPlayerTotals() {
     );
   chipSnap.forEach(docSnap => {
     const r = docSnap.data();
-    if (gameFilter !== "all" && r.gameType !== gameFilter) return;
+    if (gameFilter !== "all" && r.gameType !== gameFilter) {return};
     const chipDate =
       new Date(r.date);
     let include = true;
