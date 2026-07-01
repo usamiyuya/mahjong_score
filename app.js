@@ -119,6 +119,12 @@ window.addEventListener("load", async () => {
 
 });
 
+
+function normalizeGameType(r) {
+  // 旧データ対策：gameTypeが無いものは四麻扱い
+  return r.gameType || "4";
+}
+
 // ===================================
 // タブ切替
 // ===================================
@@ -1318,9 +1324,10 @@ async function loadRecords() {
       [...r.players]
         .sort((a, b) => a.rank - b.rank);
         
+    const type = normalizeGameType(r);
     div.innerHTML = `
       <strong>${r.date}</strong>
-      (${r.gameType === "3" ? "三麻" : "四麻"}/${r.rule})<br>
+      (${type === "3" ? "三麻" : "四麻"}/${r.rule})<br>
       ${sortedPlayers
         .map(p =>
           `${p.rank}位
@@ -1729,7 +1736,8 @@ async function renderPlayerTotals() {
   snap.forEach(docSnap => {
     const r =
       docSnap.data();
-    if (gameFilter !== "all" && r.gameType !== gameFilter) {return};
+    const type = normalizeGameType(r);
+    if (gameFilter !== "all" && type !== gameFilter) {return};
     const gameDate =
       new Date(r.date);
     let include = true;
@@ -1799,7 +1807,8 @@ async function renderPlayerTotals() {
     );
   chipSnap.forEach(docSnap => {
     const r = docSnap.data();
-    if (gameFilter !== "all" && r.gameType !== gameFilter) {return};
+    const type = normalizeGameType(r);
+    if (gameFilter !== "all" && type !== gameFilter) {return};
     const chipDate =
       new Date(r.date);
     let include = true;
