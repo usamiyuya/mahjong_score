@@ -1711,7 +1711,7 @@ async function renderPlayerTotals() {
       "player-period"
     )?.value || "year";
 
-  const gameFilter =
+  const gameFilterValue =
     document.getElementById(
       "player-game-filter"
     )?.value || "all";
@@ -1735,7 +1735,7 @@ async function renderPlayerTotals() {
     const r =
       docSnap.data();
     const type = normalizeGameType(r);
-    if (gameFilter !== "all" && type !== gameFilter) {return};
+    if (gameFilterValue !== "all" && type !== gameFilterValue) {return};
     const gameDate =
       new Date(r.date);
     let include = true;
@@ -1806,7 +1806,7 @@ async function renderPlayerTotals() {
   chipSnap.forEach(docSnap => {
     const r = docSnap.data();
     const type = normalizeGameType(r);
-    if (gameFilter !== "all" && type !== gameFilter) {return};
+    if (gameFilterValue !== "all" && type !== gameFilterValue) {return};
     const chipDate =
       new Date(r.date);
     let include = true;
