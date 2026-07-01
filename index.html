@@ -235,16 +235,16 @@
       <select id="player-period">
         <option value="day">1日</option>
         <option value="month">1か月</option>
-        <option value="year" selected>
-          通年
-        </option>
-        <option value="all">
-          すべて
-        </option>
+        <option value="year" selected>通年</option>
+        <option value="all">すべて</option>
       </select>
-      <input
-        type="date"
-        id="player-period-date">
+      <input type="date" id="player-period-date">
+      <label>対局タイプ</label>
+      <select id="player-game-filter">
+        <option value="all">総合</option>
+        <option value="3">三麻</option>
+        <option value="4">四麻</option>
+      </select>
     </div>
     <h2>プレイヤー別成績</h2>
     <div id="players-list"></div>

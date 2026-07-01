@@ -1295,8 +1295,7 @@ async function loadRecords() {
 
   snap.forEach(docSnap => {
 
-    const r =
-      docSnap.data();
+    const r = docSnap.data();
 
     const div =
       document.createElement(
@@ -1681,7 +1680,9 @@ function renderPlayerChart(totals) {
 // プレイヤー集計
 // ===================================
 async function renderPlayerTotals() {
-
+  const gameFilter =
+    document.getElementById("player-game-filter")?.value || "all";
+  
   const container =
     document.getElementById(
       "players-list"
@@ -1714,6 +1715,7 @@ async function renderPlayerTotals() {
   snap.forEach(docSnap => {
     const r =
       docSnap.data();
+    if (gameFilter !== "all" && r.gameType !== gameFilter) return;
     const gameDate =
       new Date(r.date);
     let include = true;
@@ -1783,6 +1785,7 @@ async function renderPlayerTotals() {
     );
   chipSnap.forEach(docSnap => {
     const r = docSnap.data();
+    if (gameFilter !== "all" && r.gameType !== gameFilter) return;
     const chipDate =
       new Date(r.date);
     let include = true;
@@ -1865,6 +1868,9 @@ async function renderPlayerTotals() {
       );
     });
     renderPlayerChart(totals);
+    document
+    .getElementById("player-game-filter")
+    ?.addEventListener("change", renderPlayerTotals);
 }
 
 
