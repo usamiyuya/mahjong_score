@@ -1131,10 +1131,6 @@ async function saveRecord() {
   players.forEach(p => {
     totalScore += p.score;
   });
-  const gameType =
-    document.getElementById(
-      "game-type"
-    )?.value || "4";
   const requiredTotal =
     gameType === "3"
       ? 105000
