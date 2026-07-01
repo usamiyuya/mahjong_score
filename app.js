@@ -106,6 +106,17 @@ window.addEventListener("load", async () => {
 
   setupScoreInputs();
 
+  updateRankOptions();
+
+  document
+    .getElementById(
+      "game-type"
+    )
+    ?.addEventListener(
+      "change",
+      updateRankOptions
+    );
+
 });
 
 // ===================================
@@ -604,17 +615,27 @@ function calcPoint(
 
   let umaPoint = 0;
 
-  if (rank === 1)
-    umaPoint = uma1;
-
-  if (rank === 2)
-    umaPoint = uma2;
-
-  if (rank === 3)
-    umaPoint = -uma2;
-
-  if (rank === 4)
-    umaPoint = -uma1;
+  const gameType =
+    document.getElementById(
+      "game-type"
+    )?.value || "4";
+  if (gameType === "3") {
+    if (rank === 1)
+      umaPoint = uma1;
+    if (rank === 2)
+      umaPoint = 0;
+    if (rank === 3)
+      umaPoint = -uma1;
+  } else {
+    if (rank === 1)
+      umaPoint = uma1;
+    if (rank === 2)
+      umaPoint = uma2;
+    if (rank === 3)
+      umaPoint = -uma2;
+    if (rank === 4)
+      umaPoint = -uma1;
+  }
 
   const okaPoint =
     rank === 1
@@ -861,6 +882,60 @@ function setupScoreInputs() {
 }
 
 // ===================================
+// 三麻/四麻設定切り替え
+// ===================================
+function updateRankOptions() {
+  const gameType =
+    document.getElementById(
+      "game-type"
+    )?.value || "4";
+  document
+    .querySelectorAll(".player-rank")
+    .forEach(select => {
+      const current =
+        select.value;
+      select.innerHTML = "";
+      const maxRank =
+        gameType === "3"
+          ? 3
+          : 4;
+      for (
+        let i = 1;
+        i <= maxRank;
+        i++
+      ) {
+        const option =
+          document.createElement(
+            "option"
+          );
+        option.value = i;
+        option.textContent =
+          `${i}位`;
+        select.appendChild(
+          option
+        );
+      }
+      if (
+        Number(current) <= maxRank
+      ) {
+        select.value = current;
+      }
+    });
+  document
+    .querySelectorAll(".player-card")
+    .forEach((card, index) => {
+      if (
+        gameType === "3" &&
+        index === 3
+      ) {
+        card.style.display = "none";
+      } else {
+        card.style.display = "";
+      }
+    });
+}
+
+// ===================================
 // プレイヤー登録
 // ===================================
 async function registerPlayer(name) {
@@ -1015,6 +1090,30 @@ async function saveRecord() {
     });
   }
 
+  // 三麻・四麻人数チェック
+  const gameType =
+    document.getElementById(
+      "game-type"
+    )?.value || "4";
+  if (
+    gameType === "4" &&
+    players.length <= 3
+  ) {
+    alert(
+      "四麻が選択されていますが、プレイヤーが4人未満です。"
+    );
+    return;
+  }
+  if (
+    gameType === "3" &&
+    players.length <= 2
+  ) {
+    alert(
+      "三麻が選択されていますが、プレイヤーが3人未満です。"
+    );
+    return;
+  }
+
   const names =
     players.map(p => p.name);
   const duplicateNames =
@@ -1032,10 +1131,21 @@ async function saveRecord() {
   players.forEach(p => {
     totalScore += p.score;
   });
-  if (totalScore !== 100000) {
-    alert(`素点合計が100000点ではありません（現在: ${totalScore}点）`);
-    return;
-  }
+  const gameType =
+    document.getElementById(
+      "game-type"
+    )?.value || "4";
+  const requiredTotal =
+    gameType === "3"
+      ? 105000
+      : 100000;
+  if (totalScore !== requiredTotal) {
+    alert(
+      `素点合計が${requiredTotal}点ではありません（現在: ${totalScore}点）`
+    );
+
+  return;
+}
 
   const ranks =
     players.map(p => p.rank);
@@ -1109,20 +1219,24 @@ async function saveRecord() {
     firstPlayer.point =
       -totalWithoutFirst;
   }
-
+  const gameType =
+    document.getElementById(
+      "game-type"
+    )?.value || "4";
   const record = {
     date:
       document.getElementById(
         "game-date"
       ).value,
-    time: 
+    time:
       new Date().toLocaleTimeString(
         "ja-JP",
         {
           hour: "2-digit",
           minute: "2-digit"
         }
-    ),
+      ),
+    gameType,
     rule: currentRule.name,
     players,
     currentRule,
@@ -1207,7 +1321,7 @@ async function loadRecords() {
         
     div.innerHTML = `
       <strong>${r.date}</strong>
-      (${r.rule})<br>
+      (${r.gameType === "3" ? "三麻" : "四麻"}/${r.rule})<br>
       ${sortedPlayers
         .map(p =>
           `${p.rank}位
@@ -1307,7 +1421,7 @@ async function loadRecords() {
     div.className =
       "card";
     div.innerHTML = `
-      <strong>${r.date}</strong>
+      <strong>(${r.date} ${r.gameType === "3" ? "三麻" : "四麻"})</strong>
       <br>
       チップ精算
       <hr>
@@ -1428,7 +1542,7 @@ async function renderDaily() {
         .sort((a, b) => a.rank - b.rank);
     div.innerHTML = `
       <strong>${r.time || ""}</strong>
-      （${r.rule}）
+      （${r.gameType === "3" ? "三麻" : "四麻"} / ${r.rule}）
       <hr>
       ${sortedPlayers
         .map(p =>
@@ -1766,72 +1880,6 @@ async function renderPlayerTotals() {
 // ===================================
 // チップ保存
 // ===================================
-// async function saveChipRecord() {
-//   const players = [];
-//   const names =
-//     document.querySelectorAll(
-//       ".chip-name"
-//     );
-
-//   const values =
-//     document.querySelectorAll(
-//       ".chip-value"
-//     );
-//   for (
-//     let i = 0;
-//     i < names.length;
-//     i++
-//   ) {
-//     const name =
-//       names[i]
-//         .value
-//         .trim();
-
-//     const chip =
-//       Number(
-//         values[i].value
-//       );
-//     if (!name) continue;
-//     players.push({
-//       name,
-//       chip
-//     });
-//   }
-
-//   const total =
-//     players.reduce(
-//       (sum, p) =>
-//         sum + p.chip,
-//       0
-//     );
-//   if (total !== 0) {
-//     alert(
-//       "チップ合計が0ではありません"
-//     );
-//     return;
-//   }
-
-//   await addDoc(
-//     chipRecordsCol,
-//     {
-//       date:
-//         document.getElementById(
-//           "game-date"
-//         ).value,
-//       chipValue:
-//         currentRule.chipValue,
-//       players,
-//       createdAt:
-//         Date.now()
-//     }
-//   );
-//   alert(
-//     "チップ精算を保存しました"
-//   );
-//   await loadRecords();
-//   await renderPlayerTotals();
-// }
-
 async function saveChipRecord() {
   const players = [];
   const names =
@@ -1857,11 +1905,21 @@ async function saveChipRecord() {
     alert("チップ合計が0ではありません");
     return;
   }
+  const gameType =
+    document.getElementById(
+      "game-type"
+    )?.value || "4";
   await addDoc(chipRecordsCol, {
-    date: document.getElementById("game-date").value,
-    chipValue: currentRule.chipValue,
+    date:
+      document.getElementById(
+        "game-date"
+      ).value,
+    gameType,
+    chipValue:
+      currentRule.chipValue,
     players,
-    createdAt: Date.now()
+    createdAt:
+      Date.now()
   });
   alert("チップ精算を保存しました");
   await loadRecords();
