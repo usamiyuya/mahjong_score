@@ -1139,9 +1139,8 @@ async function saveRecord() {
     alert(
       `素点合計が${requiredTotal}点ではありません（現在: ${totalScore}点）`
     );
-
-  return;
-}
+    return;
+  }
 
   const ranks =
     players.map(p => p.rank);
@@ -1215,10 +1214,6 @@ async function saveRecord() {
     firstPlayer.point =
       -totalWithoutFirst;
   }
-  const gameType =
-    document.getElementById(
-      "game-type"
-    )?.value || "4";
   const record = {
     date:
       document.getElementById(
