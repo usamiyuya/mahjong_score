@@ -30,6 +30,7 @@ const chipRecordsCol = collection(db, "chipRecords");
 const DEFAULT_RULES = [
   {
     name: "一般フリー",
+    gameType: "4",
     returnPoint: 30000,
     uma: "10-30",
     oka: 0,
@@ -39,6 +40,7 @@ const DEFAULT_RULES = [
   },
   {
     name: "Mリーグ",
+    gameType: "4",
     returnPoint: 30000,
     uma: "0-0",
     oka: 0,
@@ -48,6 +50,7 @@ const DEFAULT_RULES = [
   },
   {
     name: "競技麻雀",
+    gameType: "4",
     returnPoint: 30000,
     uma: "5-15",
     oka: 0,
@@ -63,6 +66,7 @@ const DEFAULT_RULES = [
 
 let currentRule = {
   name: "一般フリー",
+  gameType: "4",
   returnPoint: 30000,
   uma: "10-30",
   oka: 0,
@@ -109,12 +113,13 @@ window.addEventListener("load", async () => {
   updateRankOptions();
 
   document
-    .getElementById(
-      "game-rule"
-    )
+    .getElementById("game-rule")
     ?.addEventListener(
       "change",
-      updateRankOptions
+      async () => {
+        updateRankOptions();
+        await loadRules();
+      }
     );
 
 });
@@ -199,6 +204,11 @@ async function loadRules() {
   const snap =
     await getDocs(rulesCol);
 
+  const currentGameType =
+    document.getElementById(
+      "game-rule"
+    )?.value || "4";
+
   if (snap.empty) {
     for (const rule of DEFAULT_RULES) {
       await addDoc(
@@ -212,6 +222,13 @@ async function loadRules() {
   snap.forEach(docSnap => {
     const rule =
       docSnap.data();
+    const ruleType =
+      rule.gameType || "4";
+    if (
+      ruleType !== currentGameType
+    ) {
+      return;
+    }
     const option =
       document.createElement("option");
     option.value =
@@ -265,6 +282,11 @@ function applySelectedRule() {
     );
 
   currentRule = rule;
+
+  document.getElementById(
+    "rule-game-type"
+  ).value =
+    rule.gameType || "4";
 
   document.getElementById(
     "rule-name"
@@ -340,6 +362,13 @@ function setupRuleEvents() {
       ).value = currentRule.returnPoint;
 
       document.getElementById(
+        "game-rule"
+      ).value =
+        currentRule.gameType || "4";
+
+      updateRankOptions();
+
+      document.getElementById(
         "current-rounding-rule"
       ).value = currentRule.rounding;
 
@@ -404,6 +433,11 @@ async function saveRule() {
   const rule = {
 
     name,
+
+    gameType:
+      document.getElementById(
+        "rule-game-type"
+      ).value,
 
     returnPoint:
       Number(
