@@ -529,6 +529,17 @@ async function updateRuleStatus() {
     <strong>三麻：</strong>
     ${r3?.name || "未設定"}
   `;
+
+  console.log(
+    "updateRuleStatus開始"
+  );
+  const area =
+    document.getElementById(
+      "current-rule-status"
+    );
+  console.log(area);
+  area.innerHTML =
+    "テスト表示";
 }
 
 // ===================================
