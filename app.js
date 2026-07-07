@@ -60,6 +60,22 @@ const DEFAULT_RULES = [
   }
 ];
 
+const UMA_OPTIONS = {
+  "4": [
+    "10-30",
+    "10-20",
+    "20-40",
+    "0-0"
+  ],
+
+  "3": [
+    "20",
+    "15",
+    "10",
+    "0"
+  ]
+};
+
 // ===================================
 // 現在選択中ルール
 // ===================================
@@ -119,6 +135,18 @@ window.addEventListener("load", async () => {
       async () => {
         updateRankOptions();
         await loadRules();
+      }
+    );
+
+  document
+    .getElementById(
+      "rule-filter-game-type"
+    )
+    ?.addEventListener(
+      "change",
+      () => {
+        loadRules();
+        updateUmaOptions();
       }
     );
 
@@ -206,7 +234,7 @@ async function loadRules() {
 
   const currentGameType =
     document.getElementById(
-      "game-rule"
+      "rule-filter-game-type"
     )?.value || "4";
 
   if (snap.empty) {
@@ -320,6 +348,23 @@ function applySelectedRule() {
     "rule-chip-value"
   ).value =
     rule.chipValue || 0;
+
+
+
+  document.getElementById(
+    "rule-game-type"
+  )
+  ?.addEventListener(
+    "change",
+    updateUmaOptions
+  );
+
+  updateUmaOptions();
+
+  document.getElementById(
+    "rule-uma"
+  ).value =
+    rule.uma;
 }
 
 // ===================================
@@ -648,17 +693,23 @@ function calcPoint(
       roundingRule
     );
 
-  const [uma2, uma1] =
-    currentRule.uma
-      .split("-")
-      .map(Number);
-
   let umaPoint = 0;
 
   const gameType =
     document.getElementById(
       "game-rule"
     )?.value || "4";
+  let uma1 = 0;
+  let uma2 = 0;
+  if (gameType === "3") {
+    uma1 =
+      Number(currentRule.uma);
+  } else {
+    [uma2, uma1] =
+      currentRule.uma
+        .split("-")
+        .map(Number);
+  }
   if (gameType === "3") {
     if (rank === 1)
       umaPoint = uma1;
@@ -687,6 +738,32 @@ function calcPoint(
     umaPoint +
     okaPoint
   );
+}
+
+// ===================================
+// ウマ設定
+// ===================================
+function updateUmaOptions() {
+  const gameType =
+    document.getElementById(
+      "rule-game-type"
+    )?.value || "4";
+  const select =
+    document.getElementById(
+      "rule-uma"
+    );
+  if (!select) return;
+  select.innerHTML = "";
+  UMA_OPTIONS[gameType]
+    .forEach(value => {
+      const option =
+        document.createElement(
+          "option"
+        );
+      option.value = value;
+      option.textContent = value;
+      select.appendChild(option);
+    });
 }
 
 // ===================================
