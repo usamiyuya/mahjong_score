@@ -522,26 +522,18 @@ async function updateRuleStatus() {
     await loadRuleById(rule4);
   const r3 =
     await loadRuleById(rule3);
-  document.getElementById(
-    "current-rule-status"
-  ).innerHTML = `
+  const area =
+    document.getElementById(
+      "current-rule-status"
+    );
+  if (!area) return;
+  area.innerHTML = `
     <strong>四麻：</strong>
     ${r4?.name || "未設定"}
     <br>
     <strong>三麻：</strong>
     ${r3?.name || "未設定"}
   `;
-
-  console.log(
-    "updateRuleStatus開始"
-  );
-  const area =
-    document.getElementById(
-      "current-rule-status"
-    );
-  console.log(area);
-  area.innerHTML =
-    "テスト表示";
 }
 
 // ===================================
