@@ -76,15 +76,6 @@ const UMA_OPTIONS = {
   ]
 };
 
-localStorage.setItem(
-  "selectedRule4",
-  "abc123"
-);
-
-localStorage.setItem(
-  "selectedRule3",
-  "xyz789"
-);
 
 // ===================================
 // 現在選択中ルール
@@ -384,13 +375,13 @@ function applySelectedRule() {
 
 
 
-  document.getElementById(
-    "rule-game-type"
-  )
-  ?.addEventListener(
-    "change",
-    updateUmaOptions
-  );
+  // document.getElementById(
+  //   "rule-game-type"
+  // )
+  // ?.addEventListener(
+  //   "change",
+  //   updateUmaOptions
+  // );
 
   updateUmaOptions();
 
@@ -398,9 +389,6 @@ function applySelectedRule() {
     "rule-uma"
   ).value =
     rule.uma;
-
-  await loadCurrentGameRule();
-  await updateRuleStatus();
 }
 
 // ===================================
