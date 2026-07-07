@@ -76,6 +76,16 @@ const UMA_OPTIONS = {
   ]
 };
 
+localStorage.setItem(
+  "selectedRule4",
+  "abc123"
+);
+
+localStorage.setItem(
+  "selectedRule3",
+  "xyz789"
+);
+
 // ===================================
 // 現在選択中ルール
 // ===================================
@@ -134,7 +144,7 @@ window.addEventListener("load", async () => {
       "change",
       async () => {
         updateRankOptions();
-        await loadRules();
+        await loadCurrentGameRule();
       }
     );
 
@@ -149,6 +159,8 @@ window.addEventListener("load", async () => {
         updateUmaOptions();
       }
     );
+
+  await loadCurrentGameRule();
 
 });
 
@@ -286,6 +298,27 @@ async function loadRules() {
   applySelectedRule();
 }
 
+async function loadCurrentGameRule() {
+  const gameType =
+    document.getElementById(
+      "game-rule"
+    ).value;
+  const ruleId =
+    gameType === "3"
+      ? localStorage.getItem(
+          "selectedRule3"
+        )
+      : localStorage.getItem(
+          "selectedRule4"
+        );
+  const rule =
+    await loadRuleById(
+      ruleId
+    );
+  if (!rule) return;
+  applyRuleToInput(rule);
+}
+
 // ===================================
 // 選択ルール反映
 // ===================================
@@ -365,6 +398,9 @@ function applySelectedRule() {
     "rule-uma"
   ).value =
     rule.uma;
+
+  await loadCurrentGameRule();
+  await updateRuleStatus();
 }
 
 // ===================================
@@ -421,6 +457,20 @@ function setupRuleEvents() {
         `${currentRule.name} を反映しました`
       );
 
+      const gameType =
+        currentRule.gameType || "4";
+      if (gameType === "4") {
+        localStorage.setItem(
+          "selectedRule4",
+          select.value
+        );
+      } else {
+        localStorage.setItem(
+          "selectedRule3",
+          select.value
+        );
+      }
+
     });
 
   }
@@ -450,9 +500,65 @@ function setupRuleEvents() {
       "click",
       deleteRule
     );
-
   }
+}
 
+// ===================================
+// ルール適応
+// ===================================
+function applyRuleToInput(rule) {
+  currentRule = rule;
+  document.getElementById(
+    "current-return-point"
+  ).value =
+    rule.returnPoint;
+
+  document.getElementById(
+    "current-rounding-rule"
+  ).value =
+    rule.rounding;
+}
+
+async function updateRuleStatus() {
+  const rule4 =
+    localStorage.getItem(
+      "selectedRule4"
+    );
+  const rule3 =
+    localStorage.getItem(
+      "selectedRule3"
+    );
+  const r4 =
+    await loadRuleById(rule4);
+  const r3 =
+    await loadRuleById(rule3);
+  document.getElementById(
+    "current-rule-status"
+  ).innerHTML = `
+    <strong>四麻：</strong>
+    ${r4?.name || "未設定"}
+    <br>
+    <strong>三麻：</strong>
+    ${r3?.name || "未設定"}
+  `;
+}
+
+// ===================================
+// FireStoreからルール取得
+// ===================================
+async function loadRuleById(ruleId) {
+  if (!ruleId) return null;
+  const snap =
+    await getDoc(
+      doc(
+        db,
+        "rules",
+        ruleId
+      )
+    );
+  if (!snap.exists())
+    return null;
+  return snap.data();
 }
 
 // ===================================
@@ -533,6 +639,7 @@ async function saveRule() {
   );
 
   await loadRules();
+  await updateRuleStatus();
 
 }
 
