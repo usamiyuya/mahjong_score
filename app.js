@@ -152,6 +152,7 @@ window.addEventListener("load", async () => {
     );
 
   await loadCurrentGameRule();
+  await updateRuleStatus();
 
 });
 
@@ -459,6 +460,7 @@ function setupRuleEvents() {
         );
       }
 
+      await updateRuleStatus();
     });
 
   }
