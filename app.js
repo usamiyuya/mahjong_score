@@ -460,7 +460,7 @@ function setupRuleEvents() {
         );
       }
 
-      await updateRuleStatus();
+      updateRuleStatus();
     });
 
   }
