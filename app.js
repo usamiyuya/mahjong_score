@@ -1886,9 +1886,6 @@ function renderPlayerChart(totals) {
           }
         },
         y: {
-          afterFit(scale) {
-            scale.width = 120;
-          },
           ticks: {
             autoSkip: false
           }
