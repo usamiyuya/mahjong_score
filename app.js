@@ -2111,21 +2111,20 @@ async function renderPlayerTotals() {
         対局数:
         ${t.games}<br>
         平均順位<br>
-        四麻：${
-          t.games4
-            ? (t.rankSum4 / t.games4).toFixed(2)
-            : "-"
-        }
-        　三麻：${
-          t.games3
-            ? (t.rankSum3 / t.games3).toFixed(2)
-            : "-"
-        }<br>
-        四麻  　三麻<br>
-        1位 ${t.first4}　1位 ${t.first3}<br>
-        2位 ${t.second4}　2位 ${t.second3}<br>
-        3位 ${t.third4}　3位 ${t.third3}<br>
-        4位 ${t.fourth4}
+        <div class="rank-grid">
+          <div>四麻</div><div></div><div>三麻</div><div></div>
+
+          <div>1位</div><div>${t.first4}</div>
+          <div>1位</div><div>${t.first3}</div>
+
+          <div>2位</div><div>${t.second4}</div>
+          <div>2位</div><div>${t.second3}</div>
+
+          <div>3位</div><div>${t.third4}</div>
+          <div>3位</div><div>${t.third3}</div>
+
+          <div>4位</div><div>${t.fourth4}</div>
+        </div>
       `;
       container.appendChild(
         div

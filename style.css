@@ -298,3 +298,10 @@ input[type="date"] {
   font-size: 16px;
   font-weight: bold;
 }
+
+.rank-grid {
+  display: grid;
+  grid-template-columns: auto 40px auto 40px;
+  column-gap: 12px;
+  row-gap: 3px;
+}
