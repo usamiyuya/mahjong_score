@@ -1814,21 +1814,22 @@ function renderPlayerChart(totals) {
   const ctx = document.getElementById("player-point-chart");
   if (!ctx) return;
 
+  
+  
+  const chartArea = ctx.getContext("2d");
+  
+  const entries = Object.entries(totals)
+  .map(([name, t]) => ({
+    name,
+    value: t.point + (t.chip || 0)
+  }))
+  .sort((a, b) => b.value - a.value);
+  
   ctx.height =
     Math.max(
       300,
       entries.length * 35
     );
-
-  
-  const chartArea = ctx.getContext("2d");
-  
-  const entries = Object.entries(totals)
-    .map(([name, t]) => ({
-      name,
-      value: t.point + (t.chip || 0)
-    }))
-    .sort((a, b) => b.value - a.value);
 
   const labels = entries.map(e => e.name);
   const data = entries.map(e => e.value);
@@ -1885,6 +1886,9 @@ function renderPlayerChart(totals) {
           }
         },
         y: {
+          afterFit(scale) {
+            scale.width = 120;
+          },
           ticks: {
             autoSkip: false
           }
