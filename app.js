@@ -2111,6 +2111,16 @@ async function renderPlayerTotals() {
         対局数:
         ${t.games}<br>
         平均順位<br>
+        四麻：${
+          t.games4
+            ? (t.rankSum4 / t.games4).toFixed(2)
+            : "-"
+        }
+        　三麻：${
+          t.games3
+            ? (t.rankSum3 / t.games3).toFixed(2)
+            : "-"
+        }<br>
         <div class="rank-grid">
           <div>四麻</div><div></div><div>三麻</div><div></div>
 
