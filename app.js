@@ -1988,25 +1988,37 @@ async function renderPlayerTotals() {
           chip: 0,
           games: 0,
           rankSum: 0,
-          first: 0,
-          second: 0,
-          third: 0,
-          fourth: 0
+          // 四麻
+          games4: 0,
+          rankSum4: 0,
+          first4: 0,
+          second4: 0,
+          third4: 0,
+          fourth4: 0,
+          // 三麻
+          games3: 0,
+          rankSum3: 0,
+          first3: 0,
+          second3: 0,
+          third3: 0
         };
       }
       totals[p.name].point +=
         p.point;
-      totals[p.name].games++;
-      totals[p.name].rankSum +=
-        p.rank;
-      if (p.rank === 1)
-        totals[p.name].first++;
-      if (p.rank === 2)
-        totals[p.name].second++;
-      if (p.rank === 3)
-        totals[p.name].third++;
-      if (p.rank === 4)
-        totals[p.name].fourth++;
+      if (type === "4") {
+        totals[p.name].games4++;
+        totals[p.name].rankSum4 += p.rank;
+        if (p.rank === 1) totals[p.name].first4++;
+        if (p.rank === 2) totals[p.name].second4++;
+        if (p.rank === 3) totals[p.name].third4++;
+        if (p.rank === 4) totals[p.name].fourth4++;
+      } else {
+        totals[p.name].games3++;
+        totals[p.name].rankSum3 += p.rank;
+        if (p.rank === 1) totals[p.name].first3++;
+        if (p.rank === 2) totals[p.name].second3++;
+        if (p.rank === 3) totals[p.name].third3++;
+      }
     });
   });
 
@@ -2083,17 +2095,22 @@ async function renderPlayerTotals() {
         ${(t.point + chipPoint).toFixed(1)}(${chipPoint.toFixed(1)})pt<br>
         対局数:
         ${t.games}<br>
-        平均順位:
-        ${(t.rankSum/t.games)
-          .toFixed(2)}<br>
-        1位:
-        ${t.first}<br>
-        2位:
-        ${t.second}<br>
-        3位:
-        ${t.third}<br>
-        4位:
-        ${t.fourth}
+        平均順位
+        四麻：${
+          t.games4
+            ? (t.rankSum4 / t.games4).toFixed(2)
+            : "-"
+        }
+        　三麻：${
+          t.games3
+            ? (t.rankSum3 / t.games3).toFixed(2)
+            : "-"
+        }
+        四麻　　　三麻
+        1位 ${t.first4}　1位 ${t.first3}
+        2位 ${t.second4}　2位 ${t.second3}
+        3位 ${t.third4}　3位 ${t.third3}
+        4位 ${t.fourth4}
       `;
       container.appendChild(
         div
