@@ -1814,6 +1814,12 @@ function renderPlayerChart(totals) {
   const ctx = document.getElementById("player-point-chart");
   if (!ctx) return;
 
+  ctx.height =
+    Math.max(
+      300,
+      entries.length * 35
+    );
+
   
   const chartArea = ctx.getContext("2d");
   
@@ -1859,9 +1865,17 @@ function renderPlayerChart(totals) {
     },
     options: {
       responsive: true,
+      maintainAspectRatio: false,
+      layout: {
+        padding: {
+          left: 40
+        }
+      },
       indexAxis: "y",
       plugins: {
-        legend: { display: false }
+        legend: {
+          display: false
+        }
       },
       scales: {
         x: {
@@ -1869,10 +1883,15 @@ function renderPlayerChart(totals) {
           grid: {
             color: "#ddd"
           }
+        },
+        y: {
+          ticks: {
+            autoSkip: false
+          }
         }
       },
-      animation: false,
-    },
+      animation: false
+    }
   });
   const meta = playerChart.getDatasetMeta(0);
   const chartdata = playerChart.data.datasets[0].data;
@@ -2106,7 +2125,7 @@ async function renderPlayerTotals() {
             ? (t.rankSum3 / t.games3).toFixed(2)
             : "-"
         }<br>
-        四麻　　　三麻
+        四麻  　三麻<br>
         1位 ${t.first4}　1位 ${t.first3}<br>
         2位 ${t.second4}　2位 ${t.second3}<br>
         3位 ${t.third4}　3位 ${t.third3}<br>
