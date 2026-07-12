@@ -2095,7 +2095,7 @@ async function renderPlayerTotals() {
         ${(t.point + chipPoint).toFixed(1)}(${chipPoint.toFixed(1)})pt<br>
         対局数:
         ${t.games}<br>
-        平均順位
+        平均順位<br>
         四麻：${
           t.games4
             ? (t.rankSum4 / t.games4).toFixed(2)
@@ -2105,11 +2105,11 @@ async function renderPlayerTotals() {
           t.games3
             ? (t.rankSum3 / t.games3).toFixed(2)
             : "-"
-        }
+        }<br>
         四麻　　　三麻
-        1位 ${t.first4}　1位 ${t.first3}
-        2位 ${t.second4}　2位 ${t.second3}
-        3位 ${t.third4}　3位 ${t.third3}
+        1位 ${t.first4}　1位 ${t.first3}<br>
+        2位 ${t.second4}　2位 ${t.second3}<br>
+        3位 ${t.third4}　3位 ${t.third3}<br>
         4位 ${t.fourth4}
       `;
       container.appendChild(
