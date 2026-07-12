@@ -1867,11 +1867,6 @@ function renderPlayerChart(totals) {
     options: {
       responsive: true,
       maintainAspectRatio: false,
-      layout: {
-        padding: {
-          left: 40
-        }
-      },
       indexAxis: "y",
       plugins: {
         legend: {
