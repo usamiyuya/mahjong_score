@@ -2118,8 +2118,8 @@ async function renderPlayerTotals() {
             <strong>${name}</strong><br>
             総合ポイント(チップポイント):
             ${(t.point + chipPoint).toFixed(1)}(${chipPoint.toFixed(1)})pt<br>
-            対局数:<br>
-            三麻：${t.games3}　四麻：${t.games4}　合計：${t.games}<br>
+            対局数：<br>
+            四麻：${t.games4}　三麻：${t.games3}　合計：${t.games}<br>
             平均順位<br>
             四麻：${ t.games4 ? (t.rankSum4 / t.games4).toFixed(2) : "-"}
             　三麻：${t.games3 ? (t.rankSum3 / t.games3).toFixed(2): "-"}<br>
@@ -2140,16 +2140,13 @@ async function renderPlayerTotals() {
             <strong>${name}</strong><br>
             総合ポイント(チップポイント):
             ${(t.point + chipPoint).toFixed(1)}(${chipPoint.toFixed(1)})pt<br>
-            対局数:<br>
-            四麻：${t.games4}<br>
-            平均順位<br>
-            四麻：${ t.games4 ? (t.rankSum4 / t.games4).toFixed(2) : "-"}<br>
+            対局数：${t.games4}<br>
+            平均順位：${ t.games4 ? (t.rankSum4 / t.games4).toFixed(2) : "-"}<br>
             <div class="rank-grid">
-              <div>四麻</div><div></div>
-              <div>1位</div><div>${t.first4}</div>
-              <div>2位</div><div>${t.second4}</div>
-              <div>3位</div><div>${t.third4}</div>
-              <div>4位</div><div>${t.fourth4}</div>
+              <div>1位</div><div>${t.first4}</div><div></div><div></div>
+              <div>2位</div><div>${t.second4}</div><div></div><div></div>
+              <div>3位</div><div>${t.third4}</div><div></div><div></div>
+              <div>4位</div><div>${t.fourth4}</div><div></div><div></div>
             </div>
           `;
       } else {
@@ -2158,15 +2155,12 @@ async function renderPlayerTotals() {
             <strong>${name}</strong><br>
             総合ポイント(チップポイント):
             ${(t.point + chipPoint).toFixed(1)}(${chipPoint.toFixed(1)})pt<br>
-            対局数:<br>
-            三麻：${t.games3}<br>
-            平均順位<br>
-            三麻：${t.games3 ? (t.rankSum3 / t.games3).toFixed(2): "-"}<br>
+            対局数：${t.games3}<br>
+            平均順位：${t.games3 ? (t.rankSum3 / t.games3).toFixed(2): "-"}<br>
             <div class="rank-grid">
-              <div>三麻</div><div></div>
-              <div>1位</div><div>${t.first3}</div>
-              <div>2位</div><div>${t.second3}</div>
-              <div>3位</div><div>${t.third3}</div>
+              <div>1位</div><div>${t.first3}</div><div></div><div></div>
+              <div>2位</div><div>${t.second3}</div><div></div><div></div>
+              <div>3位</div><div>${t.third3}</div><div></div><div></div>
             </div>
           `;
       }
