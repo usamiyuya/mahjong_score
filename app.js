@@ -958,16 +958,13 @@ function createPlayerDropdown(input, filter = true) {
 document.addEventListener(
   "blur",
   e => {
-    if (
-      e.target.classList?.contains(
-        "player-name"
-      )
-    ) {
-      setTimeout(() => {
-        e.target.readOnly =
-          true;
-      }, 300);
-    }
+    if (!e.target.classList?.contains("player-name")) return;
+    const input = e.target;
+    setTimeout(() => {
+      // 編集中なら何もしない
+      if (editingInput === input) return;
+      input.readOnly = true;
+    }, 300);
   },
   true
 );
@@ -1292,6 +1289,11 @@ function setupPlayerDropdown() {
         () => {
           const input =
             btn.parentElement.querySelector(".player-name");
+
+          document
+          .querySelectorAll(".player-dropdown")
+          .forEach(d => d.remove());
+          input.value = "";
           input.readOnly = false;
           editingInput = input;
           input.focus();
