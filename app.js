@@ -875,6 +875,10 @@ async function loadPlayers() {
       "player-list"
     );
   playerNames = [];
+  const q = query(
+    playersCol,
+    where("name", "==", name)
+  );
   const usedNames = new Set();
   const snap =
     await getDocs(q);
