@@ -961,10 +961,14 @@ document.addEventListener(
     if (!e.target.classList?.contains("player-name")) return;
     const input = e.target;
     setTimeout(() => {
-      // 編集中なら何もしない
-      if (editingInput === input) return;
+      // ドロップダウンを閉じる
+      input.parentElement
+        .querySelector(".player-dropdown")
+        ?.remove();
+      // 編集状態解除
+      editingInput = null;
       input.readOnly = true;
-    }, 300);
+    }, 200);
   },
   true
 );
