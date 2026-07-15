@@ -869,70 +869,37 @@ function updateUmaOptions() {
 // ===================================
 // プレイヤー読み込み
 // ===================================
+
 async function loadPlayers() {
-  const datalist =
-    document.getElementById(
-      "player-list"
-    );
   playerNames = [];
-  const q = query(
-    playersCol,
-    where("name", "==", name)
-  );
   const usedNames = new Set();
-  const snap =
-    await getDocs(q);
+  const snap = await getDocs(
+    query(playersCol, orderBy("lastUsed", "desc"))
+  );
   snap.forEach(docSnap => {
-    const player =
-      docSnap.data();
-    const name =
-      player.name.trim();
-    if (usedNames.has(name)) {
-      return;
-    }
+    const player = docSnap.data();
+    const name = (player.name || "").trim();
+    if (!name || usedNames.has(name)) return;
     usedNames.add(name);
     playerNames.push(name);
   });
 }
 
-document.addEventListener(
-  "blur",
-  e => {
-    if (
-      e.target.classList?.contains(
-        "player-name"
-      )
-    ) {
-      setTimeout(() => {
-        e.target.readOnly =
-          true;
-      }, 300);
-    }
-  },
-  true
-);
-
 function createPlayerDropdown(input, filter = true) {
-
   let dropdown =
     input.parentElement.querySelector(".player-dropdown");
-
   if (dropdown) {
     dropdown.remove();
   }
-
   dropdown = document.createElement("div");
   dropdown.className = "player-dropdown";
-
   const keyword =
     input.value.trim().toLowerCase();
-
   const filtered = filter
     ? playerNames.filter(name =>
         name.toLowerCase().includes(keyword)
       )
     : playerNames;
-
   filtered
     .slice(0, 10)
     .forEach(name => {
@@ -965,6 +932,45 @@ function createPlayerDropdown(input, filter = true) {
     );
   }
 }
+
+// async function loadPlayers() {
+//   const datalist =
+//     document.getElementById(
+//       "player-list"
+//     );
+//   playerNames = [];
+//   const usedNames = new Set();
+//   const snap =
+//     await getDocs(q);
+//   snap.forEach(docSnap => {
+//     const player =
+//       docSnap.data();
+//     const name =
+//       player.name.trim();
+//     if (usedNames.has(name)) {
+//       return;
+//     }
+//     usedNames.add(name);
+//     playerNames.push(name);
+//   });
+// }
+
+// document.addEventListener(
+//   "blur",
+//   e => {
+//     if (
+//       e.target.classList?.contains(
+//         "player-name"
+//       )
+//     ) {
+//       setTimeout(() => {
+//         e.target.readOnly =
+//           true;
+//       }, 300);
+//     }
+//   },
+//   true
+// );
 
 // function createPlayerDropdown(input) {
 //   let dropdown =
