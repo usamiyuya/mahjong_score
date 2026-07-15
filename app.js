@@ -955,22 +955,22 @@ function createPlayerDropdown(input, filter = true) {
 //   });
 // }
 
-// document.addEventListener(
-//   "blur",
-//   e => {
-//     if (
-//       e.target.classList?.contains(
-//         "player-name"
-//       )
-//     ) {
-//       setTimeout(() => {
-//         e.target.readOnly =
-//           true;
-//       }, 300);
-//     }
-//   },
-//   true
-// );
+document.addEventListener(
+  "blur",
+  e => {
+    if (
+      e.target.classList?.contains(
+        "player-name"
+      )
+    ) {
+      setTimeout(() => {
+        e.target.readOnly =
+          true;
+      }, 300);
+    }
+  },
+  true
+);
 
 // function createPlayerDropdown(input) {
 //   let dropdown =
@@ -1273,7 +1273,7 @@ function setupPlayerDropdown() {
               .forEach(d =>
                 d.remove()
               );
-            createPlayerDropdown(input, false);
+            createPlayerDropdown(input, input.readOnly ? false : true);
           }
         }
       );
@@ -1291,14 +1291,9 @@ function setupPlayerDropdown() {
         "click",
         () => {
           const input =
-            btn.parentElement
-               .querySelector(
-                 ".player-name"
-               );
-          input.readOnly =
-            false;
-          editingInput =
-            input;
+            btn.parentElement.querySelector(".player-name");
+          input.readOnly = false;
+          editingInput = input;
           input.focus();
         }
       );
