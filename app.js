@@ -875,22 +875,19 @@ async function loadPlayers() {
       "player-list"
     );
   playerNames = [];
-  const q =
-    query(
-      playersCol,
-      orderBy(
-        "lastUsed",
-        "desc"
-      )
-    );
+  const usedNames = new Set();
   const snap =
     await getDocs(q);
   snap.forEach(docSnap => {
     const player =
       docSnap.data();
-    playerNames.push(
-      player.name
-    );
+    const name =
+      player.name.trim();
+    if (usedNames.has(name)) {
+      return;
+    }
+    usedNames.add(name);
+    playerNames.push(name);
   });
 }
 
@@ -911,29 +908,27 @@ document.addEventListener(
   true
 );
 
-function createPlayerDropdown(input) {
+function createPlayerDropdown(input, filter = true) {
+
   let dropdown =
-    input.parentElement
-      .querySelector(
-        ".player-dropdown"
-      );
+    input.parentElement.querySelector(".player-dropdown");
+
   if (dropdown) {
     dropdown.remove();
   }
-  dropdown =
-    document.createElement("div");
-  dropdown.className =
-    "player-dropdown";
+
+  dropdown = document.createElement("div");
+  dropdown.className = "player-dropdown";
+
   const keyword =
-    input.value
-      .trim()
-      .toLowerCase();
-  const filtered =
-    playerNames.filter(name =>
-      name
-        .toLowerCase()
-        .includes(keyword)
-    );
+    input.value.trim().toLowerCase();
+
+  const filtered = filter
+    ? playerNames.filter(name =>
+        name.toLowerCase().includes(keyword)
+      )
+    : playerNames;
+
   filtered
     .slice(0, 10)
     .forEach(name => {
@@ -966,6 +961,62 @@ function createPlayerDropdown(input) {
     );
   }
 }
+
+// function createPlayerDropdown(input) {
+//   let dropdown =
+//     input.parentElement
+//       .querySelector(
+//         ".player-dropdown"
+//       );
+//   if (dropdown) {
+//     dropdown.remove();
+//   }
+//   dropdown =
+//     document.createElement("div");
+//   dropdown.className =
+//     "player-dropdown";
+//   const keyword =
+//     input.value
+//       .trim()
+//       .toLowerCase();
+//   const filtered =
+//     playerNames.filter(name =>
+//       name
+//         .toLowerCase()
+//         .includes(keyword)
+//     );
+//   filtered
+//     .slice(0, 10)
+//     .forEach(name => {
+//       const item =
+//         document.createElement(
+//           "div"
+//         );
+//       item.className =
+//         "player-option";
+//       item.textContent =
+//         name;
+//       item.addEventListener(
+//         "click",
+//         () => {
+//           input.value = name;
+//           input.readOnly = true;
+//           editingInput = null;
+//           dropdown.remove();
+//         }
+//       );
+//       dropdown.appendChild(
+//         item
+//       );
+//     });
+//   if (
+//     dropdown.children.length > 0
+//   ) {
+//     input.parentElement.appendChild(
+//       dropdown
+//     );
+//   }
+// }
 
 // ===================================
 // 成績保存イベント
@@ -1212,9 +1263,7 @@ function setupPlayerDropdown() {
               .forEach(d =>
                 d.remove()
               );
-            createPlayerDropdown(
-              input
-            );
+            createPlayerDropdown(input, false);
           }
         }
       );
