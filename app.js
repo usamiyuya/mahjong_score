@@ -1259,18 +1259,12 @@ function setupPlayerDropdown() {
         return;
       }
       input.dataset.setup = "1";
-      input.addEventListener(
-        "click",
-        () => {
+      input.addEventListener( "click", () => {
           if (input.readOnly) {
             document
-              .querySelectorAll(
-                ".player-dropdown"
-              )
-              .forEach(d =>
-                d.remove()
-              );
-            createPlayerDropdown(input, input.readOnly ? false : true);
+              .querySelectorAll(".player-dropdown")
+              .forEach(d => d.remove());
+            createPlayerDropdown(input, !input.readOnly);
           }
         }
       );
