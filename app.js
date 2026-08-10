@@ -2083,12 +2083,14 @@ async function renderPlayerTotals() {
           second4: 0,
           third4: 0,
           fourth4: 0,
+          tobi4: 0,
           // 三麻
           games3: 0,
           rankSum3: 0,
           first3: 0,
           second3: 0,
-          third3: 0
+          third3: 0,
+          tobi3: 0
         };
       }
       totals[p.name].point +=
@@ -2101,12 +2103,20 @@ async function renderPlayerTotals() {
         if (p.rank === 2) totals[p.name].second4++;
         if (p.rank === 3) totals[p.name].third4++;
         if (p.rank === 4) totals[p.name].fourth4++;
+        // 四麻の飛び回数
+        if (p.tobiLoser) {
+          totals[p.name].tobi4++;
+        }
       } else {
         totals[p.name].games3++;
         totals[p.name].rankSum3 += p.rank;
         if (p.rank === 1) totals[p.name].first3++;
         if (p.rank === 2) totals[p.name].second3++;
         if (p.rank === 3) totals[p.name].third3++;
+        // 三麻の飛び回数
+        if (p.tobiLoser) {
+          totals[p.name].tobi3++;
+        }
       }
     });
   });
@@ -2153,17 +2163,22 @@ async function renderPlayerTotals() {
           point: 0,
           chip: 0,
           games: 0,
+          rankSum: 0,
+          // 四麻
           games4: 0,
           rankSum4: 0,
           first4: 0,
           second4: 0,
           third4: 0,
           fourth4: 0,
+          tobi4: 0,
+          // 三麻
           games3: 0,
           rankSum3: 0,
           first3: 0,
           second3: 0,
-          third3: 0
+          third3: 0,
+          tobi3: 0
         };
       }
       totals[p.name].chip +=
@@ -2186,35 +2201,62 @@ async function renderPlayerTotals() {
         "card";
 
       if (gameFilterValue === "all") {
-          // 総合表示
-          div.innerHTML = `
-            <strong>${name}</strong><br>
-            総合ポイント(チップポイント):
-            ${(t.point + chipPoint).toFixed(1)}(${chipPoint.toFixed(1)})pt<br>
-            対局数：<br>
-            四麻：${t.games4}　三麻：${t.games3}　合計：${t.games}<br>
-            平均順位<br>
-            四麻：${ t.games4 ? (t.rankSum4 / t.games4).toFixed(2) : "-"}
-            　三麻：${t.games3 ? (t.rankSum3 / t.games3).toFixed(2): "-"}<br>
-            <div class="rank-grid">
-              <div>四麻</div><div></div><div>三麻</div><div></div>
-              <div>1位</div><div>${t.first4}</div>
-              <div>1位</div><div>${t.first3}</div>
-              <div>2位</div><div>${t.second4}</div>
-              <div>2位</div><div>${t.second3}</div>
-              <div>3位</div><div>${t.third4}</div>
-              <div>3位</div><div>${t.third3}</div>
-              <div>4位</div><div>${t.fourth4}</div>
-            </div>
-          `;
-      } else if (gameFilterValue === "4") {
+        // 総合表示
+        div.innerHTML = `
+          <strong>${name}</strong><br>
+          総合ポイント(チップポイント):
+          ${(t.point + chipPoint).toFixed(1)}(${chipPoint.toFixed(1)})pt<br>
+          対局数：<br>
+          四麻：${t.games4}　
+          三麻：${t.games3}　
+          合計：${t.games}<br>
+          平均順位<br>
+          四麻：
+          ${t.games4
+            ? (t.rankSum4 / t.games4).toFixed(2)
+            : "-"}
+        　
+          三麻：
+          ${t.games3
+            ? (t.rankSum3 / t.games3).toFixed(2)
+            : "-"}<br>
+          飛び率<br>
+          四麻：
+          ${t.games4
+            ? ((t.tobi4 / t.games4) * 100).toFixed(1) + "%"
+            : "-"}
+        　
+          三麻：
+          ${t.games3
+            ? ((t.tobi3 / t.games3) * 100).toFixed(1) + "%"
+            : "-"}<br>
+          <div class="rank-grid">
+            <div>四麻</div><div></div><div>三麻</div><div></div>
+            <div>1位</div><div>${t.first4}</div>
+            <div>1位</div><div>${t.first3}</div>
+            <div>2位</div><div>${t.second4}</div>
+            <div>2位</div><div>${t.second3}</div>
+            <div>3位</div><div>${t.third4}</div>
+            <div>3位</div><div>${t.third3}</div>
+            <div>4位</div><div>${t.fourth4}</div>
+          </div>
+        `;
+      }
+      else if (gameFilterValue === "4") {
           // 四麻表示
           div.innerHTML = `
             <strong>${name}</strong><br>
             総合ポイント(チップポイント):
             ${(t.point + chipPoint).toFixed(1)}(${chipPoint.toFixed(1)})pt<br>
             対局数：${t.games4}<br>
-            平均順位：${ t.games4 ? (t.rankSum4 / t.games4).toFixed(2) : "-"}<br>
+            平均順位：
+            ${t.games4
+              ? (t.rankSum4 / t.games4).toFixed(2)
+              : "-"}<br>
+            飛び率：
+            ${t.games4
+              ? ((t.tobi4 / t.games4) * 100).toFixed(1) + "%"
+              : "-"}<br>
             <div class="rank-grid">
               <div>1位</div><div>${t.first4}</div><div></div><div></div>
               <div>2位</div><div>${t.second4}</div><div></div><div></div>
@@ -2225,51 +2267,26 @@ async function renderPlayerTotals() {
       } else {
           // 三麻表示
           div.innerHTML = `
-            <strong>${name}</strong><br>
-            総合ポイント(チップポイント):
-            ${(t.point + chipPoint).toFixed(1)}(${chipPoint.toFixed(1)})pt<br>
-            対局数：${t.games3}<br>
-            平均順位：${t.games3 ? (t.rankSum3 / t.games3).toFixed(2): "-"}<br>
-            <div class="rank-grid">
-              <div>1位</div><div>${t.first3}</div><div></div><div></div>
-              <div>2位</div><div>${t.second3}</div><div></div><div></div>
-              <div>3位</div><div>${t.third3}</div><div></div><div></div>
-            </div>
-          `;
+          <strong>${name}</strong><br>
+          総合ポイント(チップポイント):
+          ${(t.point + chipPoint).toFixed(1)}(${chipPoint.toFixed(1)})pt<br>
+          対局数：${t.games3}<br>
+          平均順位：
+          ${t.games3
+            ? (t.rankSum3 / t.games3).toFixed(2)
+            : "-"}<br>
+          飛び率：
+          ${t.games3
+            ? ((t.tobi3 / t.games3) * 100).toFixed(1) + "%"
+            : "-"}<br>
+          <div class="rank-grid">
+            <div>1位</div><div>${t.first3}</div><div></div><div></div>
+            <div>2位</div><div>${t.second3}</div><div></div><div></div>
+            <div>3位</div><div>${t.third3}</div><div></div><div></div>
+          </div>
+        `;
       }
 
-      // div.innerHTML = `
-      //   <strong>${name}</strong><br>
-      //   総合ポイント(チップポイント):
-      //   ${(t.point + chipPoint).toFixed(1)}(${chipPoint.toFixed(1)})pt<br>
-      //   対局数:
-      //   ${t.games}<br>
-      //   平均順位<br>
-      //   四麻：${
-      //     t.games4
-      //       ? (t.rankSum4 / t.games4).toFixed(2)
-      //       : "-"
-      //   }
-      //   　三麻：${
-      //     t.games3
-      //       ? (t.rankSum3 / t.games3).toFixed(2)
-      //       : "-"
-      //   }<br>
-      //   <div class="rank-grid">
-      //     <div>四麻</div><div></div><div>三麻</div><div></div>
-
-      //     <div>1位</div><div>${t.first4}</div>
-      //     <div>1位</div><div>${t.first3}</div>
-
-      //     <div>2位</div><div>${t.second4}</div>
-      //     <div>2位</div><div>${t.second3}</div>
-
-      //     <div>3位</div><div>${t.third4}</div>
-      //     <div>3位</div><div>${t.third3}</div>
-
-      //     <div>4位</div><div>${t.fourth4}</div>
-      //   </div>
-      // `;
       container.appendChild(
         div
       );
