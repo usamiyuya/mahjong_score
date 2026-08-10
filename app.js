@@ -2218,16 +2218,22 @@ async function renderPlayerTotals() {
         <div class="player-stats-table">
           <div class="player-stats-row player-stats-header">
             <div></div>
-            <div>三麻</div>
             <div>四麻</div>
+            <div>三麻</div>
           </div>
           <div class="player-stats-row">
             <div>対局数</div>
-            <div>${t.games3}</div>
             <div>${t.games4}</div>
+            <div>${t.games3}</div>
           </div>
           <div class="player-stats-row">
             <div>平均順位</div>
+            <div>
+              ${
+                t.games4
+                  ? (t.rankSum4 / t.games4).toFixed(2)
+                  : "-"
+              }
             <div>
               ${
                 t.games3
@@ -2235,16 +2241,16 @@ async function renderPlayerTotals() {
                   : "-"
               }
             </div>
-            <div>
-              ${
-                t.games4
-                  ? (t.rankSum4 / t.games4).toFixed(2)
-                  : "-"
-              }
             </div>
           </div>
           <div class="player-stats-row">
             <div>飛び率</div>
+            <div>
+              ${
+                t.games4
+                  ? ((t.tobi4 / t.games4) * 100).toFixed(1) + "%"
+                  : "-"
+              }
             <div>
               ${
                 t.games3
@@ -2252,36 +2258,30 @@ async function renderPlayerTotals() {
                   : "-"
               }
             </div>
-            <div>
-              ${
-                t.games4
-                  ? ((t.tobi4 / t.games4) * 100).toFixed(1) + "%"
-                  : "-"
-              }
             </div>
           </div>
           <div class="player-stats-row">
             <div>1位</div>
-            <div>${t.first3}</div>
             <div>${t.first4}</div>
+            <div>${t.first3}</div>
           </div>
 
           <div class="player-stats-row">
             <div>2位</div>
-            <div>${t.second3}</div>
             <div>${t.second4}</div>
+            <div>${t.second3}</div>
           </div>
 
           <div class="player-stats-row">
             <div>3位</div>
-            <div>${t.third3}</div>
             <div>${t.third4}</div>
-          </div>
+            <div>${t.third3}</div>
+            </div>
 
           <div class="player-stats-row">
             <div>4位</div>
-            <div>—</div>
             <div>${t.fourth4}</div>
+            <div>—</div>
           </div>
         </div>
       `;
