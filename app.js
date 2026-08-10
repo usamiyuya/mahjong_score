@@ -2188,6 +2188,16 @@ async function renderPlayerTotals() {
   });
 
   Object.keys(totals)
+    .sort((nameA, nameB) => {
+      const a = totals[nameA];
+      const b = totals[nameB];
+      const pointA =
+        a.point + (a.chip || 0);
+      const pointB =
+        b.point + (b.chip || 0);
+      // 総合ポイントの高い順
+      return pointB - pointA;
+    })
     .forEach(name => {
       const t =
         totals[name];
@@ -2229,35 +2239,19 @@ async function renderPlayerTotals() {
           <div class="player-stats-row">
             <div>平均順位</div>
             <div>
-              ${
-                t.games4
-                  ? (t.rankSum4 / t.games4).toFixed(2)
-                  : "-"
-              }
-            <div>
-              ${
-                t.games3
-                  ? (t.rankSum3 / t.games3).toFixed(2)
-                  : "-"
-              }
+              ${t.games4 ? (t.rankSum4 / t.games4).toFixed(2) : "-"}
             </div>
+            <div>
+              ${t.games3 ? (t.rankSum3 / t.games3).toFixed(2) : "-"}
             </div>
           </div>
           <div class="player-stats-row">
             <div>飛び率</div>
             <div>
-              ${
-                t.games4
-                  ? ((t.tobi4 / t.games4) * 100).toFixed(1) + "%"
-                  : "-"
-              }
-            <div>
-              ${
-                t.games3
-                  ? ((t.tobi3 / t.games3) * 100).toFixed(1) + "%"
-                  : "-"
-              }
+              ${t.games4 ? ((t.tobi4 / t.games4) * 100).toFixed(1) + "%" : "-"}
             </div>
+            <div>
+              ${t.games3 ? ((t.tobi3 / t.games3) * 100).toFixed(1) + "%" : "-"}
             </div>
           </div>
           <div class="player-stats-row">
