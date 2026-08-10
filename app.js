@@ -1794,38 +1794,57 @@ async function renderDaily() {
     );
   container.innerHTML = "";
   const snap =
-    await getDocs(
-      recordsCol
-    );
-  snap.forEach(docSnap => {
-    const r =
-      docSnap.data();
-    if (r.date !== date)
-      return;
-    const div =
-      document.createElement(
-        "div"
-      );
-    div.className =
-      "card";
-    const sortedPlayers =
-      [...r.players]
-        .sort((a, b) => a.rank - b.rank);
-    div.innerHTML = `
-      <strong>${r.time || ""}</strong>
-      （${r.gameType === "3" ? "三麻" : "四麻"} / ${r.rule}）
-      <hr>
-      ${sortedPlayers
-        .map(p =>
-          `${p.rank}位 ${p.name}
-          (${p.point})`
-        )
-        .join("<br>")}
-    `;
-    container.appendChild(
-      div
-    );
+  await getDocs(
+    recordsCol
+  );
+// 登録日時（createdAt）の順番で並べるため、
+// いったん対象の記録を配列に入れる
+const dailyRecords = [];
+snap.forEach(docSnap => {
+  const r =
+    docSnap.data();
+
+  if (r.date !== date)
+    return;
+
+  dailyRecords.push({
+    id: docSnap.id,
+    ...r
   });
+});
+// 実際に登録した日時の古い順に並べる
+// createdAt は Date.now() で保存されているため、
+// 日付をまたいでも正しい登録順になる
+dailyRecords.sort((a, b) => {
+  return (a.createdAt || 0) -
+         (b.createdAt || 0);
+});
+// 並び替えた順番で表示
+dailyRecords.forEach(r => {
+  const div =
+    document.createElement(
+      "div"
+    );
+  div.className =
+    "card";
+  const sortedPlayers =
+    [...r.players]
+      .sort((a, b) => a.rank - b.rank);
+  div.innerHTML = `
+    <strong>${r.time || ""}</strong>
+    （${r.gameType === "3" ? "三麻" : "四麻"} / ${r.rule}）
+    <hr>
+    ${sortedPlayers
+      .map(p =>
+        `${p.rank}位 ${p.name}
+        (${p.point})`
+      )
+      .join("<br>")}
+  `;
+  container.appendChild(
+    div
+  );
+});
 
   const chipSnap =
     await getDocs(
