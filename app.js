@@ -107,6 +107,47 @@ let sparkleInterval = null;
 let sparkleAnimationStarted = false;
 
 // ===================================
+// 背景画像変更
+// ===================================
+
+const backgrounds = [
+  {
+    image: "mahjong-hai.jpg",
+    color1: "rgba(11,93,42,0.5)",
+    color2: "rgba(21,122,63,0.5)"
+  },
+  {
+    image: "mahjong-hai2.jpg",
+    color1: "rgba(14, 17, 39, 0.5)",
+    color2: "rgba(22, 30, 65, 0.5)"
+  },
+  {
+    image: "mahjong-hai3.jpg",
+    color1: "rgba(60, 17, 17, 0.45)",
+    color2: "rgba(102, 33, 33, 0.5)"
+  },
+  {
+    image: "mahjong-hai4.jpg",
+    color1: "rgba(20, 70, 58, 0.5)",
+    color2: "rgba(30,90,100,0.5)"
+  }
+];
+const randomBackground =
+  backgrounds[Math.floor(Math.random() * backgrounds.length)];
+document.documentElement.style.setProperty(
+  "--background-image",
+  `url("${randomBackground.image}")`
+);
+document.documentElement.style.setProperty(
+  "--background-color1",
+  randomBackground.color1
+);
+document.documentElement.style.setProperty(
+  "--background-color2",
+  randomBackground.color2
+);
+
+// ===================================
 // 初期化
 // ===================================
 

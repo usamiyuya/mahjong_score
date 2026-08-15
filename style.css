@@ -26,10 +26,10 @@ body::before {
 
   background:
     linear-gradient(
-      rgba(11,93,42,0.5),
-      rgba(21,122,63,0.5)
+      var(--background-color1),
+      var(--background-color2)
     ),
-    url("mahjong-hai.jpg");
+    var(--background-image);
 
   background-size: 800px auto;
   background-position: center center;
