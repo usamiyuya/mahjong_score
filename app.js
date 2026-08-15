@@ -1635,12 +1635,15 @@ async function loadRecords() {
       <strong>${r.date}</strong>
       (${type === "3" ? "三麻" : "四麻"}/${r.rule})<br>
       ${sortedPlayers
-        .map(p =>
-          `${p.rank}位
-          ${p.name}
-          (${p.point})`
-        )
-        .join("<br>")}
+        .map(p => `
+          <div class="record-player-row">
+            <span class="record-rank">${p.rank}位</span>
+            <span class="record-name">${p.name}</span>
+            <span class="record-score">${Number(p.score).toLocaleString()}点</span>
+            <span class="record-point">${p.point}</span>
+          </div>
+        `)
+        .join("")}
       <br><br>
       ${
         canEdit(r)
@@ -1876,11 +1879,15 @@ dailyRecords.forEach(r => {
     （${r.gameType === "3" ? "三麻" : "四麻"} / ${r.rule}）
     <hr>
     ${sortedPlayers
-      .map(p =>
-        `${p.rank}位 ${p.name}
-        (${p.point})`
-      )
-      .join("<br>")}
+      .map(p => `
+        <div class="record-player-row">
+          <span class="record-rank">${p.rank}位</span>
+          <span class="record-name">${p.name}</span>
+          <span class="record-score">${Number(p.score).toLocaleString()}点</span>
+          <span class="record-point">${p.point}</span>
+        </div>
+      `)
+      .join("")}
   `;
   container.appendChild(
     div

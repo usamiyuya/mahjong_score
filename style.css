@@ -353,3 +353,39 @@ input[type="date"] {
   column-gap: 12px;
   row-gap: 3px;
 }
+
+
+/* 成績一覧のプレイヤー行 */
+.record-player-row {
+  display: grid;
+  grid-template-columns: 45px 1fr 90px 60px;
+  align-items: center;
+  gap: 4px;
+  line-height: 1.8;
+}
+
+/* 順位 */
+.record-rank {
+  text-align: left;
+  white-space: nowrap;
+}
+
+/* プレイヤー名 */
+.record-name {
+  text-align: left;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* 素点 */
+.record-score {
+  text-align: right;
+  white-space: nowrap;
+}
+
+/* ポイント */
+.record-point {
+  text-align: right;
+  white-space: nowrap;
+}
