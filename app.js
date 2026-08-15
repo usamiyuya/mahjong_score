@@ -2219,11 +2219,11 @@ async function renderPlayerTotals() {
           ${name}
         </div>
         <div class="player-total-point">
-          ${(t.point + chipPoint).toFixed(1)}
+          ${(t.point + chipPoint).toFixed(0)}
           <span>pt</span>
         </div>
         <div class="player-chip-point">
-          （チップ ${chipPoint.toFixed(1)}pt）
+          （チップ ${chipPoint.toFixed(0)}pt）
         </div>
         <div class="player-stats-table">
           <div class="player-stats-row player-stats-header">
@@ -2288,11 +2288,11 @@ async function renderPlayerTotals() {
           ${name}
         </div>
         <div class="player-total-point">
-          ${(t.point + chipPoint).toFixed(1)}
+          ${(t.point + chipPoint).toFixed(0)}
           <span>pt</span>
         </div>
         <div class="player-chip-point">
-          （チップ ${chipPoint.toFixed(1)}pt）
+          （チップ ${chipPoint.toFixed(0)}pt）
         </div>
         <div class="player-stats-table">
           <div class="player-stats-row player-stats-header">
@@ -2353,11 +2353,11 @@ async function renderPlayerTotals() {
           ${name}
         </div>
         <div class="player-total-point">
-          ${(t.point + chipPoint).toFixed(1)}
+          ${(t.point + chipPoint).toFixed(0)}
           <span>pt</span>
         </div>
         <div class="player-chip-point">
-          （チップ ${chipPoint.toFixed(1)}pt）
+          （チップ ${chipPoint.toFixed(0)}pt）
         </div>
         <div class="player-stats-table">
           <div class="player-stats-row player-stats-header">
