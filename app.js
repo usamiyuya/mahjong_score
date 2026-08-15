@@ -118,8 +118,8 @@ const backgrounds = [
   },
   {
     image: "mahjong-hai2.jpg",
-    color1: "rgba(14, 17, 39, 0.5)",
-    color2: "rgba(22, 30, 65, 0.5)"
+    color1: "rgba(30, 37, 85, 0.5)",
+    color2: "rgba(33, 45, 97, 0.5)"
   },
   {
     image: "mahjong-hai3.jpg",
@@ -128,8 +128,8 @@ const backgrounds = [
   },
   {
     image: "mahjong-hai4.jpg",
-    color1: "rgba(20, 70, 58, 0.5)",
-    color2: "rgba(30,90,100,0.5)"
+    color1: "rgba(59, 196, 164, 0.5)",
+    color2: "rgba(62, 177, 197, 0.5)"
   }
 ];
 const randomBackground =

@@ -15,7 +15,7 @@ body {
   padding-bottom: 70px;
 
   position: relative;
-  background-color: #0b5d2a;
+  background-color: var(--background-color1);
 }
 
 body::before {
