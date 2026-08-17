@@ -1160,20 +1160,58 @@ function setupRecordEvents() {
     document.getElementById("player-period");
   const customPeriod =
     document.getElementById("custom-period");
-  playerPeriod?.addEventListener("change", () => {
-    if (playerPeriod.value === "custom") {
-      customPeriod.style.display = "block";
-    } else {
-      customPeriod.style.display = "none";
+  function updateCustomPeriodVisibility() {
+    if (!playerPeriod || !customPeriod) return;
+    customPeriod.style.display =
+      playerPeriod.value === "custom"
+        ? "block"
+        : "none";
+  }
+  playerPeriod?.addEventListener(
+    "change",
+    () => {
+      updateCustomPeriodVisibility();
+      renderPlayerTotals();
     }
-    renderPlayerTotals();
-  });
+  );
+  // 初期表示時にも状態を合わせる
+  updateCustomPeriodVisibility();
   document
     .getElementById("player-period-start")
-    ?.addEventListener("change",renderPlayerTotals);
+    ?.addEventListener(
+      "change",
+      () => {
+        const startInput =
+          document.getElementById(
+            "player-period-start"
+          );
+        const endInput =
+          document.getElementById(
+            "player-period-end"
+          );
+        if (
+          startInput &&
+          endInput &&
+          startInput.value
+        ) {
+          endInput.min =
+            startInput.value;
+        }
+        if (validateCustomPeriod()) {
+          renderPlayerTotals();
+        }
+      }
+    );
   document
     .getElementById("player-period-end")
-    ?.addEventListener("change",renderPlayerTotals);
+    ?.addEventListener(
+      "change",
+      () => {
+        if (validateCustomPeriod()) {
+          renderPlayerTotals();
+        }
+      }
+    );
 }
 
 // ===================================
@@ -2141,19 +2179,6 @@ async function renderPlayerTotals() {
           document.getElementById(
             "player-period-end"
           )?.value;
-
-        if (
-          period === "custom" &&
-          startValue &&
-          endValue &&
-          startValue > endValue
-        ) {
-          alert(
-            "開始日は終了日以前の日付を指定してください。"
-          );
-          return;
-        }
-
         if (!startValue || !endValue) {
           include = false;
           break;
@@ -2162,13 +2187,16 @@ async function renderPlayerTotals() {
           new Date(startValue);
         const endDate =
           new Date(endValue);
-        // 終了日をその日の最後まで含める
+        // 終了日はその日の23:59:59まで含める
         endDate.setHours(
-          23, 59, 59, 999
+          23,
+          59,
+          59,
+          999
         );
         include =
-          gameDate >= startDate &&
-          gameDate <= endDate;
+          chipDate >= startDate &&
+          chipDate <= endDate;
         break;
       }
     }
@@ -2269,34 +2297,24 @@ async function renderPlayerTotals() {
           document.getElementById(
             "player-period-end"
           )?.value;
-          
-          if (
-            period === "custom" &&
-            startValue &&
-            endValue &&
-            startValue > endValue
-          ) {
-            alert(
-              "開始日は終了日以前の日付を指定してください。"
-            );
-            return;
-          }
-          
-          if (!startValue || !endValue) {
-            include = false;
-            break;
-          }
-          
+        if (!startValue || !endValue) {
+          include = false;
+          break;
+        }
         const startDate =
           new Date(startValue);
         const endDate =
           new Date(endValue);
+        // 終了日はその日の23:59:59まで含める
         endDate.setHours(
-          23, 59, 59, 999
+          23,
+          59,
+          59,
+          999
         );
         include =
-          chipDate >= startDate &&
-          chipDate <= endDate;
+          gameDate >= startDate &&
+          gameDate <= endDate;
         break;
       }
     }
@@ -2560,11 +2578,41 @@ async function renderPlayerTotals() {
       );
     });
     renderPlayerChart(totals);
-    document
-    .getElementById("player-game-filter")
-    ?.addEventListener("change", renderPlayerTotals);
+    // document
+    // .getElementById("player-game-filter")
+    // ?.addEventListener("change", renderPlayerTotals);
 }
 
+
+// ===================================
+// 日付逆転アラート
+// ===================================
+function validateCustomPeriod() {
+  const startInput =
+    document.getElementById(
+      "player-period-start"
+    );
+  const endInput =
+    document.getElementById(
+      "player-period-end"
+    );
+  if (!startInput || !endInput) {
+    return true;
+  }
+  const startValue = startInput.value;
+  const endValue = endInput.value;
+  // どちらか未入力なら問題なし
+  if (!startValue || !endValue) {
+    return true;
+  }
+  if (startValue > endValue) {
+    alert(
+      "開始日は終了日以前の日付を指定してください。"
+    );
+    return false;
+  }
+  return true;
+}
 
 // ===================================
 // チップ保存
