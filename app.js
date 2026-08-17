@@ -1162,10 +1162,11 @@ function setupRecordEvents() {
     document.getElementById("custom-period");
   function updateCustomPeriodVisibility() {
     if (!playerPeriod || !customPeriod) return;
-    customPeriod.style.display =
-      playerPeriod.value === "custom"
-        ? "block"
-        : "none";
+    if (playerPeriod.value === "custom") {
+      customPeriod.style.display = "block";
+    } else {
+      customPeriod.style.display = "none";
+    }
   }
   playerPeriod?.addEventListener(
     "change",
@@ -1174,7 +1175,7 @@ function setupRecordEvents() {
       renderPlayerTotals();
     }
   );
-  // 初期表示時にも状態を合わせる
+
   updateCustomPeriodVisibility();
   document
     .getElementById("player-period-start")
@@ -2195,8 +2196,8 @@ async function renderPlayerTotals() {
           999
         );
         include =
-          chipDate >= startDate &&
-          chipDate <= endDate;
+          gameDate >= startDate &&
+          gameDate <= endDate;
         break;
       }
     }
@@ -2313,8 +2314,8 @@ async function renderPlayerTotals() {
           999
         );
         include =
-          gameDate >= startDate &&
-          gameDate <= endDate;
+          chipDate >= startDate &&
+          chipDate <= endDate;
         break;
       }
     }
