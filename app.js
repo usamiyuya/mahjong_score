@@ -1161,11 +1161,23 @@ function setupRecordEvents() {
   const customPeriod =
     document.getElementById("custom-period");
   function updateCustomPeriodVisibility() {
-    if (!playerPeriod || !customPeriod) return;
+    const normalPeriod =
+      document.getElementById("normal-period");
+    if (
+      !playerPeriod ||
+      !customPeriod ||
+      !normalPeriod
+    ) {
+      return;
+    }
     if (playerPeriod.value === "custom") {
+      // 期間指定の場合
       customPeriod.style.display = "block";
+      normalPeriod.style.display = "none";
     } else {
+      // 1日・1か月・通年・すべての場合
       customPeriod.style.display = "none";
+      normalPeriod.style.display = "block";
     }
   }
   playerPeriod?.addEventListener(
