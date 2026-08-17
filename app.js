@@ -1096,14 +1096,14 @@ function setupRecordEvents() {
       renderDaily
     );
 
-  document
-    .getElementById(
-      "player-period"
-    )
-    ?.addEventListener(
-      "change",
-      renderPlayerTotals
-    );
+  // document
+  //   .getElementById(
+  //     "player-period"
+  //   )
+  //   ?.addEventListener(
+  //     "change",
+  //     renderPlayerTotals
+  //   );
 
   document
     .getElementById(
@@ -1156,6 +1156,24 @@ function setupRecordEvents() {
         : "▶ チップ精算";
     }
   );
+  const playerPeriod =
+    document.getElementById("player-period");
+  const customPeriod =
+    document.getElementById("custom-period");
+  playerPeriod?.addEventListener("change", () => {
+    if (playerPeriod.value === "custom") {
+      customPeriod.style.display = "block";
+    } else {
+      customPeriod.style.display = "none";
+    }
+    renderPlayerTotals();
+  });
+  document
+    .getElementById("player-period-start")
+    ?.addEventListener("change",renderPlayerTotals);
+  document
+    .getElementById("player-period-end")
+    ?.addEventListener("change",renderPlayerTotals);
 }
 
 // ===================================
@@ -2114,6 +2132,45 @@ async function renderPlayerTotals() {
       case "all":
         include = true;
         break;
+      case "custom": {
+        const startValue =
+          document.getElementById(
+            "player-period-start"
+          )?.value;
+        const endValue =
+          document.getElementById(
+            "player-period-end"
+          )?.value;
+
+        if (
+          period === "custom" &&
+          startValue &&
+          endValue &&
+          startValue > endValue
+        ) {
+          alert(
+            "開始日は終了日以前の日付を指定してください。"
+          );
+          return;
+        }
+
+        if (!startValue || !endValue) {
+          include = false;
+          break;
+        }
+        const startDate =
+          new Date(startValue);
+        const endDate =
+          new Date(endValue);
+        // 終了日をその日の最後まで含める
+        endDate.setHours(
+          23, 59, 59, 999
+        );
+        include =
+          gameDate >= startDate &&
+          gameDate <= endDate;
+        break;
+      }
     }
 
     if (!include) return;
@@ -2203,6 +2260,45 @@ async function renderPlayerTotals() {
       case "all":
         include = true;
         break;
+      case "custom": {
+        const startValue =
+          document.getElementById(
+            "player-period-start"
+          )?.value;
+        const endValue =
+          document.getElementById(
+            "player-period-end"
+          )?.value;
+          
+          if (
+            period === "custom" &&
+            startValue &&
+            endValue &&
+            startValue > endValue
+          ) {
+            alert(
+              "開始日は終了日以前の日付を指定してください。"
+            );
+            return;
+          }
+          
+          if (!startValue || !endValue) {
+            include = false;
+            break;
+          }
+          
+        const startDate =
+          new Date(startValue);
+        const endDate =
+          new Date(endValue);
+        endDate.setHours(
+          23, 59, 59, 999
+        );
+        include =
+          chipDate >= startDate &&
+          chipDate <= endDate;
+        break;
+      }
     }
     if (!include) return;
     r.players.forEach(p => {

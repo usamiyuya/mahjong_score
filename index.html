@@ -237,6 +237,11 @@
         <option value="month">1か月</option>
         <option value="year" selected>通年</option>
         <option value="all">すべて</option>
+        <option value="custom">期間指定</option>
+        <div id="custom-period" style="display: none;">
+          <label>開始日<input type="date" id="player-period-start"></label>
+          <label>終了日<input type="date" id="player-period-end"></label>
+        </div>
       </select>
       <input type="date" id="player-period-date">
       <label>対局タイプ</label>
