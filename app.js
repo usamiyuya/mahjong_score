@@ -247,6 +247,7 @@ function setupTabs() {
       });
       
       if (target === "tab-players") {
+        renderPlayerDisplayTabs();
         renderPlayerTotals();
       }
 
