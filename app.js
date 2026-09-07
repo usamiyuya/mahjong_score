@@ -2411,6 +2411,7 @@ async function renderPlayerTotals() {
             selectedPlayerDisplayTab
           )
         ) {return;}
+      }
 
       if (!totals[p.name]) {
         totals[p.name] = {
