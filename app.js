@@ -932,43 +932,26 @@ function updateUmaOptions() {
 async function loadPlayers() {
   playerNames = [];
   playerData = [];
-  const usedNames =
-    new Set();
-  const snap =
-    await getDocs(
-      query(
-        playersCol,
-        orderBy(
-          "lastUsed",
-          "desc"
-        )
-      )
-    );
+  const usedNames = new Set();
+  const snap = await getDocs(
+    query(playersCol, orderBy("lastUsed", "desc"))
+  );
   snap.forEach(docSnap => {
-    const player =
-      docSnap.data();
-    const name =
-      (player.name || "").trim();
-    if (
-      !name ||
-      usedNames.has(name)
-    ) {
-      return;
-    }
+    const player = docSnap.data();
+    const name = (player.name || "").trim();
+    if (!name || usedNames.has(name)) return;
     usedNames.add(name);
     playerNames.push(name);
     playerData.push({
       id: docSnap.id,
       name,
-      displayTabs:
-        Array.isArray(
-          player.displayTabs
-        )
-          ? player.displayTabs
-          : []
+      displayTabs: Array.isArray(player.displayTabs)
+        ? player.displayTabs
+        : []
     });
   });
 }
+
 // async function loadPlayers() {
 //   playerNames = [];
 //   const usedNames = new Set();
@@ -2419,6 +2402,16 @@ async function renderPlayerTotals() {
 
     if (!include) return;
     r.players.forEach(p => {
+      // 表示タブによるフィルター
+      if (selectedPlayerDisplayTab !== "all") {
+        const player = playerData.find(item => item.name === p.name);
+        if (
+          !player ||
+          !player.displayTabs.includes(
+            selectedPlayerDisplayTab
+          )
+        ) {return;}
+
       if (!totals[p.name]) {
         totals[p.name] = {
           point: 0,
