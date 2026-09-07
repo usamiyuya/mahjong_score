@@ -22,6 +22,7 @@ const recordsCol = collection(db, "records");
 const playersCol = collection(db, "players");
 const rulesCol = collection(db, "rules");
 const chipRecordsCol = collection(db, "chipRecords");
+const displayTabsCol = collection(db, "displayTabs");
 
 // ===================================
 // ルール定義
@@ -106,6 +107,10 @@ let playerChart = null;
 let sparkleInterval = null;
 let sparkleAnimationStarted = false;
 
+let displayTabs = [];
+let selectedDisplayTab = "all";
+let playerData = [];
+
 // ===================================
 // 背景画像変更
 // ===================================
@@ -160,6 +165,9 @@ window.addEventListener("load", async () => {
   setupRuleEvents();
 
   await loadPlayers();
+
+  await loadDisplayTabs();
+
   setupPlayerDropdown();
 
   await loadRecords();
@@ -512,12 +520,21 @@ function setupRuleEvents() {
     );
 
   if (saveBtn) {
-
     saveBtn.addEventListener(
       "click",
       saveRule
     );
+  }
 
+  const saveDisplayTabBtn =
+    document.getElementById(
+      "save-display-tab-btn"
+    );
+  if (saveDisplayTabBtn) {
+    saveDisplayTabBtn.addEventListener(
+      "click",
+      saveDisplayTab
+    );
   }
 
   const deleteBtn =
@@ -913,16 +930,217 @@ function updateUmaOptions() {
 
 async function loadPlayers() {
   playerNames = [];
-  const usedNames = new Set();
-  const snap = await getDocs(
-    query(playersCol, orderBy("lastUsed", "desc"))
-  );
+  playerData = [];
+  const usedNames =
+    new Set();
+  const snap =
+    await getDocs(
+      query(
+        playersCol,
+        orderBy(
+          "lastUsed",
+          "desc"
+        )
+      )
+    );
   snap.forEach(docSnap => {
-    const player = docSnap.data();
-    const name = (player.name || "").trim();
-    if (!name || usedNames.has(name)) return;
+    const player =
+      docSnap.data();
+    const name =
+      (player.name || "").trim();
+    if (
+      !name ||
+      usedNames.has(name)
+    ) {
+      return;
+    }
     usedNames.add(name);
     playerNames.push(name);
+    playerData.push({
+      id: docSnap.id,
+      name,
+      displayTabs:
+        Array.isArray(
+          player.displayTabs
+        )
+          ? player.displayTabs
+          : []
+    });
+  });
+}
+// async function loadPlayers() {
+//   playerNames = [];
+//   const usedNames = new Set();
+//   const snap = await getDocs(
+//     query(playersCol, orderBy("lastUsed", "desc"))
+//   );
+//   snap.forEach(docSnap => {
+//     const player = docSnap.data();
+//     const name = (player.name || "").trim();
+//     if (!name || usedNames.has(name)) return;
+//     usedNames.add(name);
+//     playerNames.push(name);
+//   });
+// }
+
+async function loadDisplayTabs() {
+  displayTabs = [];
+  const snap =
+    await getDocs(displayTabsCol);
+  snap.forEach(docSnap => {
+    const data = docSnap.data();
+    if (!data.name) return;
+    displayTabs.push({
+      id: docSnap.id,
+      name: data.name
+    });
+  });
+  renderDisplayTabSettings();
+  renderPlayerDisplayTabs();
+  renderPlayerDisplayTabSettings();
+}
+
+function renderDisplayTabSettings() {
+  const container =
+    document.getElementById(
+      "display-tab-list"
+    );
+  if (!container) return;
+  container.innerHTML = "";
+  displayTabs.forEach(tab => {
+    const div =
+      document.createElement("div");
+    div.className =
+      "display-tab-setting-row";
+    div.innerHTML = `
+      <span>
+        ${tab.name}
+      </span>
+      <button
+        class="delete-display-tab-btn"
+        data-id="${tab.id}">
+        削除
+      </button>
+    `;
+    container.appendChild(div);
+  });
+  container
+    .querySelectorAll(
+      ".delete-display-tab-btn"
+    )
+    .forEach(btn => {
+      btn.addEventListener(
+        "click",
+        async () => {
+          const id =
+            btn.dataset.id;
+          if (
+            !confirm(
+              "この表示タブを削除しますか？"
+            )
+          ) {
+            return;
+          }
+          await deleteDoc(
+            doc(
+              db,
+              "displayTabs",
+              id
+            )
+          );
+          if (
+            selectedDisplayTab === id
+          ) {
+            selectedDisplayTab =
+              "all";
+          }
+          await loadDisplayTabs();
+        }
+      );
+    });
+}
+
+async function saveDisplayTab() {
+  const input =
+    document.getElementById(
+      "display-tab-name"
+    );
+  if (!input) return;
+  const name =
+    input.value.trim();
+  if (!name) {
+    alert(
+      "表示タブ名を入力してください"
+    );
+    return;
+  }
+  const duplicate =
+    displayTabs.some(
+      tab => tab.name === name
+    );
+  if (duplicate) {
+    alert(
+      "同じ名前の表示タブが既にあります"
+    );
+    return;
+  }
+  await addDoc(
+    displayTabsCol,
+    {
+      name,
+      createdAt: Date.now()
+    }
+  );
+  input.value = "";
+  await loadDisplayTabs();
+}
+
+function renderPlayerDisplayTabs() {
+  const container =
+    document.getElementById(
+      "player-display-tabs"
+    );
+  if (!container) return;
+  container.innerHTML = "";
+  // 「すべて」は常に表示
+  const allButton =
+    document.createElement("button");
+  allButton.textContent = "すべて";
+  allButton.className =
+    selectedDisplayTab === "all"
+      ? "active"
+      : "";
+  allButton.addEventListener(
+    "click",
+    () => {
+      selectedDisplayTab = "all";
+      renderPlayerDisplayTabs();
+      renderPlayerTotals();
+    }
+  );
+  container.appendChild(allButton);
+  displayTabs.forEach(tab => {
+    const button =
+      document.createElement("button");
+    button.textContent =
+      tab.name;
+    button.dataset.id =
+      tab.id;
+    if (
+      selectedDisplayTab === tab.id
+    ) {
+      button.classList.add("active");
+    }
+    button.addEventListener(
+      "click",
+      () => {
+        selectedDisplayTab =
+          tab.id;
+        renderPlayerDisplayTabs();
+        renderPlayerTotals();
+      }
+    );
+    container.appendChild(button);
   });
 }
 
@@ -974,27 +1192,6 @@ function createPlayerDropdown(input, filter = true) {
   }
 }
 
-// async function loadPlayers() {
-//   const datalist =
-//     document.getElementById(
-//       "player-list"
-//     );
-//   playerNames = [];
-//   const usedNames = new Set();
-//   const snap =
-//     await getDocs(q);
-//   snap.forEach(docSnap => {
-//     const player =
-//       docSnap.data();
-//     const name =
-//       player.name.trim();
-//     if (usedNames.has(name)) {
-//       return;
-//     }
-//     usedNames.add(name);
-//     playerNames.push(name);
-//   });
-// }
 
 document.addEventListener(
   "blur",
@@ -1358,7 +1555,8 @@ async function registerPlayer(name) {
     playersCol,
     {
       name,
-      lastUsed: Date.now()
+      lastUsed: Date.now(),
+      displayTabs: []
     }
   );
 }
@@ -1638,6 +1836,7 @@ async function saveRecord() {
   alert("保存しました");
 
   await loadPlayers();
+  await loadDisplayTabs();
   await loadRecords();
   setupPlayerDropdown();
 
@@ -2132,6 +2331,9 @@ async function renderPlayerTotals() {
       "player-game-filter"
     )?.value || "all";
 
+  const displayTabValue =
+    selectedDisplayTab;
+
   const targetDate =
     document.getElementById(
       "player-period-date"
@@ -2594,6 +2796,102 @@ async function renderPlayerTotals() {
     // document
     // .getElementById("player-game-filter")
     // ?.addEventListener("change", renderPlayerTotals);
+}
+
+
+function renderPlayerDisplayTabSettings() {
+  const container =
+    document.getElementById(
+      "player-display-tab-settings"
+    );
+  if (!container) return;
+  container.innerHTML = "";
+  playerData.forEach(player => {
+    const row =
+      document.createElement("div");
+    row.className =
+      "player-display-setting";
+    row.innerHTML = `
+      <div class="player-display-player-name">
+        ${player.name}
+      </div>
+      <div class="player-display-checkboxes">
+        ${displayTabs
+          .map(tab => `
+            <label>
+              <input
+                type="checkbox"
+                class="player-display-checkbox"
+                data-player-id="${player.id}"
+                data-tab-id="${tab.id}"
+                ${
+                  player.displayTabs.includes(
+                    tab.id
+                  )
+                    ? "checked"
+                    : ""
+                }
+              >
+              ${tab.name}
+            </label>
+          `)
+          .join("")}
+      </div>
+    `;
+    container.appendChild(row);
+  });
+  container
+    .querySelectorAll(
+      ".player-display-checkbox"
+    )
+    .forEach(checkbox => {
+      checkbox.addEventListener(
+        "change",
+        async () => {
+          await updatePlayerDisplayTabs(
+            checkbox.dataset.playerId
+          );
+        }
+      );
+    });
+}
+
+
+async function updatePlayerDisplayTabs(
+  playerId
+) {
+  const checkboxes =
+    document.querySelectorAll(
+      `.player-display-checkbox[data-player-id="${playerId}"]`
+    );
+  const tabs = [];
+  checkboxes.forEach(
+    checkbox => {
+      if (checkbox.checked) {
+        tabs.push(
+          checkbox.dataset.tabId
+        );
+      }
+    }
+  );
+  await updateDoc(
+    doc(
+      db,
+      "players",
+      playerId
+    ),
+    {
+      displayTabs: tabs
+    }
+  );
+  const player =
+    playerData.find(
+      p => p.id === playerId
+    );
+  if (player) {
+    player.displayTabs = tabs;
+  }
+  renderPlayerTotals();
 }
 
 
