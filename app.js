@@ -109,6 +109,7 @@ let sparkleAnimationStarted = false;
 
 let displayTabs = [];
 let selectedDisplayTab = "all";
+let selectedPlayerDisplayTab = "all";
 let playerData = [];
 
 // ===================================
