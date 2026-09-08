@@ -2529,7 +2529,23 @@ async function renderPlayerTotals() {
       }
     }
     if (!include) return;
+
     r.players.forEach(p => {
+      // 表示タブによるフィルター
+      if (selectedPlayerDisplayTab !== "all") {
+        const player =
+          playerData.find(
+            item => item.name === p.name
+          );
+        if (
+          !player ||
+          !player.displayTabs.includes(
+            selectedPlayerDisplayTab
+          )
+        ) {
+          return;
+        }
+      }
       if (!totals[p.name]) {
         totals[p.name] = {
           point: 0,
@@ -2557,7 +2573,6 @@ async function renderPlayerTotals() {
         p.chip *
         (r.chipValue || 0);
     });
-  });
 
   Object.keys(totals)
     .sort((nameA, nameB) => {
