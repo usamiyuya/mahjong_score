@@ -108,7 +108,7 @@ let sparkleInterval = null;
 let sparkleAnimationStarted = false;
 
 let displayTabs = [];
-let selectedPlayerDisplayTab = "all";
+let selectedDisplayTab = "all";
 let playerData = [];
 
 // ===================================
@@ -1033,9 +1033,9 @@ function renderDisplayTabSettings() {
             )
           );
           if (
-            selectedPlayerDisplayTab === id
+            selectedDisplayTab === id
           ) {
-            selectedPlayerDisplayTab =
+            selectedDisplayTab =
               "all";
           }
           await loadDisplayTabs();
@@ -1091,13 +1091,13 @@ function renderPlayerDisplayTabs() {
     document.createElement("button");
   allButton.textContent = "すべて";
   allButton.className =
-    selectedPlayerDisplayTab === "all"
+    selectedDisplayTab === "all"
       ? "active"
       : "";
   allButton.addEventListener(
     "click",
     () => {
-      selectedPlayerDisplayTab = "all";
+      selectedDisplayTab = "all";
       renderPlayerDisplayTabs();
       renderPlayerTotals();
     }
@@ -1111,14 +1111,14 @@ function renderPlayerDisplayTabs() {
     button.dataset.id =
       tab.id;
     if (
-      selectedPlayerDisplayTab === tab.id
+      selectedDisplayTab === tab.id
     ) {
       button.classList.add("active");
     }
     button.addEventListener(
       "click",
       () => {
-        selectedPlayerDisplayTab =
+        selectedDisplayTab =
           tab.id;
         renderPlayerDisplayTabs();
         renderPlayerTotals();
@@ -2316,7 +2316,7 @@ async function renderPlayerTotals() {
     )?.value || "all";
 
   const displayTabValue =
-    selectedPlayerDisplayTab;
+    selectedDisplayTab;
 
   const targetDate =
     document.getElementById(
@@ -2529,7 +2529,6 @@ async function renderPlayerTotals() {
       }
     }
     if (!include) return;
-
     r.players.forEach(p => {
       // 表示タブによるフィルター
       if (selectedPlayerDisplayTab !== "all") {
@@ -2573,6 +2572,7 @@ async function renderPlayerTotals() {
         p.chip *
         (r.chipValue || 0);
     });
+  });
 
   Object.keys(totals)
     .sort((nameA, nameB) => {
