@@ -2403,12 +2403,12 @@ async function renderPlayerTotals() {
     if (!include) return;
     r.players.forEach(p => {
       // 表示タブによるフィルター
-      if (selectedPlayerDisplayTab !== "all") {
+      if (selectedDisplayTab !== "all") {
         const player = playerData.find(item => item.name === p.name);
         if (
           !player ||
           !player.displayTabs.includes(
-            selectedPlayerDisplayTab
+            selectedDisplayTab
           )
         ) {return;}
       }
@@ -2531,7 +2531,7 @@ async function renderPlayerTotals() {
     if (!include) return;
     r.players.forEach(p => {
       // 表示タブによるフィルター
-      if (selectedPlayerDisplayTab !== "all") {
+      if (selectedDisplayTab !== "all") {
         const player =
           playerData.find(
             item => item.name === p.name
@@ -2539,7 +2539,7 @@ async function renderPlayerTotals() {
         if (
           !player ||
           !player.displayTabs.includes(
-            selectedPlayerDisplayTab
+            selectedDisplayTab
           )
         ) {
           return;
