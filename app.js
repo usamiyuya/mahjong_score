@@ -108,7 +108,6 @@ let sparkleInterval = null;
 let sparkleAnimationStarted = false;
 
 let displayTabs = [];
-let selectedDisplayTab = "all";
 let selectedPlayerDisplayTab = "all";
 let playerData = [];
 
@@ -1034,9 +1033,9 @@ function renderDisplayTabSettings() {
             )
           );
           if (
-            selectedDisplayTab === id
+            selectedPlayerDisplayTab === id
           ) {
-            selectedDisplayTab =
+            selectedPlayerDisplayTab =
               "all";
           }
           await loadDisplayTabs();
@@ -1092,13 +1091,13 @@ function renderPlayerDisplayTabs() {
     document.createElement("button");
   allButton.textContent = "すべて";
   allButton.className =
-    selectedDisplayTab === "all"
+    selectedPlayerDisplayTab === "all"
       ? "active"
       : "";
   allButton.addEventListener(
     "click",
     () => {
-      selectedDisplayTab = "all";
+      selectedPlayerDisplayTab = "all";
       renderPlayerDisplayTabs();
       renderPlayerTotals();
     }
@@ -1112,14 +1111,14 @@ function renderPlayerDisplayTabs() {
     button.dataset.id =
       tab.id;
     if (
-      selectedDisplayTab === tab.id
+      selectedPlayerDisplayTab === tab.id
     ) {
       button.classList.add("active");
     }
     button.addEventListener(
       "click",
       () => {
-        selectedDisplayTab =
+        selectedPlayerDisplayTab =
           tab.id;
         renderPlayerDisplayTabs();
         renderPlayerTotals();
@@ -2317,7 +2316,7 @@ async function renderPlayerTotals() {
     )?.value || "all";
 
   const displayTabValue =
-    selectedDisplayTab;
+    selectedPlayerDisplayTab;
 
   const targetDate =
     document.getElementById(
