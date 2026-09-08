@@ -429,3 +429,54 @@ input[type="date"] {
 .player-display-tabs button.active {
   font-weight: bold;
 }
+
+/* ===================================
+   プレイヤー表示タブ設定
+   =================================== */
+
+#player-display-tab-settings {
+  margin-top: 6px;
+}
+
+.player-display-setting {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 7px 0;
+  border-bottom: 1px solid #ddd;
+}
+
+.player-display-setting:last-child {
+  border-bottom: none;
+}
+
+.player-display-player-name {
+  flex: 0 0 75px;
+  font-weight: bold;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.player-display-checkboxes {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  flex: 1;
+}
+
+.player-display-checkboxes label {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  margin: 0;
+  padding: 0;
+  white-space: nowrap;
+}
+
+.player-display-checkboxes input[type="checkbox"] {
+  width: auto;
+  margin: 0;
+  padding: 0;
+}
