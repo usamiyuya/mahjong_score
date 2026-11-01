@@ -2337,7 +2337,7 @@ async function renderPlayerTotals() {
     const r =
       docSnap.data();
     const type = normalizeGameType(r);
-    if (gameFilterValue !== "4" && type !== gameFilterValue) {return};
+    if (gameFilterValue !== "all" && type !== gameFilterValue) {return};
     const gameDate =
       new Date(r.date);
     let include = true;
@@ -2471,7 +2471,7 @@ async function renderPlayerTotals() {
   chipSnap.forEach(docSnap => {
     const r = docSnap.data();
     const type = normalizeGameType(r);
-    if (gameFilterValue !== "4" && type !== gameFilterValue) {return};
+    if (gameFilterValue !== "all" && type !== gameFilterValue) {return};
     const chipDate =
       new Date(r.date);
     let include = true;
@@ -2684,8 +2684,8 @@ async function renderPlayerTotals() {
         <div class="player-stats-table">
           <div class="player-stats-row player-stats-header">
             <div></div>
-            <div>回数</div>
-            <div>割合</div>
+            <div>四麻</div>
+            <div>　</div>
           </div>
           <div class="player-stats-row">
             <div>対局数</div>
@@ -2775,8 +2775,8 @@ async function renderPlayerTotals() {
         <div class="player-stats-table">
           <div class="player-stats-row player-stats-header">
             <div></div>
-            <div>回数</div>
-            <div>割合</div>
+            <div>三麻</div>
+            <div>　</div>
           </div>
           <div class="player-stats-row">
             <div>対局数</div>
@@ -2849,9 +2849,6 @@ async function renderPlayerTotals() {
       );
     });
     renderPlayerChart(totals);
-    // document
-    // .getElementById("player-game-filter")
-    // ?.addEventListener("change", renderPlayerTotals);
 }
 
 
