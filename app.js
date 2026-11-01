@@ -2244,26 +2244,24 @@ function drawPlayerRankChart(
 
   const rankRevealPlugin = {
     id: "rankReveal",
-
     beforeDatasetsDraw(chart) {
       const { ctx, chartArea } = chart;
-
       if (!chartArea) return;
-
+      // 進行度を0～1の範囲に制限
+      const progress = Math.min(
+        1,
+        Math.max(0, revealProgress)
+      );
       ctx.save();
-
       ctx.beginPath();
-
       ctx.rect(
         chartArea.left,
         chartArea.top,
-        chartArea.width * revealProgress,
-        chartArea.bottom - chartArea.top
+        chartArea.width * progress,
+        chartArea.height
       );
-
       ctx.clip();
     },
-
     afterDatasetsDraw(chart) {
       chart.ctx.restore();
     }
@@ -2355,20 +2353,20 @@ function drawPlayerRankChart(
       },
 
       // Chart.jsによる点の上下・左右の移動を無効化
-      animations: {
-        x: {
-          duration: 0
-        },
-        y: {
-          duration: 0
-        },
-        colors: {
-          duration: 0
-        },
-        numbers: {
-          duration: 0
-        }
-      },
+      // animations: {
+      //   x: {
+      //     duration: 0
+      //   },
+      //   y: {
+      //     duration: 0
+      //   },
+      //   colors: {
+      //     duration: 0
+      //   },
+      //   numbers: {
+      //     duration: 0
+      //   }
+      // },
 
       plugins: {
         legend: {
