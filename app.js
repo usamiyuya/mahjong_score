@@ -2191,25 +2191,26 @@ function drawPlayerRankChart(
   canvas,
   gameFilterValue
 ) {
+  
   // ===================================
   // 現在選択されている集計期間を取得
   // ===================================
   const period =
     document.getElementById("player-period")?.value || "all";
-
-  const today = new Date();
-
+  // 集計タブで選択されている基準日を取得
+  const targetDate =
+    document.getElementById("player-period-date")?.value;
+  const today = targetDate
+    ? new Date(targetDate)
+    : new Date();
+  // 期間指定の日付を取得
   const startValue =
     document.getElementById("player-period-start")?.value;
-
   const endValue =
     document.getElementById("player-period-end")?.value;
-
-  // 期間指定の日付を取得
   const startDate = startValue
     ? new Date(startValue)
     : null;
-
   const endDate = endValue
     ? new Date(endValue)
     : null;
@@ -2217,27 +2218,11 @@ function drawPlayerRankChart(
   if (endDate) {
     endDate.setHours(23, 59, 59, 999);
   }
-  
   const playerRecords = allGameRecords
     .filter(record => {
-      // 対局日時を取得
-      let gameDate;
-      if (record.createdAt?.toDate) {
-        // Firestore Timestampの場合
-        gameDate = record.createdAt.toDate();
-      } else if (record.createdAt instanceof Date) {
-        gameDate = record.createdAt;
-      } else {
-        // 数値または日時文字列の場合
-        let timestamp = record.createdAt;
-        if (
-          typeof timestamp === "number" &&
-          timestamp < 1000000000000
-        ) {
-          timestamp *= 1000;
-        }
-        gameDate = new Date(timestamp);
-      }
+      // 対局日を取得
+      // createdAtではなく、集計タブと同じrecord.dateを使用
+      const gameDate = new Date(record.date);
       if (isNaN(gameDate.getTime())) {
         return false;
       }
@@ -2298,10 +2283,13 @@ function drawPlayerRankChart(
         player => player.name === playerName
       );
     })
+    // 登録日時の新しい順に並べる
     .sort((a, b) =>
       (b.createdAt || 0) - (a.createdAt || 0)
     )
+    // 指定した試合数だけ取得
     .slice(0, gameCount)
+    // 古い試合から順番に表示
     .reverse();
 
   // 各試合の順位を取得
