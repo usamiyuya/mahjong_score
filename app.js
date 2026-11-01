@@ -2194,14 +2194,12 @@ function drawPlayerRankChart(
   const playerRecords = allGameRecords
     .filter(record => {
       const type = normalizeGameType(record);
-
       if (
         gameFilterValue !== "all" &&
         type !== gameFilterValue
       ) {
         return false;
       }
-
       return record.players?.some(
         player => player.name === playerName
       );
@@ -2212,10 +2210,13 @@ function drawPlayerRankChart(
     .slice(0, gameCount)
     .reverse();
 
+  // 各試合の順位を取得
   const ranks = playerRecords.map(record => {
     const player = record.players.find(
       p => p.name === playerName
     );
+    return player ? Number(player.rank) : null;
+  });
 
   // 各試合の素点を取得
   const scores = playerRecords.map(record => {
@@ -2234,10 +2235,6 @@ function drawPlayerRankChart(
       scores[index] > 50000
     );
   };
-
-    return player ? Number(player.rank) : null;
-  });
-
   const labels = ranks.map(() => "");
 
   // ===================================
@@ -2288,7 +2285,7 @@ function drawPlayerRankChart(
         // 点の色
         backgroundColor: "#e7f8ff",
         borderWidth: 2,
-        
+
         // 点の大きさ
         pointRadius: function(context) {
           return isSpecialFirst(context.dataIndex)
