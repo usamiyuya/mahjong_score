@@ -2273,18 +2273,35 @@ function drawPlayerRankChart(
   const firePointPlugin = {
     id: "firePoint",
     afterDatasetsDraw(chart) {
-      const { ctx } = chart;
+      const { ctx, chartArea } = chart;
+      if (!chartArea) return;
+      // グラフと同じ表示進行度を使用
+      const progress = Math.min(
+        1,
+        Math.max(0, revealProgress)
+      );
+      // 左から右への表示範囲
+      const revealWidth = chartArea.width * progress;
+      ctx.save();
+      // 炎もグラフと同じ範囲内だけ描画
+      ctx.beginPath();
+      ctx.rect(
+        chartArea.left,
+        chartArea.top,
+        revealWidth,
+        chartArea.height
+      );
+      ctx.clip();
       const meta = chart.getDatasetMeta(0);
       meta.data.forEach((point, index) => {
         if (!isSpecialFirst(index)) return;
         const { x, y } = point;
-        ctx.save();
         ctx.font = "22px Arial";
         ctx.textAlign = "center";
         ctx.textBaseline = "middle";
         ctx.fillText("🔥", x, y);
-        ctx.restore();
       });
+      ctx.restore();
     }
   };
   
