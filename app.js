@@ -2339,13 +2339,15 @@ function drawPlayerRankChart(
       // 描画アニメーション
       // ===================================
       animation: {
-        // 小さい数字：早い表示　大きい数字：遅い表示
         duration: 1600,
         easing: "linear",
         onProgress: function(animation) {
-          revealProgress =
-            animation.currentStep /
-            animation.numSteps;
+          const progress =
+            animation.currentStep / animation.numSteps;
+          // 計算結果が正常な数値の場合だけ反映
+          revealProgress = Number.isFinite(progress)
+            ? Math.min(1, Math.max(0, progress))
+            : 1;
         },
         onComplete: function() {
           revealProgress = 1;
@@ -2414,10 +2416,15 @@ function drawPlayerRankChart(
           reverse: true,
           ticks: {
             stepSize: 1,
-            padding: 2,
-            color: "#c5d8e8",
             callback: function(value) {
-              return `${value}位`;
+              if (
+                Number.isInteger(Number(value)) &&
+                value >= 1 &&
+                value <= 4
+              ) {
+                return `${value}位`;
+              }
+              return "";
             }
           },
           title: {
@@ -2434,8 +2441,8 @@ function drawPlayerRankChart(
           },
           afterFit: function(scale) {
             // グラフの縦幅
-            scale.width = 20;
             scale.width = 58;
+            scale.height = 20;
           }
         }
       }
