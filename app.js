@@ -2278,8 +2278,8 @@ function drawPlayerRankChart(
         },
         // 縦軸
         y: {
-          min: 1,
-          max: 4,
+          min: 0.7,
+          max: 4.3,
           reverse: true,
           ticks: {
             stepSize: 1,
@@ -2295,7 +2295,7 @@ function drawPlayerRankChart(
           },
           // 縦軸の幅を調整
           afterFit: function(scale) {
-            scale.width = 45;
+            scale.width = 20;
           }
         }
       }
