@@ -2337,37 +2337,38 @@ function drawPlayerRankChart(
       // ===================================
       // 描画アニメーション
       // ===================================
-      animation: {
-        duration: 1600,
-        easing: "linear",
-        onProgress: function(animation) {
-          const progress =
-            animation.currentStep / animation.numSteps;
-          // 計算結果が正常な数値の場合だけ反映
-          revealProgress = Number.isFinite(progress)
-            ? Math.min(1, Math.max(0, progress))
-            : 1;
-        },
-        onComplete: function() {
-          revealProgress = 1;
-        }
-      },
+      animation: false,
+      // animation: {
+      //   duration: 1600,
+      //   easing: "linear",
+      //   onProgress: function(animation) {
+      //     const progress =
+      //       animation.currentStep / animation.numSteps;
+      //     // 計算結果が正常な数値の場合だけ反映
+      //     revealProgress = Number.isFinite(progress)
+      //       ? Math.min(1, Math.max(0, progress))
+      //       : 1;
+      //   },
+      //   onComplete: function() {
+      //     revealProgress = 1;
+      //   }
+      // },
 
       // Chart.jsによる点の上下・左右の移動を無効化
-      animations: {
-        x: {
-          duration: 0
-        },
-        y: {
-          duration: 0
-        },
-        colors: {
-          duration: 0
-        },
-        numbers: {
-          duration: 0
-        }
-      },
+      // animations: {
+      //   x: {
+      //     duration: 0
+      //   },
+      //   y: {
+      //     duration: 0
+      //   },
+      //   colors: {
+      //     duration: 0
+      //   },
+      //   numbers: {
+      //     duration: 0
+      //   }
+      // },
 
       plugins: {
         legend: {
@@ -2446,11 +2447,40 @@ function drawPlayerRankChart(
       }
     }
     });
-  // Canvasのサイズ確定後にグラフを再計算・再描画
+  // ===================================
+  // 左から右への独自アニメーション
+  // ===================================
+  // アニメーション時間（ミリ秒）
+  const revealDuration = 1600;
+  // 開始時刻
+  let startTime = null;
+  // アニメーション処理
+  function animateReveal(timestamp) {
+    if (startTime === null) {
+      startTime = timestamp;
+    }
+    // 経過時間から進行度を計算
+    const elapsed = timestamp - startTime;
+    revealProgress = Math.min(
+      elapsed / revealDuration,
+      1
+    );
+    // グラフを再描画
+    chart.draw();
+    // 完了していなければ次のフレームへ
+    if (revealProgress < 1) {
+      requestAnimationFrame(animateReveal);
+    }
+  }
+  // レイアウト確定後にアニメーション開始
   requestAnimationFrame(() => {
     requestAnimationFrame(() => {
       chart.resize();
-      chart.update("none");
+      // 表示範囲を左端に戻す
+      revealProgress = 0;
+      chart.draw();
+      // アニメーション開始
+      requestAnimationFrame(animateReveal);
     });
   });
   return chart;
