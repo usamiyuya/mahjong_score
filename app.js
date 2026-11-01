@@ -2337,7 +2337,7 @@ async function renderPlayerTotals() {
     const r =
       docSnap.data();
     const type = normalizeGameType(r);
-    if (gameFilterValue !== "all" && type !== gameFilterValue) {return};
+    if (gameFilterValue !== "4" && type !== gameFilterValue) {return};
     const gameDate =
       new Date(r.date);
     let include = true;
@@ -2471,7 +2471,7 @@ async function renderPlayerTotals() {
   chipSnap.forEach(docSnap => {
     const r = docSnap.data();
     const type = normalizeGameType(r);
-    if (gameFilterValue !== "all" && type !== gameFilterValue) {return};
+    if (gameFilterValue !== "4" && type !== gameFilterValue) {return};
     const chipDate =
       new Date(r.date);
     let include = true;
@@ -2684,7 +2684,8 @@ async function renderPlayerTotals() {
         <div class="player-stats-table">
           <div class="player-stats-row player-stats-header">
             <div></div>
-            <div>四麻</div>
+            <div>回数</div>
+            <div>割合</div>
           </div>
           <div class="player-stats-row">
             <div>対局数</div>
@@ -2713,21 +2714,46 @@ async function renderPlayerTotals() {
           <div class="player-stats-row">
             <div>1位</div>
             <div>${t.first4}</div>
+            <div>
+              ${
+                t.games4
+                  ? ((t.first4 / t.games4) * 100).toFixed(1) + "%"
+                  : "-"
+              }
+            </div>
           </div>
-
           <div class="player-stats-row">
             <div>2位</div>
             <div>${t.second4}</div>
+            <div>
+              ${
+                t.games4
+                  ? ((t.second4 / t.games4) * 100).toFixed(1) + "%"
+                  : "-"
+              }
+            </div>
           </div>
-
           <div class="player-stats-row">
             <div>3位</div>
             <div>${t.third4}</div>
+            <div>
+              ${
+                t.games4
+                  ? ((t.third4 / t.games4) * 100).toFixed(1) + "%"
+                  : "-"
+              }
+            </div>
           </div>
-
           <div class="player-stats-row">
             <div>4位</div>
             <div>${t.fourth4}</div>
+            <div>
+              ${
+                t.games4
+                  ? ((t.fourth4 / t.games4) * 100).toFixed(1) + "%"
+                  : "-"
+              }
+            </div>
           </div>
         </div>
       `;
@@ -2749,7 +2775,8 @@ async function renderPlayerTotals() {
         <div class="player-stats-table">
           <div class="player-stats-row player-stats-header">
             <div></div>
-            <div>三麻</div>
+            <div>回数</div>
+            <div>割合</div>
           </div>
           <div class="player-stats-row">
             <div>対局数</div>
@@ -2778,16 +2805,35 @@ async function renderPlayerTotals() {
           <div class="player-stats-row">
             <div>1位</div>
             <div>${t.first3}</div>
+            <div>
+              ${
+                t.games3
+                  ? ((t.first3 / t.games3) * 100).toFixed(1) + "%"
+                  : "-"
+              }
+            </div>
           </div>
-
           <div class="player-stats-row">
             <div>2位</div>
             <div>${t.second3}</div>
+            <div>
+              ${
+                t.games3
+                  ? ((t.second3 / t.games3) * 100).toFixed(1) + "%"
+                  : "-"
+              }
+            </div>
           </div>
-
           <div class="player-stats-row">
             <div>3位</div>
             <div>${t.third3}</div>
+            <div>
+              ${
+                t.games3
+                  ? ((t.third3 / t.games3) * 100).toFixed(1) + "%"
+                  : "-"
+              }
+            </div>
           </div>
 
           <div class="player-stats-row">
