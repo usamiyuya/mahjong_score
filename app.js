@@ -2313,7 +2313,7 @@ async function renderPlayerTotals() {
   const gameFilterValue =
     document.getElementById(
       "player-game-filter"
-    )?.value || "all";
+    )?.value || "4";
 
   const displayTabValue =
     selectedDisplayTab;
