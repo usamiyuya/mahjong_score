@@ -2181,6 +2181,123 @@ dailyRecords.forEach(r => {
 }
 
 // ===================================
+// プレイヤー別・直近順位グラフ
+// ===================================
+
+function drawPlayerRankChart(
+  playerName,
+  gameCount,
+  allGameRecords,
+  canvas,
+  gameFilterValue
+) {
+  // 対象プレイヤーが参加した対局を取得
+  const playerRecords = allGameRecords
+    .filter(record => {
+      // 三麻・四麻のフィルター
+      const type = normalizeGameType(record);
+      if (
+        gameFilterValue !== "all" &&
+        type !== gameFilterValue
+      ) {
+        return false;
+      }
+      return record.players?.some(
+        player => player.name === playerName
+      );
+    })
+    // 登録日時の新しい順に並べる
+    .sort((a, b) => {
+      return (b.createdAt || 0) -
+             (a.createdAt || 0);
+    })
+    // 直近の指定試合数だけ取得
+    .slice(0, gameCount)
+    // 古い試合から新しい試合の順にする
+    .reverse();
+  // 各試合の順位を取得
+  const ranks = playerRecords.map(record => {
+    const player =
+      record.players.find(
+        p => p.name === playerName
+      );
+    return player ? Number(player.rank) : null;
+  });
+  // 横軸のラベルは表示しない
+  const labels = ranks.map(() => "");
+  // グラフを描画
+  return new Chart(canvas, {
+    type: "line",
+    data: {
+      labels: labels,
+      datasets: [{
+        label: "取得順位",
+        data: ranks,
+        borderColor: "rgba(52, 152, 219, 1)",
+        backgroundColor: "rgba(52, 152, 219, 0.15)",
+        borderWidth: 2,
+        pointRadius: 4,
+        pointHoverRadius: 6,
+        tension: 0.2,
+        fill: false
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: {
+          display: false
+        },
+        tooltip: {
+          callbacks: {
+            title: function(context) {
+              const index =
+                context[0].dataIndex;
+              const remaining =
+                ranks.length - index;
+              return remaining === 1
+                ? "直近の試合"
+                : `直近${remaining}試合前`;
+            },
+            label: function(context) {
+              return `${context.parsed.y}位`;
+            }
+          }
+        }
+      },
+      scales: {
+        // 横軸
+        x: {
+          title: {
+            display: false
+          },
+          ticks: {
+            display: false
+          }
+        },
+        // 縦軸
+        y: {
+          min: 1,
+          max: 4,
+          reverse: true,
+          ticks: {
+            stepSize: 1,
+            callback: function(value) {
+              return `${value}位`;
+            }
+          },
+          title: {
+            display: true,
+            text: "順位"
+          }
+        }
+      }
+    }
+  });
+}
+
+// ===================================
 // グラフ描画
 // ===================================
 function renderPlayerChart(totals) {
@@ -2332,10 +2449,14 @@ async function renderPlayerTotals() {
     await getDocs(
       recordsCol
     );
-
+  // グラフ表示用に全対局記録を保存
+  const allGameRecords = [];
   snap.forEach(docSnap => {
     const r =
       docSnap.data();
+    allGameRecords.push({
+      ...r
+    });
     const type = normalizeGameType(r);
     if (gameFilterValue !== "all" && type !== gameFilterValue) {return};
     const gameDate =
@@ -2843,6 +2964,98 @@ async function renderPlayerTotals() {
         </div>
       `;
     }
+
+    // ===================================
+    // プレイヤー別順位グラフの操作部分
+    // ===================================
+    const graphControls =
+      document.createElement("div");
+    graphControls.className =
+      "player-rank-graph-controls";
+    // 試合数選択欄
+    const graphCountSelect =
+      document.createElement("select");
+    graphCountSelect.className =
+      "player-rank-graph-count";
+    [10, 20, 50].forEach(count => {
+      const option =
+        document.createElement("option");
+      option.value = count;
+      option.textContent = `${count}試合`;
+      graphCountSelect.appendChild(option);
+    });
+    // 初期値は10試合
+    graphCountSelect.value = "10";
+    // グラフ表示ボタン
+    const graphButton =
+      document.createElement("button");
+    graphButton.type = "button";
+    graphButton.className =
+      "player-rank-graph-button";
+    graphButton.textContent =
+      "グラフを表示";
+    // グラフ表示領域
+    const graphArea =
+      document.createElement("div");
+    graphArea.className =
+      "player-rank-graph-area";
+    graphArea.style.display = "none";
+    // グラフ用Canvas
+    const graphCanvas =
+      document.createElement("canvas");
+    graphCanvas.className =
+      "player-rank-graph-canvas";
+    graphArea.appendChild(graphCanvas);
+    // 試合数選択欄とボタンを配置
+    graphControls.appendChild(graphCountSelect);
+    graphControls.appendChild(graphButton);
+    // 成績カードの最後に追加
+    div.appendChild(graphControls);
+    div.appendChild(graphArea);
+    // このプレイヤー専用のグラフ
+    let rankChart = null;
+    // グラフ表示・非表示切り替え
+    graphButton.addEventListener("click", () => {
+      // グラフが表示されている場合は非表示にする
+      if (graphArea.style.display !== "none") {
+        graphArea.style.display = "none";
+        graphButton.textContent =
+          "グラフを表示";
+        if (rankChart) {
+          rankChart.destroy();
+          rankChart = null;
+        }
+        return;
+      }
+      // グラフを表示する
+      graphArea.style.display = "block";
+      graphButton.textContent =
+        "グラフを非表示";
+      rankChart = drawPlayerRankChart(
+        name,
+        Number(graphCountSelect.value),
+        allGameRecords,
+        graphCanvas,
+        gameFilterValue
+      );
+    });
+    // 試合数を変更したとき、表示中ならグラフを更新
+    graphCountSelect.addEventListener("change", () => {
+      if (graphArea.style.display === "none") {
+        return;
+      }
+      if (rankChart) {
+        rankChart.destroy();
+        rankChart = null;
+      }
+      rankChart = drawPlayerRankChart(
+        name,
+        Number(graphCountSelect.value),
+        allGameRecords,
+        graphCanvas,
+        gameFilterValue
+      );
+    });
 
       container.appendChild(
         div
