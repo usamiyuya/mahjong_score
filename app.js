@@ -2191,71 +2191,136 @@ function drawPlayerRankChart(
   canvas,
   gameFilterValue
 ) {
-  // 対象プレイヤーが参加した対局を取得
   const playerRecords = allGameRecords
     .filter(record => {
-      // 三麻・四麻のフィルター
       const type = normalizeGameType(record);
+
       if (
         gameFilterValue !== "all" &&
         type !== gameFilterValue
       ) {
         return false;
       }
+
       return record.players?.some(
         player => player.name === playerName
       );
     })
-    // 登録日時の新しい順に並べる
-    .sort((a, b) => {
-      return (b.createdAt || 0) -
-             (a.createdAt || 0);
-    })
-    // 直近の指定試合数だけ取得
+    .sort((a, b) =>
+      (b.createdAt || 0) - (a.createdAt || 0)
+    )
     .slice(0, gameCount)
-    // 古い試合から新しい試合の順にする
     .reverse();
-  // 各試合の順位を取得
+
   const ranks = playerRecords.map(record => {
-    const player =
-      record.players.find(
-        p => p.name === playerName
-      );
+    const player = record.players.find(
+      p => p.name === playerName
+    );
+
     return player ? Number(player.rank) : null;
   });
-  // 横軸のラベルは表示しない
+
   const labels = ranks.map(() => "");
-  // グラフを描画
+
+  // ===================================
+  // 左から右へ描画するための進行度
+  // ===================================
+  let revealProgress = 0;
+
+  const rankRevealPlugin = {
+    id: "rankReveal",
+
+    beforeDatasetsDraw(chart) {
+      const { ctx, chartArea } = chart;
+
+      if (!chartArea) return;
+
+      ctx.save();
+
+      ctx.beginPath();
+
+      ctx.rect(
+        chartArea.left,
+        chartArea.top,
+        chartArea.width * revealProgress,
+        chartArea.bottom - chartArea.top
+      );
+
+      ctx.clip();
+    },
+
+    afterDatasetsDraw(chart) {
+      chart.ctx.restore();
+    }
+  };
+
   return new Chart(canvas, {
     type: "line",
+
     data: {
-      labels: labels,
+      labels,
+
       datasets: [{
         label: "取得順位",
         data: ranks,
-        borderColor: "rgba(52, 152, 219, 1)",
-        backgroundColor: "rgba(52, 152, 219, 0.15)",
+
+        // 線の色
+        borderColor: "#55c8ff",
+
+        // 点の色
+        backgroundColor: "#e7f8ff",
+
         borderWidth: 2,
+
+        // 小さな点
         pointRadius: 2,
         pointHoverRadius: 4,
+
+        // 直線でつなぐ
         tension: 0,
+
         fill: false
       }]
     },
+
+    plugins: [
+      rankRevealPlugin
+    ],
+
     options: {
       responsive: true,
       maintainAspectRatio: false,
+
+      // ===================================
+      // 描画アニメーション
+      // ===================================
+      animation: {
+        // 小さい数字：早い表示　大きい数字：遅い表示
+        duration: 1600,
+        easing: "linear",
+        onProgress: function(animation) {
+          revealProgress =
+            animation.currentStep /
+            animation.numSteps;
+        },
+        onComplete: function() {
+          revealProgress = 1;
+        }
+      },
       plugins: {
         legend: {
           display: false
         },
         tooltip: {
+          backgroundColor: "rgba(5, 20, 38, 0.95)",
+          titleColor: "#ffffff",
+          bodyColor: "#d9efff",
+          borderColor: "rgba(100, 190, 240, 0.4)",
+          borderWidth: 1,
           callbacks: {
             title: function(context) {
-              const index =
-                context[0].dataIndex;
-              const remaining =
-                ranks.length - index;
+              const index = context[0].dataIndex;
+              const remaining = ranks.length - index;
               return remaining === 1
                 ? "直近の試合"
                 : `直近${remaining}試合前`;
@@ -2267,23 +2332,29 @@ function drawPlayerRankChart(
         }
       },
       scales: {
-        // 横軸
         x: {
           title: {
             display: false
           },
           ticks: {
             display: false
+          },
+          grid: {
+            color: "rgba(150, 200, 235, 0.10)"
+          },
+          border: {
+            color: "rgba(150, 200, 235, 0.25)"
           }
         },
-        // 縦軸
         y: {
+          // グラフの上下余白
           min: 0.7,
           max: 4.3,
           reverse: true,
           ticks: {
             stepSize: 1,
             padding: 2,
+            color: "#c5d8e8",
             callback: function(value) {
               return `${value}位`;
             }
@@ -2291,10 +2362,17 @@ function drawPlayerRankChart(
           title: {
             display: true,
             text: "順位",
+            color: "#c5d8e8",
             padding: 2
           },
-          // 縦軸の幅を調整
+          grid: {
+            color: "rgba(150, 200, 235, 0.13)"
+          },
+          border: {
+            color: "rgba(150, 200, 235, 0.25)"
+          },
           afterFit: function(scale) {
+            // グラフの縦幅
             scale.width = 20;
           }
         }
