@@ -219,11 +219,11 @@ input[type="date"] {
   margin-top: 8px;
 }
 
+/* プレイヤー別成績表を3列表示にする */
 .player-stats-row {
   display: grid;
   grid-template-columns: 1.2fr 1fr 1fr;
   align-items: center;
-  min-height: 34px;
 }
 
 .player-stats-row > div {
@@ -481,9 +481,3 @@ input[type="date"] {
   padding: 0;
 }
 
-/* プレイヤー別成績表を3列表示にする */
-.player-stats-row {
-  display: grid;
-  grid-template-columns: 1.2fr 1fr 1fr;
-  align-items: center;
-}
