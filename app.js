@@ -2191,8 +2191,99 @@ function drawPlayerRankChart(
   canvas,
   gameFilterValue
 ) {
+  // ===================================
+  // 現在選択されている集計期間を取得
+  // ===================================
+  const period =
+    document.getElementById("player-period")?.value || "all";
+
+  const today = new Date();
+
+  const startValue =
+    document.getElementById("player-period-start")?.value;
+
+  const endValue =
+    document.getElementById("player-period-end")?.value;
+
+  // 期間指定の日付を取得
+  const startDate = startValue
+    ? new Date(startValue)
+    : null;
+
+  const endDate = endValue
+    ? new Date(endValue)
+    : null;
+  // 終了日は23:59:59.999まで含める
+  if (endDate) {
+    endDate.setHours(23, 59, 59, 999);
+  }
+  
   const playerRecords = allGameRecords
     .filter(record => {
+      // 対局日時を取得
+      let gameDate;
+      if (record.createdAt?.toDate) {
+        // Firestore Timestampの場合
+        gameDate = record.createdAt.toDate();
+      } else if (record.createdAt instanceof Date) {
+        gameDate = record.createdAt;
+      } else {
+        // 数値または日時文字列の場合
+        let timestamp = record.createdAt;
+        if (
+          typeof timestamp === "number" &&
+          timestamp < 1000000000000
+        ) {
+          timestamp *= 1000;
+        }
+        gameDate = new Date(timestamp);
+      }
+      if (isNaN(gameDate.getTime())) {
+        return false;
+      }
+      // ===================================
+      // 集計期間による絞り込み
+      // ===================================
+      let include = false;
+      switch (period) {
+        case "day":
+          include =
+            gameDate.toDateString() ===
+            today.toDateString();
+          break;
+        case "month":
+          include =
+            gameDate.getFullYear() ===
+              today.getFullYear() &&
+            gameDate.getMonth() ===
+              today.getMonth();
+          break;
+        case "year":
+          include =
+            gameDate.getFullYear() ===
+            today.getFullYear();
+          break;
+        case "all":
+          include = true;
+          break;
+        case "custom":
+          if (!startDate || !endDate) {
+            include = false;
+            break;
+          }
+          include =
+            gameDate >= startDate &&
+            gameDate <= endDate;
+          break;
+        default:
+          include = true;
+      }
+      if (!include) {
+        return false;
+      }
+      // ===================================
+      // 三麻・四麻による絞り込み
+      // ===================================
       const type = normalizeGameType(record);
       if (
         gameFilterValue !== "all" &&
@@ -2200,6 +2291,9 @@ function drawPlayerRankChart(
       ) {
         return false;
       }
+      // ===================================
+      // プレイヤーによる絞り込み
+      // ===================================
       return record.players?.some(
         player => player.name === playerName
       );
@@ -2376,37 +2470,6 @@ function drawPlayerRankChart(
       // 描画アニメーション
       // ===================================
       animation: false,
-      // animation: {
-      //   duration: 1600,
-      //   easing: "linear",
-      //   onProgress: function(animation) {
-      //     const progress =
-      //       animation.currentStep / animation.numSteps;
-      //     // 計算結果が正常な数値の場合だけ反映
-      //     revealProgress = Number.isFinite(progress)
-      //       ? Math.min(1, Math.max(0, progress))
-      //       : 1;
-      //   },
-      //   onComplete: function() {
-      //     revealProgress = 1;
-      //   }
-      // },
-
-      // Chart.jsによる点の上下・左右の移動を無効化
-      // animations: {
-      //   x: {
-      //     duration: 0
-      //   },
-      //   y: {
-      //     duration: 0
-      //   },
-      //   colors: {
-      //     duration: 0
-      //   },
-      //   numbers: {
-      //     duration: 0
-      //   }
-      // },
 
       plugins: {
         legend: {
