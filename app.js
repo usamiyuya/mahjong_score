@@ -2217,6 +2217,24 @@ function drawPlayerRankChart(
       p => p.name === playerName
     );
 
+  // 各試合の素点を取得
+  const scores = playerRecords.map(record => {
+    const player = record.players.find(
+      p => p.name === playerName
+    );
+    return player
+      ? Number(String(player.score ?? 0).replace(/,/g, ""))
+      : 0;
+  });
+
+  // 1位かつ50,000点超えかどうか
+  const isSpecialFirst = index => {
+    return (
+      ranks[index] === 1 &&
+      scores[index] > 50000
+    );
+  };
+
     return player ? Number(player.rank) : null;
   });
 
@@ -2269,12 +2287,41 @@ function drawPlayerRankChart(
 
         // 点の色
         backgroundColor: "#e7f8ff",
-
         borderWidth: 2,
-
-        // 小さな点
-        pointRadius: 2,
-        pointHoverRadius: 4,
+        
+        // 点の大きさ
+        pointRadius: function(context) {
+          return isSpecialFirst(context.dataIndex)
+            ? 8
+            : 2;
+        },
+        pointHoverRadius: function(context) {
+          return isSpecialFirst(context.dataIndex)
+            ? 10
+            : 4;
+        },
+        // 点の形
+        pointStyle: function(context) {
+          return isSpecialFirst(context.dataIndex)
+            ? "star"
+            : "circle";
+        },
+        // 点の色
+        pointBackgroundColor: function(context) {
+          return isSpecialFirst(context.dataIndex)
+            ? "#ffd700"
+            : "#e7f8ff";
+        },
+        pointBorderColor: function(context) {
+          return isSpecialFirst(context.dataIndex)
+            ? "#fff1a8"
+            : "#55c8ff";
+        },
+        pointBorderWidth: function(context) {
+          return isSpecialFirst(context.dataIndex)
+            ? 2
+            : 1;
+        },
 
         // 直線でつなぐ
         tension: 0,
@@ -2307,6 +2354,23 @@ function drawPlayerRankChart(
           revealProgress = 1;
         }
       },
+
+      // Chart.jsによる点の上下・左右の移動を無効化
+      animations: {
+        x: {
+          duration: 0
+        },
+        y: {
+          duration: 0
+        },
+        colors: {
+          duration: 0
+        },
+        numbers: {
+          duration: 0
+        }
+      },
+
       plugins: {
         legend: {
           display: false
@@ -2374,6 +2438,7 @@ function drawPlayerRankChart(
           afterFit: function(scale) {
             // グラフの縦幅
             scale.width = 20;
+            scale.width = 58;
           }
         }
       }
