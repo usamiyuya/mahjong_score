@@ -2236,9 +2236,9 @@ function drawPlayerRankChart(
         borderColor: "rgba(52, 152, 219, 1)",
         backgroundColor: "rgba(52, 152, 219, 0.15)",
         borderWidth: 2,
-        pointRadius: 4,
-        pointHoverRadius: 6,
-        tension: 0.2,
+        pointRadius: 2,
+        pointHoverRadius: 4,
+        tension: 0,
         fill: false
       }]
     },
@@ -2283,13 +2283,19 @@ function drawPlayerRankChart(
           reverse: true,
           ticks: {
             stepSize: 1,
+            padding: 2,
             callback: function(value) {
               return `${value}位`;
             }
           },
           title: {
             display: true,
-            text: "順位"
+            text: "順位",
+            padding: 2
+          },
+          // 縦軸の幅を調整
+          afterFit: function(scale) {
+            scale.width = 45;
           }
         }
       }
@@ -3007,20 +3013,24 @@ async function renderPlayerTotals() {
       "player-rank-graph-canvas";
     graphArea.appendChild(graphCanvas);
     // 試合数選択欄とボタンを配置
-    graphControls.appendChild(graphCountSelect);
+    // ボタンだけを最初に表示
     graphControls.appendChild(graphButton);
+    // 試合数選択欄は最初は非表示
+    graphCountSelect.style.display = "none";
+    graphControls.appendChild(graphCountSelect);
     // 成績カードの最後に追加
     div.appendChild(graphControls);
     div.appendChild(graphArea);
     // このプレイヤー専用のグラフ
     let rankChart = null;
     // グラフ表示・非表示切り替え
+    // グラフ表示・非表示切り替え
     graphButton.addEventListener("click", () => {
       // グラフが表示されている場合は非表示にする
       if (graphArea.style.display !== "none") {
         graphArea.style.display = "none";
-        graphButton.textContent =
-          "グラフを表示";
+        graphCountSelect.style.display = "none";
+        graphButton.textContent = "グラフを表示";
         if (rankChart) {
           rankChart.destroy();
           rankChart = null;
@@ -3029,8 +3039,8 @@ async function renderPlayerTotals() {
       }
       // グラフを表示する
       graphArea.style.display = "block";
-      graphButton.textContent =
-        "グラフを非表示";
+      graphCountSelect.style.display = "";
+      graphButton.textContent = "グラフを非表示";
       rankChart = drawPlayerRankChart(
         name,
         Number(graphCountSelect.value),
