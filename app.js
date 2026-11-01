@@ -2442,7 +2442,6 @@ function drawPlayerRankChart(
           afterFit: function(scale) {
             // グラフの縦幅
             scale.width = 58;
-            scale.height = 20;
           }
         }
       }
