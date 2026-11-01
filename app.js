@@ -2267,7 +2267,8 @@ function drawPlayerRankChart(
     }
   };
 
-  return new Chart(canvas, {
+  // return new Chart(canvas, {
+  const chart = new Chart(canvas, {
     type: "line",
 
     data: {
@@ -2353,20 +2354,20 @@ function drawPlayerRankChart(
       },
 
       // Chart.jsによる点の上下・左右の移動を無効化
-      // animations: {
-      //   x: {
-      //     duration: 0
-      //   },
-      //   y: {
-      //     duration: 0
-      //   },
-      //   colors: {
-      //     duration: 0
-      //   },
-      //   numbers: {
-      //     duration: 0
-      //   }
-      // },
+      animations: {
+        x: {
+          duration: 0
+        },
+        y: {
+          duration: 0
+        },
+        colors: {
+          duration: 0
+        },
+        numbers: {
+          duration: 0
+        }
+      },
 
       plugins: {
         legend: {
@@ -2444,7 +2445,15 @@ function drawPlayerRankChart(
         }
       }
     }
+    });
+  // Canvasのサイズ確定後にグラフを再計算・再描画
+  requestAnimationFrame(() => {
+    requestAnimationFrame(() => {
+      chart.resize();
+      chart.update("none");
+    });
   });
+  return chart;
 }
 
 // ===================================
