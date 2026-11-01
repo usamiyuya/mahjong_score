@@ -2267,7 +2267,27 @@ function drawPlayerRankChart(
     }
   };
 
-  // return new Chart(canvas, {
+  // ===================================
+  // 50,000点超えの1位に炎マークを表示
+  // ===================================
+  const firePointPlugin = {
+    id: "firePoint",
+    afterDatasetsDraw(chart) {
+      const { ctx } = chart;
+      const meta = chart.getDatasetMeta(0);
+      meta.data.forEach((point, index) => {
+        if (!isSpecialFirst(index)) return;
+        const { x, y } = point;
+        ctx.save();
+        ctx.font = "22px Arial";
+        ctx.textAlign = "center";
+        ctx.textBaseline = "middle";
+        ctx.fillText("🔥", x, y);
+        ctx.restore();
+      });
+    }
+  };
+  
   const chart = new Chart(canvas, {
     type: "line",
 
@@ -2299,7 +2319,7 @@ function drawPlayerRankChart(
         // 点の形
         pointStyle: function(context) {
           return isSpecialFirst(context.dataIndex)
-            ? "star"
+            ? false
             : "circle";
         },
         // 点の色
@@ -2327,7 +2347,8 @@ function drawPlayerRankChart(
     },
 
     plugins: [
-      rankRevealPlugin
+      rankRevealPlugin,
+      firePointPlugin
     ],
 
     options: {
