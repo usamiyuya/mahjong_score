@@ -2531,6 +2531,7 @@ function drawPlayerRankChart(
           afterFit: function(scale) {
             // グラフの縦幅
             scale.width = 58;
+            scale.height = 20;
           }
         }
       }
@@ -3259,7 +3260,7 @@ async function renderPlayerTotals() {
       const option =
         document.createElement("option");
       option.value = count;
-      option.textContent = `${count}試合`;
+      option.textContent = `直近${count}試合`;
       graphCountSelect.appendChild(option);
     });
     // 初期値は10試合
