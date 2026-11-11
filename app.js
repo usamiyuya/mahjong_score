@@ -2317,6 +2317,16 @@ function drawPlayerRankChart(
       scores[index] > 50000
     );
   };
+  // 飛んだ人かどうか
+  const isTobiLoser = index => {
+    const record = playerRecords[index];
+
+    const player = record.players.find(
+      p => p.name === playerName
+    );
+
+    return player?.tobiLoser === true;
+  };
   const labels = ranks.map(() => "");
 
   // ===================================
@@ -2349,11 +2359,12 @@ function drawPlayerRankChart(
     }
   };
 
+  
   // ===================================
-  // 50,000点超えの1位に炎マークを表示
+  // 炎・どくろマークを表示
   // ===================================
-  const firePointPlugin = {
-    id: "firePoint",
+  const specialPointPlugin = {
+    id: "specialPoint",
     afterDatasetsDraw(chart) {
       const { ctx, chartArea } = chart;
       if (!chartArea) return;
@@ -2363,9 +2374,10 @@ function drawPlayerRankChart(
         Math.max(0, revealProgress)
       );
       // 左から右への表示範囲
-      const revealWidth = chartArea.width * progress;
+      const revealWidth =
+        chartArea.width * progress;
       ctx.save();
-      // 炎もグラフと同じ範囲内だけ描画
+      // マークもグラフと同じ範囲内だけ描画
       ctx.beginPath();
       ctx.rect(
         chartArea.left,
@@ -2376,16 +2388,37 @@ function drawPlayerRankChart(
       ctx.clip();
       const meta = chart.getDatasetMeta(0);
       meta.data.forEach((point, index) => {
-        if (!isSpecialFirst(index)) return;
         const { x, y } = point;
+        const hasFire =
+          isSpecialFirst(index);
+        const hasSkull =
+          isTobiLoser(index);
+        // どちらにも該当しなければ何もしない
+        if (!hasFire && !hasSkull) return;
         ctx.font = "22px Arial";
         ctx.textAlign = "center";
         ctx.textBaseline = "middle";
-        ctx.fillText("🔥", x, y);
+        // 炎マーク
+        if (hasFire) {
+          ctx.fillText(
+            "🔥",
+            hasSkull ? x - 11 : x,
+            y
+          );
+        }
+        // どくろマーク
+        if (hasSkull) {
+          ctx.fillText(
+            "☠️",
+            hasFire ? x + 11 : x,
+            y
+          );
+        }
       });
       ctx.restore();
     }
   };
+
   
   const chart = new Chart(canvas, {
     type: "line",
@@ -2447,7 +2480,7 @@ function drawPlayerRankChart(
 
     plugins: [
       rankRevealPlugin,
-      firePointPlugin
+      specialPointPlugin
     ],
 
     options: {
@@ -2531,7 +2564,7 @@ function drawPlayerRankChart(
           afterFit: function(scale) {
             // グラフの縦幅
             scale.width = 58;
-            scale.height = 20;
+            scale.height = 10;
           }
         }
       }
